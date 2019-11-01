@@ -1,0 +1,60 @@
+<html xmlns:th="https://www.thymeleaf.org">
+<head>
+    <title>Demo</title>
+
+    <meta name="webAuthnChallenge" th:content="${webAuthnChallenge}" content="" />
+    <meta name="webAuthnCredentialId" th:content="${credentialId}" content="" />
+    <script
+            src="https://code.jquery.com/jquery-3.4.1.js"
+            integrity="sha256-WpOohJOqMqqyKL9FccASB9O0KwACQJpFTUBLTYOVvVU="
+            crossorigin="anonymous"></script>
+    <script th:src="@{/base64url.js}"></script>
+    <script type="text/javascript">
+        if (!window.PublicKeyCredential) { /* Client not capable. Handle error. */ }
+
+        function login() {
+            var challenge = $("meta[name=webAuthnChallenge]").attr("content");
+            var credentialIds = $("meta[name=webAuthnCredentialId]").attr("content");
+            const publicKeyCredentialRequestOptions = {
+                challenge: base64url.decodeBase64url(challenge),
+                allowCredentials: [{
+                    id: base64url.decodeBase64url(credentialIds),
+                    type: 'public-key',
+                    transports: ['usb', 'ble', 'nfc'],
+                }],
+                timeout: 60000,
+            };
+
+            return navigator.credentials.get({
+                publicKey: publicKeyCredentialRequestOptions
+            }).then(function (credential) {
+                $("#credentialId").val(credential.id);
+                $("#clientDataJSON").val(base64url.encodeBase64url(credential.response.clientDataJSON));
+                $("#authenticatorData").val(base64url.encodeBase64url(credential.response.authenticatorData));
+                $("#signature").val(base64url.encodeBase64url(credential.response.signature));
+                $("#clientExtensions").val(JSON.stringify(credential.getClientExtensionResults()));
+                $('#login').submit();
+            });
+        }
+        $(document).ready(function() {
+            $("#login").submit(function(e) {
+                var f = this;
+                login().then(r => f.submit());
+                return false;
+            });
+        });
+    </script>
+</head>
+<body>
+<h1>Log In</h1>
+<form id="login" th:action="@{/login/webauthn}" method="post">
+    <input type="submit" value="Log In">
+
+    <input id="credentialId" name="credentialId" type="hidden" />
+    <input id="clientDataJSON" name="clientDataJSON" type="hidden" />
+    <input id="authenticatorData" name="authenticatorData" type="hidden" />
+    <input id="signature" name="signature" type="hidden" />
+    <input id="clientExtensions" name="clientExtensions" type="hidden" />
+</form>
+</body>
+</html>
