@@ -12,17 +12,8 @@ import java.util.Map;
  */
 @Controller
 public class IndexController {
-	final WebAuthnChallengeRepository challenges;
-
-	public IndexController(WebAuthnChallengeRepository challenges) {
-		this.challenges = challenges;
-	}
-
 	@GetMapping("/")
-	String index(Map<String, Object> model, HttpSession httpSession) {
-		String challenge = this.challenges.generateChallenge();
-		this.challenges.save(httpSession, challenge);
-		model.put("webAuthnChallenge", challenge);
-		return "webauthn/registration";
+	String index() {
+		return "index";
 	}
 }

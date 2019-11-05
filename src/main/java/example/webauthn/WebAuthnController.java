@@ -1,6 +1,8 @@
 package example.webauthn;
 
 import com.webauthn4j.authenticator.Authenticator;
+import example.webauthn.security.WebAuthnAuthenticatorRepository;
+import example.webauthn.security.web.WebAuthnChallengeRepository;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.Base64Utils;
@@ -22,6 +24,14 @@ public class WebAuthnController {
 			WebAuthnAuthenticatorRepository authenticators) {
 		this.challenges = challenges;
 		this.authenticators = authenticators;
+	}
+
+	@GetMapping("/webauthn/register")
+	String registerForm(Map<String, Object> model, HttpSession httpSession) {
+		String challenge = this.challenges.generateChallenge();
+		this.challenges.save(httpSession, challenge);
+		model.put("webAuthnChallenge", challenge);
+		return "webauthn/registration";
 	}
 
 	@GetMapping("/login/webauthn")

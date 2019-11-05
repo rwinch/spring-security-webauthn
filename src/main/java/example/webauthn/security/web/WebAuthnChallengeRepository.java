@@ -1,4 +1,4 @@
-package example.webauthn;
+package example.webauthn.security.web;
 
 import org.springframework.stereotype.Component;
 import org.springframework.util.Base64Utils;
@@ -11,7 +11,6 @@ import java.util.UUID;
 /**
  * @author Rob Winch
  */
-@Component
 public class WebAuthnChallengeRepository {
 
 	private String attrName = "challenge";

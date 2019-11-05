@@ -1,4 +1,4 @@
-package example.webauthn;
+package example.webauthn.security;
 
 import com.webauthn4j.authenticator.Authenticator;
 import org.springframework.security.core.Authentication;
@@ -9,7 +9,6 @@ import org.springframework.stereotype.Component;
  *
  * @author Rob Winch
  */
-@Component
 public class WebAuthnAuthenticatorRepository {
 	private Authenticator authenticator;
 

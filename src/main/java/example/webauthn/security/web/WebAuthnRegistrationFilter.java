@@ -1,4 +1,4 @@
-package example.webauthn;
+package example.webauthn.security.web;
 
 import com.webauthn4j.authenticator.Authenticator;
 import com.webauthn4j.authenticator.AuthenticatorImpl;
@@ -12,6 +12,7 @@ import com.webauthn4j.data.extension.authenticator.RegistrationExtensionAuthenti
 import com.webauthn4j.server.ServerProperty;
 import com.webauthn4j.validator.WebAuthnRegistrationContextValidationResponse;
 import com.webauthn4j.validator.WebAuthnRegistrationContextValidator;
+import example.webauthn.security.WebAuthnAuthenticatorRepository;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.DefaultRedirectStrategy;
@@ -31,7 +32,6 @@ import java.io.IOException;
 /**
  * @author Rob Winch
  */
-@Component
 public class WebAuthnRegistrationFilter extends OncePerRequestFilter {
 	private RequestMatcher matcher = new AntPathRequestMatcher("/webauthn/register",
 			"POST");

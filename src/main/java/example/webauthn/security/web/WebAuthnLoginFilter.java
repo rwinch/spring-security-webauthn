@@ -1,4 +1,4 @@
-package example.webauthn;
+package example.webauthn.security.web;
 
 import com.webauthn4j.authenticator.Authenticator;
 import com.webauthn4j.data.WebAuthnAuthenticationContext;
@@ -8,18 +8,19 @@ import com.webauthn4j.data.client.challenge.DefaultChallenge;
 import com.webauthn4j.server.ServerProperty;
 import com.webauthn4j.validator.WebAuthnAuthenticationContextValidationResponse;
 import com.webauthn4j.validator.WebAuthnAuthenticationContextValidator;
+import example.webauthn.security.MultiFactorAuthentication;
+import example.webauthn.security.WebAuthnAuthenticatorRepository;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.DefaultRedirectStrategy;
 import org.springframework.security.web.RedirectStrategy;
+import org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
-import org.springframework.security.web.util.matcher.RequestMatcher;
 import org.springframework.stereotype.Component;
 import org.springframework.util.Base64Utils;
-import org.springframework.web.filter.OncePerRequestFilter;
 
-import javax.servlet.FilterChain;
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -27,37 +28,21 @@ import java.io.IOException;
 /**
  * @author Rob Winch
  */
-@Component
-public class WebAuthnLoginFilter extends OncePerRequestFilter {
-	private RequestMatcher matcher = new AntPathRequestMatcher("/login/webauthn",
-			"POST");
-
-	private RedirectStrategy redirectStrategy = new DefaultRedirectStrategy();
-
+public class WebAuthnLoginFilter extends AbstractAuthenticationProcessingFilter {
 	private final WebAuthnChallengeRepository challenges;
 
 	private final WebAuthnAuthenticatorRepository authenticators;
 
 	public WebAuthnLoginFilter(WebAuthnChallengeRepository challenges,
 			WebAuthnAuthenticatorRepository authenticators) {
+		super(new AntPathRequestMatcher("/login/webauthn", "POST"));
 		this.challenges = challenges;
 		this.authenticators = authenticators;
 	}
 
 	@Override
-	protected void doFilterInternal(HttpServletRequest request,
-			HttpServletResponse response, FilterChain filterChain)
-			throws ServletException, IOException {
-
-		if (this.matcher.matches(request)) {
-			login(request);
-			this.redirectStrategy.sendRedirect(request, response, "/?success");
-			return;
-		}
-		filterChain.doFilter(request, response);
-	}
-
-	private void login(HttpServletRequest request) {
+	public Authentication attemptAuthentication(HttpServletRequest request,
+			HttpServletResponse response) throws AuthenticationException, IOException {
 		Authentication authentication = SecurityContextHolder.getContext()
 				.getAuthentication();
 		Authenticator authenticator = this.authenticators.load(authentication);
@@ -94,14 +79,15 @@ public class WebAuthnLoginFilter extends OncePerRequestFilter {
 		WebAuthnAuthenticationContextValidator webAuthnAuthenticationContextValidator =
 				new WebAuthnAuthenticationContextValidator();
 
-		WebAuthnAuthenticationContextValidationResponse response = webAuthnAuthenticationContextValidator.validate(authenticationContext, authenticator);
+		WebAuthnAuthenticationContextValidationResponse webauthnResponse = webAuthnAuthenticationContextValidator.validate(authenticationContext, authenticator);
 
 		// please update the counter of the authenticator record
 		//		updateCounter(
 		//				response.getAuthenticatorData().getAttestedCredentialData().getCredentialId(),
 		//				response.getAuthenticatorData().getSignCount()
 		//		);
-		authenticator.setCounter(response.getAuthenticatorData().getSignCount());
+		authenticator.setCounter(webauthnResponse.getAuthenticatorData().getSignCount());
+		return new MultiFactorAuthentication(authentication);
 	}
 
 	private byte[] bytes(HttpServletRequest request, String paramName) {
