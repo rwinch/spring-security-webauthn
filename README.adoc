@@ -1,4 +1,4 @@
-This repository is exploring multifactor authentication with webauthn.
+This repository is exploring multifactor authentication with webauthn. To follow along on the discussions see https://github.com/spring-projects/spring-security/pull/6842
 
 * Visit https://localhost:8443/
 * Log in with user / password
