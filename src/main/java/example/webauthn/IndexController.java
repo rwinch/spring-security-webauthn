@@ -12,4 +12,9 @@ public class IndexController {
 	String index() {
 		return "index";
 	}
+
+	@GetMapping("/secure")
+	String secure() {
+		return "secure";
+	}
 }

@@ -34,7 +34,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 			.formLogin().and()
 			.authorizeRequests()
 				.mvcMatchers("/login/webauthn", "/base64url.js").permitAll()
-				.mvcMatchers("/webauthn/register").authenticated()
-				.anyRequest().access("@mfa.require(authentication)");
+				.mvcMatchers("/secure").access("@mfa.require(authentication)")
+				.anyRequest().authenticated();
 	}
 }

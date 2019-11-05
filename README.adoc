@@ -1,0 +1,8 @@
+This repository is exploring multifactor authentication with webauthn.
+
+* Visit https://localhost:8443/
+* Log in with user / password
+* If you visit https://localhost:8443/ no additional authentication is required
+* If you visit https://localhost:8443/secure you will be prompted for webauthn log in.
+The first time you will be required to register.
+* Use https://localhost:8443/logout to log out
