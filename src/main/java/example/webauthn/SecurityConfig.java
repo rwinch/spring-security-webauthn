@@ -1,6 +1,7 @@
 package example.webauthn;
 
 import example.webauthn.security.WebAuthnAuthenticatorRepository;
+import example.webauthn.security.web.DefaultWebAuthnRegistrationGeneratingFilter;
 import example.webauthn.security.web.MultiFactorExceptionTranslationFilter;
 import example.webauthn.security.web.WebAuthnChallengeRepository;
 import example.webauthn.security.web.WebAuthnLoginFilter;
@@ -11,6 +12,13 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.web.access.ExceptionTranslationFilter;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.authentication.ui.DefaultLoginPageGeneratingFilter;
+import org.springframework.security.web.csrf.CsrfToken;
+
+import javax.servlet.http.HttpServletRequest;
+import java.util.Collections;
+import java.util.Map;
+import java.util.function.Function;
 
 /**
  * @author Rob Winch
@@ -26,7 +34,15 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
+		Function<HttpServletRequest, Map<String, String>> csrf = request -> {
+			CsrfToken token = (CsrfToken)request.getAttribute(CsrfToken.class.getName());
+			return token == null ? Collections.emptyMap() : Collections.singletonMap(token.getParameterName(), token.getToken());
+		};
+		DefaultWebAuthnRegistrationGeneratingFilter registration = new DefaultWebAuthnRegistrationGeneratingFilter();
+		registration.setResolveHiddenInputs(csrf);
 		http
+			.addFilterBefore(registration,
+					DefaultLoginPageGeneratingFilter.class)
 			.addFilterAfter(new MultiFactorExceptionTranslationFilter(), ExceptionTranslationFilter.class)
 			.addFilterBefore(new WebAuthnRegistrationFilter(this.challenges, this.authenticators), UsernamePasswordAuthenticationFilter.class)
 			.addFilterBefore(new WebAuthnLoginFilter(this.challenges, this.authenticators),
