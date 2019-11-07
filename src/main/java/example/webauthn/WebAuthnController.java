@@ -26,7 +26,7 @@ public class WebAuthnController {
 		this.authenticators = authenticators;
 	}
 
-	@GetMapping("/webauthn/register")
+//	@GetMapping("/webauthn/register")
 	String registerForm(Map<String, Object> model, HttpSession httpSession) {
 		String challenge = this.challenges.generateChallenge();
 		this.challenges.save(httpSession, challenge);
