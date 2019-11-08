@@ -1,6 +1,7 @@
 package example.webauthn;
 
 import example.webauthn.security.WebAuthnAuthenticatorRepository;
+import example.webauthn.security.web.DefaultWebAuthnLoginPageGeneratingFilter;
 import example.webauthn.security.web.DefaultWebAuthnRegistrationGeneratingFilter;
 import example.webauthn.security.web.MultiFactorExceptionTranslationFilter;
 import example.webauthn.security.web.WebAuthnChallengeRepository;
@@ -40,8 +41,13 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 		};
 		DefaultWebAuthnRegistrationGeneratingFilter registration = new DefaultWebAuthnRegistrationGeneratingFilter();
 		registration.setResolveHiddenInputs(csrf);
+		DefaultWebAuthnLoginPageGeneratingFilter login = new DefaultWebAuthnLoginPageGeneratingFilter(
+				authenticators);
+		login.setResolveHiddenInputs(csrf);
 		http
 			.addFilterBefore(registration,
+					DefaultLoginPageGeneratingFilter.class)
+			.addFilterBefore(login,
 					DefaultLoginPageGeneratingFilter.class)
 			.addFilterAfter(new MultiFactorExceptionTranslationFilter(), ExceptionTranslationFilter.class)
 			.addFilterBefore(new WebAuthnRegistrationFilter(this.challenges, this.authenticators), UsernamePasswordAuthenticationFilter.class)
