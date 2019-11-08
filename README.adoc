@@ -1,8 +1,8 @@
 This repository is exploring multifactor authentication with webauthn. To follow along on the discussions see https://github.com/spring-projects/spring-security/pull/6842
 
-* Visit https://localhost:8443/
+* Visit http://localhost:8080/
 * Log in with user / password
-* If you visit https://localhost:8443/ no additional authentication is required
-* If you visit https://localhost:8443/secure you will be prompted for webauthn log in.
+* If you visit http://localhost:8080/ no additional authentication is required
+* If you visit http://localhost:8080/secure you will be prompted for webauthn log in.
 The first time you will be required to register.
-* Use https://localhost:8443/logout to log out
+* Use http://localhost:8080/logout to log out
