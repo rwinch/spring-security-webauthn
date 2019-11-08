@@ -4,7 +4,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 
-import static example.webauthn.security.WebAuthnConfigurer.webAuthn;
+import static example.webauthn.security.config.WebAuthnConfigurer.webAuthn;
 
 /**
  * @author Rob Winch
