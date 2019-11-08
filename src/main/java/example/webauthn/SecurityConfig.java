@@ -55,7 +55,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 					UsernamePasswordAuthenticationFilter.class)
 			.formLogin().and()
 			.authorizeRequests()
-				.mvcMatchers("/login/webauthn", "/base64url.js").permitAll()
 				.mvcMatchers("/secure").access("@mfa.require(authentication)")
 				.anyRequest().authenticated();
 	}
