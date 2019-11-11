@@ -1,12 +1,12 @@
 package example.webauthn.security.config;
 
 import example.webauthn.security.WebAuthnAuthenticatorRepository;
-import example.webauthn.security.web.DefaultWebAuthnLoginPageGeneratingFilter;
-import example.webauthn.security.web.DefaultWebAuthnRegistrationGeneratingFilter;
-import example.webauthn.security.web.MultiFactorExceptionTranslationFilter;
-import example.webauthn.security.web.WebAuthnChallengeRepository;
-import example.webauthn.security.web.WebAuthnLoginFilter;
-import example.webauthn.security.web.WebAuthnRegistrationFilter;
+import org.springframework.security.web.webauthn.DefaultWebAuthnLoginPageGeneratingFilter;
+import org.springframework.security.web.webauthn.DefaultWebAuthnRegistrationGeneratingFilter;
+import org.springframework.security.web.webauthn.MultiFactorExceptionTranslationFilter;
+import org.springframework.security.web.webauthn.WebAuthnChallengeRepository;
+import org.springframework.security.web.webauthn.WebAuthnLoginFilter;
+import org.springframework.security.web.webauthn.WebAuthnRegistrationFilter;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.web.access.ExceptionTranslationFilter;

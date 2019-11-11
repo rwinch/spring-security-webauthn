@@ -1,4 +1,4 @@
-package example.webauthn.security.web;
+package org.springframework.security.web.webauthn;
 
 import example.webauthn.security.MultiFactorAuthenticationRequiredException;
 import example.webauthn.security.MultiFactorRegistrationRequiredException;
