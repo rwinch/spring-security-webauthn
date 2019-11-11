@@ -1,4 +1,4 @@
-package example.webauthn.security.web;
+package org.springframework.security.web.webauthn;
 
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.security.web.util.matcher.RequestMatcher;

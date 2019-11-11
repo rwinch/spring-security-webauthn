@@ -1,4 +1,4 @@
-package example.webauthn.security.web;
+package org.springframework.security.web.webauthn;
 
 import com.webauthn4j.authenticator.Authenticator;
 import com.webauthn4j.authenticator.AuthenticatorImpl;
@@ -19,7 +19,6 @@ import org.springframework.security.web.DefaultRedirectStrategy;
 import org.springframework.security.web.RedirectStrategy;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.security.web.util.matcher.RequestMatcher;
-import org.springframework.stereotype.Component;
 import org.springframework.util.Base64Utils;
 import org.springframework.web.filter.OncePerRequestFilter;
 

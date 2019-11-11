@@ -1,4 +1,4 @@
-package example.webauthn.security.web;
+package org.springframework.security.web.webauthn;
 
 import com.webauthn4j.authenticator.Authenticator;
 import example.webauthn.security.WebAuthnAuthenticatorRepository;

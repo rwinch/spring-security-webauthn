@@ -1,4 +1,4 @@
-package example.webauthn.security.web;
+package org.springframework.security.web.webauthn;
 
 import org.springframework.stereotype.Component;
 import org.springframework.util.Base64Utils;
