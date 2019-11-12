@@ -1,5 +1,7 @@
 package example.webauthn;
 
+import example.webauthn.security.WebAuthnAuthenticatorRepository;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
@@ -21,5 +23,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 			.authorizeRequests()
 				.mvcMatchers("/secure").access("@mfa.require(authentication)")
 				.anyRequest().authenticated();
+	}
+
+	@Bean
+	public WebAuthnAuthenticatorRepository authenticatorRepository() {
+		return new WebAuthnAuthenticatorRepository();
 	}
 }

@@ -1,6 +1,8 @@
 package example.webauthn.security.config;
 
 import example.webauthn.security.WebAuthnAuthenticatorRepository;
+import org.springframework.context.ApplicationContext;
+import org.springframework.core.ResolvableType;
 import org.springframework.security.web.webauthn.DefaultWebAuthnLoginPageGeneratingFilter;
 import org.springframework.security.web.webauthn.DefaultWebAuthnRegistrationGeneratingFilter;
 import org.springframework.security.web.webauthn.MultiFactorExceptionTranslationFilter;
@@ -31,7 +33,7 @@ public class WebAuthnConfigurer extends
 
 	@Override
 	public void configure(HttpSecurity http) throws Exception {
-		WebAuthnAuthenticatorRepository authenticators = authnAuthenticatorRepository();
+		WebAuthnAuthenticatorRepository authenticators = authnAuthenticatorRepository(http);
 		WebAuthnChallengeRepository challenges = challengeRepository();
 		Function<HttpServletRequest, Map<String, String>> csrf = request -> {
 			CsrfToken token = (CsrfToken)request.getAttribute(CsrfToken.class.getName());
@@ -57,7 +59,24 @@ public class WebAuthnConfigurer extends
 		return new WebAuthnChallengeRepository();
 	}
 
-	WebAuthnAuthenticatorRepository authnAuthenticatorRepository() {
+	WebAuthnAuthenticatorRepository authnAuthenticatorRepository(HttpSecurity http) {
+		WebAuthnAuthenticatorRepository bean = getBeanOrNull(WebAuthnAuthenticatorRepository.class);
+		if (bean != null) {
+			return bean;
+		}
 		return new WebAuthnAuthenticatorRepository();
+	}
+
+
+	private <T> T getBeanOrNull(Class<T> type) {
+		ApplicationContext context = getBuilder().getSharedObject(ApplicationContext.class);
+		if (context == null) {
+			return null;
+		}
+		String[] names =  context.getBeanNamesForType(type);
+		if (names.length == 1) {
+			return (T) context.getBean(names[0]);
+		}
+		return null;
 	}
 }
