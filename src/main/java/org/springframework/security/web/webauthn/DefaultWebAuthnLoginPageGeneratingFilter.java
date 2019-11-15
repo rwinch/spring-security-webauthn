@@ -1,7 +1,6 @@
 package org.springframework.security.web.webauthn;
 
 import com.webauthn4j.authenticator.Authenticator;
-import example.webauthn.security.WebAuthnAuthenticatorRepository;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
@@ -25,16 +24,15 @@ import java.util.function.Function;
 public class DefaultWebAuthnLoginPageGeneratingFilter extends OncePerRequestFilter {
 	private RequestMatcher matches = new AntPathRequestMatcher("/login/webauthn", "GET");
 
-	private WebAuthnChallengeRepository challenges = new WebAuthnChallengeRepository();
-
 	private Function<HttpServletRequest, Map<String, String>> resolveHiddenInputs = request -> Collections
 			.emptyMap();
 
-	private final WebAuthnAuthenticatorRepository authenticators;
+	private final WebAuthnManager manager;
 
-	public DefaultWebAuthnLoginPageGeneratingFilter(
-			WebAuthnAuthenticatorRepository authenticators) {
-		this.authenticators = authenticators;
+	private WebAuthnParamsRepository paramsRepository = new WebAuthnParamsRepository();
+
+	public DefaultWebAuthnLoginPageGeneratingFilter(WebAuthnManager manager) {
+		this.manager = manager;
 	}
 
 	/**
@@ -64,11 +62,12 @@ public class DefaultWebAuthnLoginPageGeneratingFilter extends OncePerRequestFilt
 			HttpServletResponse response) throws IOException {
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 		response.setContentType("text/html;charset=UTF-8");
-		String challenge = this.challenges.generateChallenge();
-		this.challenges.save(request.getSession(), challenge);
-		Authenticator authenticator = this.authenticators.load(authentication);
+
+		ServerLoginParameters params = this.manager.createLoginParametersFor(authentication);
+		String challenge = Base64Utils.encodeToUrlSafeString(params.getChallenge());
+		this.paramsRepository.saveLoginParams(request, response, params);
 		String credentialId = Base64Utils
-				.encodeToUrlSafeString(authenticator.getAttestedCredentialData().getCredentialId());
+				.encodeToUrlSafeString(params.getCredentialId());
 		response.getWriter().write("<!DOCTYPE html>\n"
 				+ "<html xmlns:th=\"https://www.thymeleaf.org\">\n"
 				+ "<head>\n"

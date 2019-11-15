@@ -2,11 +2,11 @@ package example.webauthn.security.config;
 
 import example.webauthn.security.WebAuthnAuthenticatorRepository;
 import org.springframework.context.ApplicationContext;
-import org.springframework.core.ResolvableType;
 import org.springframework.security.web.webauthn.DefaultWebAuthnLoginPageGeneratingFilter;
 import org.springframework.security.web.webauthn.DefaultWebAuthnRegistrationGeneratingFilter;
 import org.springframework.security.web.webauthn.MultiFactorExceptionTranslationFilter;
-import org.springframework.security.web.webauthn.WebAuthnChallengeRepository;
+import org.springframework.security.web.webauthn.WebAuthnManager;
+import org.springframework.security.web.webauthn.WebAuthnParamsRepository;
 import org.springframework.security.web.webauthn.WebAuthnLoginFilter;
 import org.springframework.security.web.webauthn.WebAuthnRegistrationFilter;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -34,15 +34,17 @@ public class WebAuthnConfigurer extends
 	@Override
 	public void configure(HttpSecurity http) throws Exception {
 		WebAuthnAuthenticatorRepository authenticators = authnAuthenticatorRepository(http);
-		WebAuthnChallengeRepository challenges = challengeRepository();
+		WebAuthnParamsRepository challenges = challengeRepository();
 		Function<HttpServletRequest, Map<String, String>> csrf = request -> {
 			CsrfToken token = (CsrfToken)request.getAttribute(CsrfToken.class.getName());
 			return token == null ? Collections.emptyMap() : Collections.singletonMap(token.getParameterName(), token.getToken());
 		};
-		DefaultWebAuthnRegistrationGeneratingFilter registration = new DefaultWebAuthnRegistrationGeneratingFilter();
+		WebAuthnManager manager = new WebAuthnManager(authenticators);
+		DefaultWebAuthnRegistrationGeneratingFilter registration = new DefaultWebAuthnRegistrationGeneratingFilter(
+				manager);
 		registration.setResolveHiddenInputs(csrf);
 		DefaultWebAuthnLoginPageGeneratingFilter login = new DefaultWebAuthnLoginPageGeneratingFilter(
-				authenticators);
+				manager);
 		login.setResolveHiddenInputs(csrf);
 		http
 				.addFilterBefore(registration,
@@ -50,13 +52,13 @@ public class WebAuthnConfigurer extends
 				.addFilterBefore(login,
 						DefaultLoginPageGeneratingFilter.class)
 				.addFilterAfter(new MultiFactorExceptionTranslationFilter(), ExceptionTranslationFilter.class)
-				.addFilterBefore(new WebAuthnRegistrationFilter(challenges, authenticators), UsernamePasswordAuthenticationFilter.class)
-				.addFilterBefore(new WebAuthnLoginFilter(challenges, authenticators),
+				.addFilterBefore(new WebAuthnRegistrationFilter(challenges, manager), UsernamePasswordAuthenticationFilter.class)
+				.addFilterBefore(new WebAuthnLoginFilter(challenges, manager),
 						UsernamePasswordAuthenticationFilter.class);
 	}
 
-	private WebAuthnChallengeRepository challengeRepository() {
-		return new WebAuthnChallengeRepository();
+	private WebAuthnParamsRepository challengeRepository() {
+		return new WebAuthnParamsRepository();
 	}
 
 	WebAuthnAuthenticatorRepository authnAuthenticatorRepository(HttpSecurity http) {

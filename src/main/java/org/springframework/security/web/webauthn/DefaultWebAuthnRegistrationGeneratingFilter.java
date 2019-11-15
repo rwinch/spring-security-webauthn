@@ -1,8 +1,11 @@
 package org.springframework.security.web.webauthn;
 
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.security.web.util.matcher.RequestMatcher;
 import org.springframework.util.Assert;
+import org.springframework.util.Base64Utils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import javax.servlet.FilterChain;
@@ -20,10 +23,17 @@ import java.util.function.Function;
 public class DefaultWebAuthnRegistrationGeneratingFilter extends OncePerRequestFilter {
 	private RequestMatcher matches = new AntPathRequestMatcher("/webauthn/register", "GET");
 
-	private WebAuthnChallengeRepository challenges = new WebAuthnChallengeRepository();
+	private WebAuthnParamsRepository webAuthnRequests = new WebAuthnParamsRepository();
+
+	private final WebAuthnManager manager;
 
 	private Function<HttpServletRequest, Map<String, String>> resolveHiddenInputs = request -> Collections
 			.emptyMap();
+
+	public DefaultWebAuthnRegistrationGeneratingFilter(WebAuthnManager manager) {
+		this.manager = manager;
+	}
+
 	/**
 	 * Sets a Function used to resolve a Map of the hidden inputs where the key is the
 	 * name of the input and the value is the value of the input. Typically this is used
@@ -50,9 +60,11 @@ public class DefaultWebAuthnRegistrationGeneratingFilter extends OncePerRequestF
 	private void writeRegistrationPageHtml(HttpServletRequest request,
 			HttpServletResponse response) throws IOException {
 
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 		response.setContentType("text/html;charset=UTF-8");
-		String challenge = this.challenges.generateChallenge();
-		this.challenges.save(request.getSession(), challenge);
+		ServerRegistrationParameters params = this.manager
+				.createRegistrationParametersFor(authentication);
+		this.webAuthnRequests.saveRegistrationParams(request, response, params);
 		response.getWriter().write("<!DOCTYPE html>\n"
 				+ "<html lang=\"en\" xmlns:th=\"https://www.thymeleaf.org\">\n"
 				+ "<head>\n"
@@ -63,7 +75,8 @@ public class DefaultWebAuthnRegistrationGeneratingFilter extends OncePerRequestF
 				+ "    <title>WebAuthn - Registration</title>\n"
 				+ "    <link href=\"https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/css/bootstrap.min.css\" rel=\"stylesheet\" integrity=\"sha384-/Y6pD6FV/Vv2HJnA6t+vslU6fwYXjCFtcEpHbNJ0lyAFsXTsjBbfaDjzALeQsN6M\" crossorigin=\"anonymous\">\n"
 				+ "    <link href=\"https://getbootstrap.com/docs/4.0/examples/signin/signin.css\" rel=\"stylesheet\" crossorigin=\"anonymous\"/>\n"
-				+ "    <meta name=\"webAuthnChallenge\" content=\"" + challenge + "\" content=\"\" />\n"
+				+ "    <meta name=\"webAuthnChallenge\" content=\"" + Base64Utils.encodeToUrlSafeString(params.getChallenge()) + "\" />\n"
+				+ "    <meta name=\"userId\" content=\"" + Base64Utils.encodeToUrlSafeString(params.getUserId()) + "\" />\n"
 				+ "</head>\n"
 				+ "<body>\n"
 				+ "<div class=\"container\">\n"
@@ -86,6 +99,7 @@ public class DefaultWebAuthnRegistrationGeneratingFilter extends OncePerRequestF
 				+ "\n"
 				+ "        function register() {\n"
 				+ "            var challenge = $(\"meta[name=webAuthnChallenge]\").attr(\"content\");\n"
+				+ "            var userId = $(\"meta[name=userId]\").attr(\"content\");\n"
 				+ "            var publicKey = {\n"
 				+ "                // The challenge is produced by the server; see the Security Considerations\n"
 				+ "                challenge: base64url.decodeBase64url(challenge),\n"
@@ -96,7 +110,7 @@ public class DefaultWebAuthnRegistrationGeneratingFilter extends OncePerRequestF
 				+ "                },\n"
 				+ "\n" + "                // User:\n"
 				+ "                user: {\n"
-				+ "                    id: Uint8Array.from(window.atob(\"MIIBkzCCATigAwIBAjCCAZMwggE4oAMCAQIwggGTMII=\"), c => c.charCodeAt(0)),\n"
+				+ "                    id: base64url.decodeBase64url(userId),\n"
 				+ "                    name: \"alex.p.mueller@example.com\",\n"
 				+ "                    displayName: \"Alex P. Müller\",\n"
 				+ "                },\n"
