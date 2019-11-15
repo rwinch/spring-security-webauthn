@@ -9,7 +9,6 @@ import com.webauthn4j.server.ServerProperty;
 import com.webauthn4j.validator.WebAuthnAuthenticationContextValidationResponse;
 import com.webauthn4j.validator.WebAuthnAuthenticationContextValidator;
 import example.webauthn.security.MultiFactorAuthentication;
-import example.webauthn.security.WebAuthnAuthenticatorRepository;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -20,20 +19,20 @@ import org.springframework.util.Base64Utils;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.net.URL;
 
 /**
  * @author Rob Winch
  */
 public class WebAuthnLoginFilter extends AbstractAuthenticationProcessingFilter {
-	private final WebAuthnChallengeRepository challenges;
+	private final WebAuthnParamsRepository requests;
 
-	private final WebAuthnAuthenticatorRepository authenticators;
+	private final WebAuthnManager manager;
 
-	public WebAuthnLoginFilter(WebAuthnChallengeRepository challenges,
-			WebAuthnAuthenticatorRepository authenticators) {
+	public WebAuthnLoginFilter(WebAuthnParamsRepository requests, WebAuthnManager manager) {
 		super(new AntPathRequestMatcher("/login/webauthn", "POST"));
-		this.challenges = challenges;
-		this.authenticators = authenticators;
+		this.requests = requests;
+		this.manager = manager;
 	}
 
 	@Override
@@ -41,10 +40,6 @@ public class WebAuthnLoginFilter extends AbstractAuthenticationProcessingFilter 
 			HttpServletResponse response) throws AuthenticationException, IOException {
 		Authentication authentication = SecurityContextHolder.getContext()
 				.getAuthentication();
-		Authenticator authenticator = this.authenticators.load(authentication);
-		if (authenticator == null) {
-			throw new IllegalStateException("No authenticator found");
-		}
 
 		// Client properties
 		byte[] credentialIdBytes = bytes(request, "credentialId");
@@ -52,37 +47,21 @@ public class WebAuthnLoginFilter extends AbstractAuthenticationProcessingFilter 
 		byte[] authenticatorDataBytes = bytes(request, "authenticatorData");
 		byte[] signatureBytes = bytes(request, "signature");
 
-		// Server properties
-		Origin origin = new Origin(request.getScheme(), request.getServerName(), request.getServerPort()); /* set origin */;
-		String rpId = origin.getHost();
-		String base64Challenge = this.challenges.load(request);
-		Challenge challenge = new DefaultChallenge(base64Challenge);
-		// FIXME: should populate this
-		byte[] tokenBindingId = null /* set tokenBindingId */;
-		ServerProperty serverProperty = new ServerProperty(origin, rpId, challenge, tokenBindingId);
-		boolean userVerificationRequired = false;
+		ServerLoginParameters loginParams = this.requests
+				.loadLoginParams(request);
 
-		WebAuthnAuthenticationContext authenticationContext =
-				new WebAuthnAuthenticationContext(
-						credentialIdBytes,
-						clientDataJSONBytes,
-						authenticatorDataBytes,
-						signatureBytes,
-						serverProperty,
-						userVerificationRequired
-				);
+		WebAuthnLoginRequest loginRequest = new WebAuthnLoginRequest();
+		loginRequest.setAuthentication(authentication);
+		loginRequest.setAuthenticatorData(authenticatorDataBytes);
+		loginRequest.setClientDataJSON(clientDataJSONBytes);
+		loginRequest.setCredentialId(credentialIdBytes);
+		loginRequest.setAuthenticatorData(authenticatorDataBytes);
+		loginRequest.setSignature(signatureBytes);
+		loginRequest.setOrigin(new URL(request.getRequestURL().toString()));
+		loginRequest.setLoginParameters(loginParams);
 
-		WebAuthnAuthenticationContextValidator webAuthnAuthenticationContextValidator =
-				new WebAuthnAuthenticationContextValidator();
+		this.manager.login(loginRequest);
 
-		WebAuthnAuthenticationContextValidationResponse webauthnResponse = webAuthnAuthenticationContextValidator.validate(authenticationContext, authenticator);
-
-		// please update the counter of the authenticator record
-		//		updateCounter(
-		//				response.getAuthenticatorData().getAttestedCredentialData().getCredentialId(),
-		//				response.getAuthenticatorData().getSignCount()
-		//		);
-		authenticator.setCounter(webauthnResponse.getAuthenticatorData().getSignCount());
 		return new MultiFactorAuthentication(authentication);
 	}
 

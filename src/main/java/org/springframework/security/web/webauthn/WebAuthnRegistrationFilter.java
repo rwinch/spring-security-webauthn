@@ -1,20 +1,5 @@
 package org.springframework.security.web.webauthn;
 
-import com.webauthn4j.authenticator.Authenticator;
-import com.webauthn4j.authenticator.AuthenticatorImpl;
-import com.webauthn4j.data.WebAuthnRegistrationContext;
-import com.webauthn4j.data.attestation.AttestationObject;
-import com.webauthn4j.data.attestation.authenticator.AuthenticatorData;
-import com.webauthn4j.data.client.Origin;
-import com.webauthn4j.data.client.challenge.Challenge;
-import com.webauthn4j.data.client.challenge.DefaultChallenge;
-import com.webauthn4j.data.extension.authenticator.RegistrationExtensionAuthenticatorOutput;
-import com.webauthn4j.server.ServerProperty;
-import com.webauthn4j.validator.WebAuthnRegistrationContextValidationResponse;
-import com.webauthn4j.validator.WebAuthnRegistrationContextValidator;
-import example.webauthn.security.WebAuthnAuthenticatorRepository;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.DefaultRedirectStrategy;
 import org.springframework.security.web.RedirectStrategy;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
@@ -27,6 +12,8 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.net.URI;
+import java.net.URL;
 
 /**
  * @author Rob Winch
@@ -37,14 +24,14 @@ public class WebAuthnRegistrationFilter extends OncePerRequestFilter {
 
 	private RedirectStrategy redirectStrategy = new DefaultRedirectStrategy();
 
-	private final WebAuthnChallengeRepository challenges;
+	private final WebAuthnParamsRepository webAuthnRequests;
 
-	private final WebAuthnAuthenticatorRepository authenticators;
+	private final WebAuthnManager manager;
 
-	public WebAuthnRegistrationFilter(WebAuthnChallengeRepository challenges,
-			WebAuthnAuthenticatorRepository authenticators) {
-		this.challenges = challenges;
-		this.authenticators = authenticators;
+	public WebAuthnRegistrationFilter(WebAuthnParamsRepository webAuthnRequests,
+			WebAuthnManager manager) {
+		this.webAuthnRequests = webAuthnRequests;
+		this.manager = manager;
 	}
 
 	@Override
@@ -60,7 +47,7 @@ public class WebAuthnRegistrationFilter extends OncePerRequestFilter {
 		filterChain.doFilter(request, response);
 	}
 
-	private void register(HttpServletRequest request) {
+	private void register(HttpServletRequest request) throws IOException{
 
 		String clientDataJSON = request.getParameter("clientDataJSON");
 		String attestationObject = request.getParameter("attestationObject");
@@ -69,39 +56,15 @@ public class WebAuthnRegistrationFilter extends OncePerRequestFilter {
 		byte[] clientDataJSONBytes = Base64Utils.decodeFromUrlSafeString(clientDataJSON);
 		byte[] attestationObjectBytes = Base64Utils.decodeFromUrlSafeString(attestationObject);
 
-		// Server properties
-		Origin origin = new Origin(request.getScheme(), request.getServerName(), request.getServerPort()); /* set origin */;
-		String rpId = origin.getHost();
-		String base64Challenge = this.challenges.load(request);
-		Challenge challenge = new DefaultChallenge(base64Challenge);
-		// FIXME: should populate this
-		byte[] tokenBindingId = null /* set tokenBindingId */;
-		ServerProperty serverProperty = new ServerProperty(origin, rpId, challenge, tokenBindingId);
-		boolean userVerificationRequired = false;
+		ServerRegistrationParameters parameters = this.webAuthnRequests.loadRegistrationParams(request);
+		AuthenticatorAttestationResponse authenticatorResponse = new AuthenticatorAttestationResponse();
+		authenticatorResponse.setAttestationObject(attestationObjectBytes);
+		authenticatorResponse.setClientDataJSON(clientDataJSONBytes);
+		RegistrationRequest registration = new RegistrationRequest();
+		registration.setResponse(authenticatorResponse);
+		registration.setParameters(parameters);
+		registration.setOrigin(new URL(request.getRequestURL().toString()));
 
-		WebAuthnRegistrationContext registrationContext = new WebAuthnRegistrationContext(clientDataJSONBytes, attestationObjectBytes, serverProperty, userVerificationRequired);
-
-		// WebAuthnRegistrationContextValidator.createNonStrictRegistrationContextValidator() returns a WebAuthnRegistrationContextValidator instance
-		// which doesn't validate an attestation statement. It is recommended configuration for most web application.
-		// If you are building enterprise web application and need to validate the attestation statement, use the constructor of
-		// WebAuthnRegistrationContextValidator and provide validators you like
-		WebAuthnRegistrationContextValidator webAuthnRegistrationContextValidator =
-				WebAuthnRegistrationContextValidator.createNonStrictRegistrationContextValidator();
-
-
-		WebAuthnRegistrationContextValidationResponse registration = webAuthnRegistrationContextValidator.validate(registrationContext);
-		//
-		//		// please persist Authenticator object, which will be used in the authentication process.
-		AttestationObject registeredAttestationObject = registration.getAttestationObject();
-		AuthenticatorData<RegistrationExtensionAuthenticatorOutput> authenticatorData = registeredAttestationObject
-				.getAuthenticatorData();
-		Authenticator authenticator =
-				new AuthenticatorImpl( // You may create your own Authenticator implementation to save friendly authenticator name
-						authenticatorData.getAttestedCredentialData(),
-						registeredAttestationObject.getAttestationStatement(),
-						authenticatorData.getSignCount()
-				);
-		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-		this.authenticators.save(authentication, authenticator);
+		this.manager.register(registration);
 	}
 }
