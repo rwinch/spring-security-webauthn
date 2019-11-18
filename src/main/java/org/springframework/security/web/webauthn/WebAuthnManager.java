@@ -1,15 +1,11 @@
 package org.springframework.security.web.webauthn;
 
 import com.webauthn4j.authenticator.Authenticator;
-import com.webauthn4j.authenticator.AuthenticatorImpl;
 import com.webauthn4j.data.WebAuthnAuthenticationContext;
 import com.webauthn4j.data.WebAuthnRegistrationContext;
-import com.webauthn4j.data.attestation.AttestationObject;
-import com.webauthn4j.data.attestation.authenticator.AuthenticatorData;
 import com.webauthn4j.data.client.Origin;
 import com.webauthn4j.data.client.challenge.Challenge;
 import com.webauthn4j.data.client.challenge.DefaultChallenge;
-import com.webauthn4j.data.extension.authenticator.RegistrationExtensionAuthenticatorOutput;
 import com.webauthn4j.server.ServerProperty;
 import com.webauthn4j.validator.WebAuthnAuthenticationContextValidationResponse;
 import com.webauthn4j.validator.WebAuthnAuthenticationContextValidator;
@@ -72,19 +68,10 @@ public class WebAuthnManager {
 
 
 		WebAuthnRegistrationContextValidationResponse registration = webAuthnRegistrationContextValidator.validate(registrationContext);
-		//
-		//		// please persist Authenticator object, which will be used in the authentication process.
-		AttestationObject registeredAttestationObject = registration.getAttestationObject();
-		AuthenticatorData<RegistrationExtensionAuthenticatorOutput> authenticatorData = registeredAttestationObject
-				.getAuthenticatorData();
-		Authenticator authenticator =
-				new AuthenticatorImpl( // You may create your own Authenticator implementation to save friendly authenticator name
-						authenticatorData.getAttestedCredentialData(),
-						registeredAttestationObject.getAttestationStatement(),
-						authenticatorData.getSignCount()
-				);
+
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-		this.authenticators.save(authentication, authenticator);
+		// FIXME: should save something w/ a counter on it
+		this.authenticators.save(authentication, request.getResponse());
 	}
 
 	public ServerLoginParameters createLoginParametersFor(Authentication authentication) {
