@@ -1,11 +1,20 @@
 package org.springframework.security.web.webauthn;
 
 import com.webauthn4j.authenticator.Authenticator;
+import com.webauthn4j.authenticator.AuthenticatorImpl;
+import com.webauthn4j.converter.AttestationObjectConverter;
+import com.webauthn4j.converter.CollectedClientDataConverter;
+import com.webauthn4j.converter.util.CborConverter;
+import com.webauthn4j.converter.util.JsonConverter;
 import com.webauthn4j.data.WebAuthnAuthenticationContext;
 import com.webauthn4j.data.WebAuthnRegistrationContext;
+import com.webauthn4j.data.attestation.AttestationObject;
+import com.webauthn4j.data.attestation.authenticator.AuthenticatorData;
+import com.webauthn4j.data.client.CollectedClientData;
 import com.webauthn4j.data.client.Origin;
 import com.webauthn4j.data.client.challenge.Challenge;
 import com.webauthn4j.data.client.challenge.DefaultChallenge;
+import com.webauthn4j.data.extension.authenticator.RegistrationExtensionAuthenticatorOutput;
 import com.webauthn4j.server.ServerProperty;
 import com.webauthn4j.validator.WebAuthnAuthenticationContextValidationResponse;
 import com.webauthn4j.validator.WebAuthnAuthenticationContextValidator;
@@ -75,7 +84,7 @@ public class WebAuthnManager {
 	}
 
 	public ServerLoginParameters createLoginParametersFor(Authentication authentication) {
-		Authenticator authenticator = this.authenticators.load(authentication);
+		Authenticator authenticator = load(authentication);
 		ServerLoginParameters result = new ServerLoginParameters();
 		result.setChallenge(randomBytes());
 		result.setCredentialId(authenticator.getAttestedCredentialData().getCredentialId());
@@ -85,7 +94,7 @@ public class WebAuthnManager {
 	// FIXME: login
 
 	public void login(WebAuthnLoginRequest request) {
-		Authenticator authenticator = this.authenticators.load(request.getAuthentication());
+		Authenticator authenticator = load(request.getAuthentication());
 		if (authenticator == null) {
 			throw new IllegalStateException("No authenticator found");
 		}
@@ -122,6 +131,25 @@ public class WebAuthnManager {
 		//				response.getAuthenticatorData().getSignCount()
 		//		);
 		authenticator.setCounter(webauthnResponse.getAuthenticatorData().getSignCount());
+	}
+
+	private Authenticator load(Authentication authentication) {
+		AuthenticatorAttestationResponse response = this.authenticators.load(authentication);
+		if (response == null) {
+			return null;
+		}
+		CollectedClientDataConverter collectedClientDataConverter = new CollectedClientDataConverter(new JsonConverter());
+		AttestationObjectConverter attestationObjectConverter = new AttestationObjectConverter(new CborConverter());
+
+		CollectedClientData collectedClientData = collectedClientDataConverter.convert(response.getClientDataJSON());
+		AttestationObject attestationObject = attestationObjectConverter.convert(response.getAttestationObject());
+
+		AuthenticatorData<RegistrationExtensionAuthenticatorOutput> authenticatorData = attestationObject.getAuthenticatorData();
+		return new AuthenticatorImpl(
+				authenticatorData.getAttestedCredentialData(),
+				attestationObject.getAttestationStatement(),
+				authenticatorData.getSignCount()
+		);
 	}
 
 	private byte[] userId(Authentication authentication) {
