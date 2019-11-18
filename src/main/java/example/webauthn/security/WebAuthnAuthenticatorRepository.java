@@ -29,21 +29,7 @@ public class WebAuthnAuthenticatorRepository {
 		this.response = response;
 	}
 
-	public Authenticator load(Authentication authentication) {
-		if (response == null) {
-			return null;
-		}
-		CollectedClientDataConverter collectedClientDataConverter = new CollectedClientDataConverter(new JsonConverter());
-		AttestationObjectConverter attestationObjectConverter = new AttestationObjectConverter(new CborConverter());
-
-		CollectedClientData collectedClientData = collectedClientDataConverter.convert(response.getClientDataJSON());
-		AttestationObject attestationObject = attestationObjectConverter.convert(response.getAttestationObject());
-
-		AuthenticatorData<RegistrationExtensionAuthenticatorOutput> authenticatorData = attestationObject.getAuthenticatorData();
-		return new AuthenticatorImpl(
-						authenticatorData.getAttestedCredentialData(),
-						attestationObject.getAttestationStatement(),
-						authenticatorData.getSignCount()
-				);
+	public AuthenticatorAttestationResponse load(Authentication authentication) {
+		return this.response;
 	}
 }

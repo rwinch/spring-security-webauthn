@@ -7,6 +7,7 @@ import example.webauthn.security.MultiFactorRegistrationRequiredException;
 import example.webauthn.security.WebAuthnAuthenticatorRepository;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.web.webauthn.AuthenticatorAttestationResponse;
 import org.springframework.stereotype.Component;
 
 /**
@@ -27,8 +28,8 @@ public class Mfa {
 		if (authentication instanceof MultiFactorAuthentication) {
 			return true;
 		}
-		Authenticator authenticator = this.authenticators.load(authentication);
-		if (authenticator == null) {
+		AuthenticatorAttestationResponse response = this.authenticators.load(authentication);
+		if (response == null) {
 			throw new MultiFactorRegistrationRequiredException();
 		}
 		throw new MultiFactorAuthenticationRequiredException();
