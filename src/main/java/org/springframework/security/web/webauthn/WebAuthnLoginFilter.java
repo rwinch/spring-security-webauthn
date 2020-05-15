@@ -38,6 +38,7 @@ public class WebAuthnLoginFilter extends AbstractAuthenticationProcessingFilter 
 		byte[] clientDataJSONBytes = bytes(request, "clientDataJSON");
 		byte[] authenticatorDataBytes = bytes(request, "authenticatorData");
 		byte[] signatureBytes = bytes(request, "signature");
+		//FIXME: clientExtensionJSON should also be received
 
 		ServerLoginParameters loginParams = this.requests
 				.loadLoginParams(request);

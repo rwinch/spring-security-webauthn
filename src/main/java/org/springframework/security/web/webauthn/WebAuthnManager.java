@@ -59,7 +59,7 @@ public class WebAuthnManager {
 	public void register(RegistrationRequest request) {
 		// Server properties
 		Origin origin = new Origin(request.getOrigin().toExternalForm()); /* set origin */;
-		String rpId = origin.getHost();
+		String rpId = origin.getHost(); //FIXME: This is good for default value, but it should be configurable
 		ServerRegistrationParameters serverRegistrationParameters = request.getParameters();
 		byte[] base64Challenge = serverRegistrationParameters.getChallenge();
 		byte[] attestationObject = request.getResponse().getAttestationObject();
