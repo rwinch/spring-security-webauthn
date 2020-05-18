@@ -51,6 +51,7 @@ public class WebAuthnRegistrationFilter extends OncePerRequestFilter {
 
 		String clientDataJSON = request.getParameter("clientDataJSON");
 		String attestationObject = request.getParameter("attestationObject");
+		//FIXME: clientExtensionJSON should also be received
 
 		// Client properties
 		byte[] clientDataJSONBytes = Base64Utils.decodeFromUrlSafeString(clientDataJSON);
