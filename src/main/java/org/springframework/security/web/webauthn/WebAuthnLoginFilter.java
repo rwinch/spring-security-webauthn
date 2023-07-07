@@ -6,12 +6,14 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
+
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.util.Base64Utils;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.net.URL;
+import java.util.Base64;
 
 /**
  * @author Rob Winch
@@ -63,6 +65,6 @@ public class WebAuthnLoginFilter extends AbstractAuthenticationProcessingFilter 
 		if (value == null) {
 			return null;
 		}
-		return Base64Utils.decodeFromUrlSafeString(value);
+		return Base64.getUrlDecoder().decode(value);
 	}
 }

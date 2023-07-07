@@ -16,7 +16,7 @@ import org.springframework.security.web.webauthn.WebAuthnManager;
 import org.springframework.security.web.webauthn.WebAuthnParamsRepository;
 import org.springframework.security.web.webauthn.WebAuthnRegistrationFilter;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 import java.util.Collections;
 import java.util.Map;
 import java.util.function.Function;

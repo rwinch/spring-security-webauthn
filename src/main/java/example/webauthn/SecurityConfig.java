@@ -3,8 +3,10 @@ package example.webauthn;
 import example.webauthn.security.WebAuthnAuthenticatorRepository;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.web.DefaultSecurityFilterChain;
 
 import static example.webauthn.security.config.WebAuthnConfigurer.webAuthn;
 
@@ -12,17 +14,20 @@ import static example.webauthn.security.config.WebAuthnConfigurer.webAuthn;
  * @author Rob Winch
  */
 @Configuration
-public class SecurityConfig extends WebSecurityConfigurerAdapter {
+@EnableWebSecurity
+public class SecurityConfig {
 
-	@Override
-	protected void configure(HttpSecurity http) throws Exception {
+	@Bean
+	DefaultSecurityFilterChain springSecurity(HttpSecurity http, Mfa mfa) throws Exception {
 		http
+			.formLogin(Customizer.withDefaults())
+			.authorizeHttpRequests(requests -> requests
+				.requestMatchers("/secure").access(mfa)
+				.anyRequest().authenticated()
+			)
 			.apply(webAuthn())
-				.and()
-			.formLogin().and()
-			.authorizeRequests()
-				.mvcMatchers("/secure").access("@mfa.require(authentication)")
-				.anyRequest().authenticated();
+			;
+		return http.build();
 	}
 
 	@Bean

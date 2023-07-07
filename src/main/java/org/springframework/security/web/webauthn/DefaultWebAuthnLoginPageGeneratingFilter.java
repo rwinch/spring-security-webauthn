@@ -1,6 +1,5 @@
 package org.springframework.security.web.webauthn;
 
-import com.webauthn4j.authenticator.Authenticator;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
@@ -9,11 +8,12 @@ import org.springframework.util.Assert;
 import org.springframework.util.Base64Utils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-import javax.servlet.FilterChain;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.Base64;
 import java.util.Collections;
 import java.util.Map;
 import java.util.function.Function;
@@ -64,10 +64,9 @@ public class DefaultWebAuthnLoginPageGeneratingFilter extends OncePerRequestFilt
 		response.setContentType("text/html;charset=UTF-8");
 
 		ServerLoginParameters params = this.manager.createLoginParametersFor(authentication);
-		String challenge = Base64Utils.encodeToUrlSafeString(params.getChallenge());
+		String challenge = Base64.getUrlEncoder().encodeToString(params.getChallenge());
 		this.paramsRepository.saveLoginParams(request, response, params);
-		String credentialId = Base64Utils
-				.encodeToUrlSafeString(params.getCredentialId());
+		String credentialId = Base64.getUrlEncoder().encodeToString(params.getCredentialId());
 		response.getWriter().write("<!DOCTYPE html>\n"
 				+ "<html xmlns:th=\"https://www.thymeleaf.org\">\n"
 				+ "<head>\n"
