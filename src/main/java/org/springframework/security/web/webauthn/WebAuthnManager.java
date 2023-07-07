@@ -54,11 +54,9 @@ public class WebAuthnManager {
 		this.authenticators = authenticators;
 	}
 
-	public ServerRegistrationParameters createRegistrationParametersFor(Authentication authentication) {
-		ServerRegistrationParameters result = new ServerRegistrationParameters();
-		result.setChallenge(randomBytes());
-		result.setUserId(userId(authentication));
-		return result;
+	public PublicKeyCredentialCreationOptions createRegistrationParametersFor(Authentication authentication) {
+
+		return null;
 	}
 
 	// FIXME: This should return a registration (should not do any saving in the manager)
