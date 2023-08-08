@@ -1,6 +1,6 @@
 package example.webauthn.security.config;
 
-import example.webauthn.security.WebAuthnAuthenticatorRepository;
+import org.springframework.security.web.webauthn.WebAuthnRepository;
 import org.springframework.context.ApplicationContext;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -13,7 +13,6 @@ import org.springframework.security.web.webauthn.DefaultWebAuthnRegistrationGene
 import org.springframework.security.web.webauthn.MultiFactorExceptionTranslationFilter;
 import org.springframework.security.web.webauthn.WebAuthnLoginFilter;
 import org.springframework.security.web.webauthn.WebAuthnManager;
-import org.springframework.security.web.webauthn.WebAuthnParamsRepository;
 import org.springframework.security.web.webauthn.WebAuthnRegistrationFilter;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -33,8 +32,7 @@ public class WebAuthnConfigurer extends
 
 	@Override
 	public void configure(HttpSecurity http) throws Exception {
-		WebAuthnAuthenticatorRepository authenticators = authnAuthenticatorRepository(http);
-		WebAuthnParamsRepository challenges = challengeRepository();
+		WebAuthnRepository authenticators = authnAuthenticatorRepository(http);
 		Function<HttpServletRequest, Map<String, String>> csrf = request -> {
 			CsrfToken token = (CsrfToken)request.getAttribute(CsrfToken.class.getName());
 			return token == null ? Collections.emptyMap() : Collections.singletonMap(token.getParameterName(), token.getToken());
@@ -52,21 +50,17 @@ public class WebAuthnConfigurer extends
 				.addFilterBefore(login,
 						DefaultLoginPageGeneratingFilter.class)
 				.addFilterAfter(new MultiFactorExceptionTranslationFilter(), ExceptionTranslationFilter.class)
-				.addFilterBefore(new WebAuthnRegistrationFilter(challenges, manager), UsernamePasswordAuthenticationFilter.class)
-				.addFilterBefore(new WebAuthnLoginFilter(challenges, manager),
+				.addFilterBefore(new WebAuthnRegistrationFilter(manager), UsernamePasswordAuthenticationFilter.class)
+				.addFilterBefore(new WebAuthnLoginFilter(manager),
 						UsernamePasswordAuthenticationFilter.class);
 	}
 
-	private WebAuthnParamsRepository challengeRepository() {
-		return new WebAuthnParamsRepository();
-	}
-
-	WebAuthnAuthenticatorRepository authnAuthenticatorRepository(HttpSecurity http) {
-		WebAuthnAuthenticatorRepository bean = getBeanOrNull(WebAuthnAuthenticatorRepository.class);
+	WebAuthnRepository authnAuthenticatorRepository(HttpSecurity http) {
+		WebAuthnRepository bean = getBeanOrNull(WebAuthnRepository.class);
 		if (bean != null) {
 			return bean;
 		}
-		return new WebAuthnAuthenticatorRepository();
+		return new WebAuthnRepository();
 	}
 
 

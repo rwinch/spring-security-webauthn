@@ -19,13 +19,11 @@ import java.util.Base64;
  * @author Rob Winch
  */
 public class WebAuthnLoginFilter extends AbstractAuthenticationProcessingFilter {
-	private final WebAuthnParamsRepository requests;
 
 	private final WebAuthnManager manager;
 
-	public WebAuthnLoginFilter(WebAuthnParamsRepository requests, WebAuthnManager manager) {
+	public WebAuthnLoginFilter(WebAuthnManager manager) {
 		super(new AntPathRequestMatcher("/login/webauthn", "POST"));
-		this.requests = requests;
 		this.manager = manager;
 	}
 
@@ -35,27 +33,27 @@ public class WebAuthnLoginFilter extends AbstractAuthenticationProcessingFilter 
 		Authentication authentication = SecurityContextHolder.getContext()
 				.getAuthentication();
 
-		// Client properties
-		byte[] credentialIdBytes = bytes(request, "credentialId");
-		byte[] clientDataJSONBytes = bytes(request, "clientDataJSON");
-		byte[] authenticatorDataBytes = bytes(request, "authenticatorData");
-		byte[] signatureBytes = bytes(request, "signature");
-		//FIXME: clientExtensionJSON should also be received
-
-		ServerLoginParameters loginParams = this.requests
-				.loadLoginParams(request);
-
-		WebAuthnLoginRequest loginRequest = new WebAuthnLoginRequest();
-		loginRequest.setAuthentication(authentication);
-		loginRequest.setAuthenticatorData(authenticatorDataBytes);
-		loginRequest.setClientDataJSON(clientDataJSONBytes);
-		loginRequest.setCredentialId(credentialIdBytes);
-		loginRequest.setAuthenticatorData(authenticatorDataBytes);
-		loginRequest.setSignature(signatureBytes);
-		loginRequest.setOrigin(new URL(request.getRequestURL().toString()));
-		loginRequest.setLoginParameters(loginParams);
-
-		this.manager.login(loginRequest);
+//		// Client properties
+//		byte[] credentialIdBytes = bytes(request, "credentialId");
+//		byte[] clientDataJSONBytes = bytes(request, "clientDataJSON");
+//		byte[] authenticatorDataBytes = bytes(request, "authenticatorData");
+//		byte[] signatureBytes = bytes(request, "signature");
+//		//FIXME: clientExtensionJSON should also be received
+//
+//		ServerLoginParameters loginParams = this.requests
+//				.loadLoginParams(request);
+//
+//		WebAuthnLoginRequest loginRequest = new WebAuthnLoginRequest();
+//		loginRequest.setAuthentication(authentication);
+//		loginRequest.setAuthenticatorData(authenticatorDataBytes);
+//		loginRequest.setClientDataJSON(clientDataJSONBytes);
+//		loginRequest.setCredentialId(credentialIdBytes);
+//		loginRequest.setAuthenticatorData(authenticatorDataBytes);
+//		loginRequest.setSignature(signatureBytes);
+//		loginRequest.setOrigin(new URL(request.getRequestURL().toString()));
+//		loginRequest.setLoginParameters(loginParams);
+//
+//		this.manager.login(loginRequest);
 
 		return new MultiFactorAuthentication(authentication);
 	}

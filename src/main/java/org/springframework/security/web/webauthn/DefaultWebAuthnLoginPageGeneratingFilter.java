@@ -1,19 +1,17 @@
 package org.springframework.security.web.webauthn;
 
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.security.web.util.matcher.RequestMatcher;
 import org.springframework.util.Assert;
-import org.springframework.util.Base64Utils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-import jakarta.servlet.FilterChain;
-import jakarta.servlet.ServletException;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.Base64;
 import java.util.Collections;
 import java.util.Map;
 import java.util.function.Function;
@@ -28,8 +26,6 @@ public class DefaultWebAuthnLoginPageGeneratingFilter extends OncePerRequestFilt
 			.emptyMap();
 
 	private final WebAuthnManager manager;
-
-	private WebAuthnParamsRepository paramsRepository = new WebAuthnParamsRepository();
 
 	public DefaultWebAuthnLoginPageGeneratingFilter(WebAuthnManager manager) {
 		this.manager = manager;
@@ -63,10 +59,8 @@ public class DefaultWebAuthnLoginPageGeneratingFilter extends OncePerRequestFilt
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 		response.setContentType("text/html;charset=UTF-8");
 
-		ServerLoginParameters params = this.manager.createLoginParametersFor(authentication);
-		String challenge = Base64.getUrlEncoder().encodeToString(params.getChallenge());
-		this.paramsRepository.saveLoginParams(request, response, params);
-		String credentialId = Base64.getUrlEncoder().encodeToString(params.getCredentialId());
+		String challenge = null; // Base64.getUrlEncoder().encodeToString(params.getChallenge());
+		String credentialId = null;// Base64.getUrlEncoder().encodeToString(params.getCredentialId());
 		response.getWriter().write("<!DOCTYPE html>\n"
 				+ "<html xmlns:th=\"https://www.thymeleaf.org\">\n"
 				+ "<head>\n"

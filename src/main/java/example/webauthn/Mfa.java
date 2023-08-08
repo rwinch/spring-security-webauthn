@@ -1,15 +1,15 @@
 package example.webauthn;
 
+import com.yubico.webauthn.data.AuthenticatorAttestationResponse;
 import example.webauthn.security.MultiFactorAuthentication;
 import example.webauthn.security.MultiFactorAuthenticationRequiredException;
 import example.webauthn.security.MultiFactorRegistrationRequiredException;
-import example.webauthn.security.WebAuthnAuthenticatorRepository;
+import org.springframework.security.web.webauthn.WebAuthnRepository;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.authorization.AuthorizationDecision;
 import org.springframework.security.authorization.AuthorizationManager;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.access.intercept.RequestAuthorizationContext;
-import org.springframework.security.web.webauthn.AuthenticatorAttestationResponse;
 import org.springframework.stereotype.Component;
 
 import java.util.function.Supplier;
@@ -19,9 +19,9 @@ import java.util.function.Supplier;
  */
 @Component
 public class Mfa implements AuthorizationManager<RequestAuthorizationContext> {
-	private final WebAuthnAuthenticatorRepository authenticators;
+	private final WebAuthnRepository authenticators;
 
-	public Mfa(WebAuthnAuthenticatorRepository authenticators) {
+	public Mfa(WebAuthnRepository authenticators) {
 		this.authenticators = authenticators;
 	}
 
@@ -33,10 +33,10 @@ public class Mfa implements AuthorizationManager<RequestAuthorizationContext> {
 		if (authentication instanceof MultiFactorAuthentication) {
 			return new AuthorizationDecision(false);
 		}
-		AuthenticatorAttestationResponse response = this.authenticators.load(authentication.get());
-		if (response == null) {
+//		AuthenticatorAttestationResponse response = this.authenticators.load(authentication.get());
+//		if (response == null) {
 			throw new MultiFactorRegistrationRequiredException();
-		}
-		throw new MultiFactorAuthenticationRequiredException();
+//		}
+//		throw new MultiFactorAuthenticationRequiredException();
 	}
 }

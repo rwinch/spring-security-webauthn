@@ -1,5 +1,6 @@
 package org.springframework.security.web.webauthn;
 
+import com.yubico.webauthn.data.AuthenticatorAttestationResponse;
 import org.springframework.security.web.DefaultRedirectStrategy;
 import org.springframework.security.web.RedirectStrategy;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
@@ -24,13 +25,9 @@ public class WebAuthnRegistrationFilter extends OncePerRequestFilter {
 
 	private RedirectStrategy redirectStrategy = new DefaultRedirectStrategy();
 
-	private final WebAuthnParamsRepository webAuthnRequests;
-
 	private final WebAuthnManager manager;
 
-	public WebAuthnRegistrationFilter(WebAuthnParamsRepository webAuthnRequests,
-			WebAuthnManager manager) {
-		this.webAuthnRequests = webAuthnRequests;
+	public WebAuthnRegistrationFilter(WebAuthnManager manager) {
 		this.manager = manager;
 	}
 
@@ -40,7 +37,7 @@ public class WebAuthnRegistrationFilter extends OncePerRequestFilter {
 			throws ServletException, IOException {
 
 		if (this.matcher.matches(request)) {
-			register(request);
+//			register(request);
 			this.redirectStrategy.sendRedirect(request, response, "/login/webauthn");
 			return;
 		}

@@ -1,6 +1,6 @@
 package example.webauthn;
 
-import example.webauthn.security.WebAuthnAuthenticatorRepository;
+import org.springframework.security.web.webauthn.WebAuthnRepository;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.Customizer;
@@ -31,7 +31,7 @@ public class SecurityConfig {
 	}
 
 	@Bean
-	public WebAuthnAuthenticatorRepository authenticatorRepository() {
-		return new WebAuthnAuthenticatorRepository();
+	public WebAuthnRepository authenticatorRepository() {
+		return new WebAuthnRepository();
 	}
 }
