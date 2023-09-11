@@ -1,6 +1,5 @@
 package org.springframework.security.web.webauthn;
 
-import com.yubico.webauthn.data.UserIdentity;
 import org.springframework.security.web.webauthn.api.PublicKeyCredentialUserEntity;
 
 import java.util.Map;
@@ -11,16 +10,18 @@ import java.util.concurrent.ConcurrentHashMap;
  *
  * @author Rob Winch
  */
-public class WebAuthnRepository {
+public class MapPublicKeyCredentialUserEntityRepository implements PublicKeyCredentialUserEntityRepository {
 
 
 	private Map<String, PublicKeyCredentialUserEntity> usernameToUserId = new ConcurrentHashMap<>();
 
+	@Override
 	public PublicKeyCredentialUserEntity  findUserIdByUsername(String username) {
 		return this.usernameToUserId.get(username);
 	}
 
-	public void save(String username, PublicKeyCredentialUserEntity  userIdentity) {
+	@Override
+	public void save(String username, PublicKeyCredentialUserEntity userIdentity) {
 		this.usernameToUserId.put(username, userIdentity);
 	}
 }

@@ -1,6 +1,6 @@
 package example.webauthn.security.config;
 
-import org.springframework.security.web.webauthn.WebAuthnRepository;
+import org.springframework.security.web.webauthn.MapPublicKeyCredentialUserEntityRepository;
 import org.springframework.context.ApplicationContext;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -32,7 +32,7 @@ public class WebAuthnConfigurer extends
 
 	@Override
 	public void configure(HttpSecurity http) throws Exception {
-		WebAuthnRepository authenticators = authnAuthenticatorRepository(http);
+		MapPublicKeyCredentialUserEntityRepository authenticators = authnAuthenticatorRepository(http);
 		Function<HttpServletRequest, Map<String, String>> csrf = request -> {
 			CsrfToken token = (CsrfToken)request.getAttribute(CsrfToken.class.getName());
 			return token == null ? Collections.emptyMap() : Collections.singletonMap(token.getParameterName(), token.getToken());
@@ -55,12 +55,12 @@ public class WebAuthnConfigurer extends
 						UsernamePasswordAuthenticationFilter.class);
 	}
 
-	WebAuthnRepository authnAuthenticatorRepository(HttpSecurity http) {
-		WebAuthnRepository bean = getBeanOrNull(WebAuthnRepository.class);
+	MapPublicKeyCredentialUserEntityRepository authnAuthenticatorRepository(HttpSecurity http) {
+		MapPublicKeyCredentialUserEntityRepository bean = getBeanOrNull(MapPublicKeyCredentialUserEntityRepository.class);
 		if (bean != null) {
 			return bean;
 		}
-		return new WebAuthnRepository();
+		return new MapPublicKeyCredentialUserEntityRepository();
 	}
 
 

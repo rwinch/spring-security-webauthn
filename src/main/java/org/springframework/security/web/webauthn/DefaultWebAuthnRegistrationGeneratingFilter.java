@@ -31,6 +31,8 @@ public class DefaultWebAuthnRegistrationGeneratingFilter extends OncePerRequestF
 	private SecurityContextHolderStrategy securityContextHolderStrategy = SecurityContextHolder
 			.getContextHolderStrategy();
 
+	private PublicKeyCredentialCreationOptionsRepository optionsRepository = new HttpSessionPublicKeyCredentialCreationOptionsRepository();
+
 	private final WebAuthnManager manager;
 
 	private Function<HttpServletRequest, Map<String, String>> resolveHiddenInputs = request -> Collections
@@ -62,6 +64,7 @@ public class DefaultWebAuthnRegistrationGeneratingFilter extends OncePerRequestF
 		}
 		Authentication authentication = this.securityContextHolderStrategy.getContext().getAuthentication();
 		PublicKeyCredentialCreationOptions options = this.manager.createPublicKeyCredentialCreationOptions(authentication);
+		this.optionsRepository.save(options, request, response);
 		request.setAttribute(PublicKeyCredentialCreationOptions.class.getName(), options);
 		writeRegistrationPageHtml(request, response);
 	}
@@ -108,10 +111,12 @@ public class DefaultWebAuthnRegistrationGeneratingFilter extends OncePerRequestF
 				            src=\"https://code.jquery.com/jquery-3.4.1.js\"
 				            integrity=\"sha256-WpOohJOqMqqyKL9FccASB9O0KwACQJpFTUBLTYOVvVU=\"
 				            crossorigin=\"anonymous\"></script>
-				    <script type=\"text/javascript\">\"use strict\";!function(r){for(var e=\"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_\",t=new Uint8Array(256),n=0;n<e.length;n++)t[e.charCodeAt(n)]=n;r.decodeBase64url=function(r){for(var e=r.length,n=\"=\"===r.charAt(e-2)?2:\"=\"===r.charAt(e-1)?1:0,a=new ArrayBuffer(3*e/4-n),c=new Uint8Array(a),o=0,s=0;s<e;s+=4){var h=t[r.charCodeAt(s)],u=t[r.charCodeAt(s+1)],i=t[r.charCodeAt(s+2)],A=t[r.charCodeAt(s+3)];c[o++]=h<<2|u>>4,c[o++]=(15&u)<<4|i>>2,c[o++]=(3&i)<<6|63&A}return a},r.encodeBase64url=function(r){for(var t=new Uint8Array(r),n=t.length,a=\"\",c=0;c<n;c+=3)a+=e[t[c]>>2],a+=e[(3&t[c])<<4|t[c+1]>>4],a+=e[(15&t[c+1])<<2|t[c+2]>>6],a+=e[63&t[c+2]];switch(n%3){case 1:a=a.substring(0,a.length-2);break;case 2:a=a.substring(0,a.length-1)}return a}}(\"undefined\"==typeof exports?this.base64url={}:exports);</script>
 				    <script type=\"text/javascript\">
 				        if (!window.PublicKeyCredential) { /* Client not capable. Handle error. */ }
 				
+				        function arrayBufferToString(buffer) {
+				            return String.fromCharCode.apply(null, new Uint8Array(buffer));
+				        }
 				        function register() {
 				            const publicKey = """ + objectsJson +
 
@@ -122,10 +127,9 @@ public class DefaultWebAuthnRegistrationGeneratingFilter extends OncePerRequestF
 				            return navigator.credentials.create({ publicKey })
 				                .then(function (newCredentialInfo) {
 				                    console.log('Created credentials');
-				                    console.log(newCredentialInfo);
-				                    $('#clientDataJSON').val(base64url.encodeBase64url(newCredentialInfo.response.clientDataJSON));
-				                    $('#attestationObject').val(base64url.encodeBase64url(newCredentialInfo.response.attestationObject));
-				                    $('#clientExtensions').val(JSON.stringify(newCredentialInfo.getClientExtensionResults()));
+				                    $('#clientDataJSON').val(arrayBufferToString(newCredentialInfo.response.clientDataJSON));
+				                    $('#attestationObject').val(window.btoa(arrayBufferToString(newCredentialInfo.response.attestationObject)));
+				                    $('#clientExtensions').val(arrayBufferToString(newCredentialInfo.getClientExtensionResults()));
 				                    console.log(\"Updated the hidden inputs\");
 				                }).catch(function (e) {
 				                    console.error(\"Error:%s, Message:%s\", e.name, e.message);

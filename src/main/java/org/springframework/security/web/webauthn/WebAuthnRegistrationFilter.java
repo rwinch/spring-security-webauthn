@@ -1,10 +1,12 @@
 package org.springframework.security.web.webauthn;
 
-import com.yubico.webauthn.data.AuthenticatorAttestationResponse;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.DefaultRedirectStrategy;
 import org.springframework.security.web.RedirectStrategy;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.security.web.util.matcher.RequestMatcher;
+import org.springframework.security.web.webauthn.api.PublicKeyCredentialCreationOptions;
 import org.springframework.util.Base64Utils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -15,6 +17,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URL;
+import java.util.Base64;
 
 /**
  * @author Rob Winch
@@ -27,6 +30,10 @@ public class WebAuthnRegistrationFilter extends OncePerRequestFilter {
 
 	private final WebAuthnManager manager;
 
+	private WebAuthnParamsRepository webAuthnRequests = new WebAuthnParamsRepository();
+
+	private PublicKeyCredentialCreationOptionsRepository optionsRepository = new HttpSessionPublicKeyCredentialCreationOptionsRepository();
+
 	public WebAuthnRegistrationFilter(WebAuthnManager manager) {
 		this.manager = manager;
 	}
@@ -37,7 +44,7 @@ public class WebAuthnRegistrationFilter extends OncePerRequestFilter {
 			throws ServletException, IOException {
 
 		if (this.matcher.matches(request)) {
-//			register(request);
+			register(request);
 			this.redirectStrategy.sendRedirect(request, response, "/login/webauthn");
 			return;
 		}
@@ -48,21 +55,23 @@ public class WebAuthnRegistrationFilter extends OncePerRequestFilter {
 
 		String clientDataJSON = request.getParameter("clientDataJSON");
 		String attestationObject = request.getParameter("attestationObject");
+
+		byte[] attestationObjectBytes = Base64.getDecoder().decode(attestationObject);
 		//FIXME: clientExtensionJSON should also be received
 
-		// Client properties
-		byte[] clientDataJSONBytes = Base64Utils.decodeFromUrlSafeString(clientDataJSON);
-		byte[] attestationObjectBytes = Base64Utils.decodeFromUrlSafeString(attestationObject);
 
 		ServerRegistrationParameters parameters = this.webAuthnRequests.loadRegistrationParams(request);
+		PublicKeyCredentialCreationOptions options = this.optionsRepository.load(request);
 		AuthenticatorAttestationResponse authenticatorResponse = new AuthenticatorAttestationResponse();
 		authenticatorResponse.setAttestationObject(attestationObjectBytes);
-		authenticatorResponse.setClientDataJSON(clientDataJSONBytes);
+		authenticatorResponse.setClientDataJSON(clientDataJSON);
 		RegistrationRequest registration = new RegistrationRequest();
 		registration.setResponse(authenticatorResponse);
 		registration.setParameters(parameters);
 		registration.setOrigin(new URL(request.getRequestURL().toString()));
+		registration.setCreationOptions(options);
 
-		this.manager.register(registration);
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		this.manager.register(registration, authentication);
 	}
 }

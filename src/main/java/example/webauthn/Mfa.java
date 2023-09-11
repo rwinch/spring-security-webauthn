@@ -1,10 +1,8 @@
 package example.webauthn;
 
-import com.yubico.webauthn.data.AuthenticatorAttestationResponse;
 import example.webauthn.security.MultiFactorAuthentication;
-import example.webauthn.security.MultiFactorAuthenticationRequiredException;
 import example.webauthn.security.MultiFactorRegistrationRequiredException;
-import org.springframework.security.web.webauthn.WebAuthnRepository;
+import org.springframework.security.web.webauthn.MapPublicKeyCredentialUserEntityRepository;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.authorization.AuthorizationDecision;
 import org.springframework.security.authorization.AuthorizationManager;
@@ -19,9 +17,9 @@ import java.util.function.Supplier;
  */
 @Component
 public class Mfa implements AuthorizationManager<RequestAuthorizationContext> {
-	private final WebAuthnRepository authenticators;
+	private final MapPublicKeyCredentialUserEntityRepository authenticators;
 
-	public Mfa(WebAuthnRepository authenticators) {
+	public Mfa(MapPublicKeyCredentialUserEntityRepository authenticators) {
 		this.authenticators = authenticators;
 	}
 

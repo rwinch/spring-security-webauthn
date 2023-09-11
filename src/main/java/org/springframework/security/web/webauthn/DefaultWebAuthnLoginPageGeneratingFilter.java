@@ -25,6 +25,8 @@ public class DefaultWebAuthnLoginPageGeneratingFilter extends OncePerRequestFilt
 	private Function<HttpServletRequest, Map<String, String>> resolveHiddenInputs = request -> Collections
 			.emptyMap();
 
+	private PublicKeyCredentialCreationOptionsRepository optionsRepository = new HttpSessionPublicKeyCredentialCreationOptionsRepository();
+
 	private final WebAuthnManager manager;
 
 	public DefaultWebAuthnLoginPageGeneratingFilter(WebAuthnManager manager) {
