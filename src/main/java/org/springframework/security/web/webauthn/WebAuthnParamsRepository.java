@@ -2,6 +2,8 @@ package org.springframework.security.web.webauthn;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.security.webauthn.ServerLoginParameters;
+import org.springframework.security.webauthn.ServerRegistrationParameters;
 
 /**
  * @author Rob Winch

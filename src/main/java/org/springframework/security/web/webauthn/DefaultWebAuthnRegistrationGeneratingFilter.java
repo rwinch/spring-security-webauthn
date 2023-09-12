@@ -1,23 +1,23 @@
 package org.springframework.security.web.webauthn;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContext;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.context.SecurityContextHolderStrategy;
-import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
-import org.springframework.security.web.util.matcher.RequestMatcher;
-import org.springframework.security.web.webauthn.api.PublicKeyCredentialCreationOptions;
-import org.springframework.util.Assert;
-import org.springframework.util.Base64Utils;
-import org.springframework.web.filter.OncePerRequestFilter;
-
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.context.SecurityContextHolderStrategy;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
+import org.springframework.security.web.util.matcher.RequestMatcher;
+import org.springframework.security.webauthn.HttpSessionPublicKeyCredentialCreationOptionsRepository;
+import org.springframework.security.webauthn.PublicKeyCredentialCreationOptions;
+import org.springframework.security.webauthn.PublicKeyCredentialCreationOptionsRepository;
+import org.springframework.security.webauthn.WebAuthnManager;
+import org.springframework.util.Assert;
+import org.springframework.web.filter.OncePerRequestFilter;
+
 import java.io.IOException;
-import java.util.Base64;
 import java.util.Collections;
 import java.util.Map;
 import java.util.function.Function;
@@ -82,25 +82,25 @@ public class DefaultWebAuthnRegistrationGeneratingFilter extends OncePerRequestF
 
 		response.getWriter().write("""
 				<!DOCTYPE html>
-				<html lang=\"en\" xmlns:th=\"https://www.thymeleaf.org\">
+				<html lang="en" xmlns:th="https://www.thymeleaf.org">
 				<head>
-				    <meta charset=\"utf-8\">
-				    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1, shrink-to-fit=no\">
-				    <meta name=\"description\" content=\"\">
-				    <meta name=\"author\" content=\"\">
+				    <meta charset="utf-8">
+				    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+				    <meta name="description" content="">
+				    <meta name="author" content="">
 				    <title>WebAuthn - Registration</title>
-				    <link href=\"https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/css/bootstrap.min.css\" rel=\"stylesheet\" integrity=\"sha384-/Y6pD6FV/Vv2HJnA6t+vslU6fwYXjCFtcEpHbNJ0lyAFsXTsjBbfaDjzALeQsN6M\" crossorigin=\"anonymous\">
-				    <link href=\"https://getbootstrap.com/docs/4.0/examples/signin/signin.css\" rel=\"stylesheet\" crossorigin=\"anonymous\"/>
+				    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-/Y6pD6FV/Vv2HJnA6t+vslU6fwYXjCFtcEpHbNJ0lyAFsXTsjBbfaDjzALeQsN6M" crossorigin="anonymous">
+				    <link href="https://getbootstrap.com/docs/4.0/examples/signin/signin.css" rel="stylesheet" crossorigin="anonymous"/>
 				</head>
 				<body>
-				<div class=\"container\">
-				    <form id=\"register\" class=\"form-signin\" method=\"post\" action=\"""" + request.getContextPath() + """
-				/webauthn/register\">
-				        <h2 class=\"form-signin-heading\">WebAuthn - Registration</h2>
-				        <button class=\"btn btn-lg btn-primary btn-block\" type=\"submit\">Register</button>
-				        <input type=\"hidden\" id=\"clientDataJSON\" name=\"clientDataJSON\">
-				        <input type=\"hidden\" id=\"attestationObject\" name=\"attestationObject\">
-				        <input type=\"hidden\" id=\"clientExtensions\" name=\"clientExtensions\">
+				<div class="container">
+				    <form id="register" class="form-signin" method="post" action=\"""" + request.getContextPath() + """
+				/webauthn/register">
+				        <h2 class="form-signin-heading">WebAuthn - Registration</h2>
+				        <button class="btn btn-lg btn-primary btn-block" type="submit">Register</button>
+				        <input type="hidden" id="clientDataJSON" name="clientDataJSON">
+				        <input type="hidden" id="attestationObject" name="attestationObject">
+				        <input type="hidden" id="clientExtensions" name="clientExtensions">
 				        
 				"""
 				+ renderHiddenInputs(request) +
@@ -108,10 +108,10 @@ public class DefaultWebAuthnRegistrationGeneratingFilter extends OncePerRequestF
 				    </form>
 				</div>
 				    <script
-				            src=\"https://code.jquery.com/jquery-3.4.1.js\"
-				            integrity=\"sha256-WpOohJOqMqqyKL9FccASB9O0KwACQJpFTUBLTYOVvVU=\"
-				            crossorigin=\"anonymous\"></script>
-				    <script type=\"text/javascript\">
+				            src="https://code.jquery.com/jquery-3.4.1.js"
+				            integrity="sha256-WpOohJOqMqqyKL9FccASB9O0KwACQJpFTUBLTYOVvVU="
+				            crossorigin="anonymous"></script>
+				    <script type="text/javascript">
 				        if (!window.PublicKeyCredential) { /* Client not capable. Handle error. */ }
 				
 				        function arrayBufferToString(buffer) {
@@ -130,13 +130,13 @@ public class DefaultWebAuthnRegistrationGeneratingFilter extends OncePerRequestF
 				                    $('#clientDataJSON').val(arrayBufferToString(newCredentialInfo.response.clientDataJSON));
 				                    $('#attestationObject').val(window.btoa(arrayBufferToString(newCredentialInfo.response.attestationObject)));
 				                    $('#clientExtensions').val(arrayBufferToString(newCredentialInfo.getClientExtensionResults()));
-				                    console.log(\"Updated the hidden inputs\");
+				                    console.log("Updated the hidden inputs");
 				                }).catch(function (e) {
-				                    console.error(\"Error:%s, Message:%s\", e.name, e.message);
+				                    console.error("Error:%s, Message:%s", e.name, e.message);
 				                });
 				        }
 				        $(document).ready(function() {
-				            $(\"#register\").submit(function(e) {
+				            $("#register").submit(function(e) {
 				                var f = this;
 				                register().then(r => f.submit());
 				                return false;

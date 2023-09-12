@@ -1,14 +1,14 @@
 package example.webauthn;
 
-import org.springframework.security.web.webauthn.MapPublicKeyCredentialUserEntityRepository;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.web.DefaultSecurityFilterChain;
+import org.springframework.security.webauthn.MapPublicKeyCredentialUserEntityRepository;
 
-import static example.webauthn.security.config.WebAuthnConfigurer.webAuthn;
+import static org.springframework.security.config.webauthn.WebAuthnConfigurer.webAuthn;
 
 /**
  * @author Rob Winch
@@ -18,11 +18,10 @@ import static example.webauthn.security.config.WebAuthnConfigurer.webAuthn;
 public class SecurityConfig {
 
 	@Bean
-	DefaultSecurityFilterChain springSecurity(HttpSecurity http, Mfa mfa) throws Exception {
+	DefaultSecurityFilterChain springSecurity(HttpSecurity http) throws Exception {
 		http
 			.formLogin(Customizer.withDefaults())
 			.authorizeHttpRequests(requests -> requests
-				.requestMatchers("/secure").access(mfa)
 				.anyRequest().authenticated()
 			)
 			.apply(webAuthn())

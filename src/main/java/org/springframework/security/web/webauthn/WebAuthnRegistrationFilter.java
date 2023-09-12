@@ -1,21 +1,19 @@
 package org.springframework.security.web.webauthn;
 
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.DefaultRedirectStrategy;
 import org.springframework.security.web.RedirectStrategy;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.security.web.util.matcher.RequestMatcher;
-import org.springframework.security.web.webauthn.api.PublicKeyCredentialCreationOptions;
-import org.springframework.util.Base64Utils;
+import org.springframework.security.webauthn.*;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-import jakarta.servlet.FilterChain;
-import jakarta.servlet.ServletException;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.net.URI;
 import java.net.URL;
 import java.util.Base64;
 
@@ -72,6 +70,6 @@ public class WebAuthnRegistrationFilter extends OncePerRequestFilter {
 		registration.setCreationOptions(options);
 
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-		this.manager.register(registration, authentication);
+//		this.manager.register(registration, authentication);
 	}
 }

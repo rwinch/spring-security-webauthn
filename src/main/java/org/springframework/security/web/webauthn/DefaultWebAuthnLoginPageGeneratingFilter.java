@@ -8,6 +8,9 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.security.web.util.matcher.RequestMatcher;
+import org.springframework.security.webauthn.HttpSessionPublicKeyCredentialCreationOptionsRepository;
+import org.springframework.security.webauthn.PublicKeyCredentialCreationOptionsRepository;
+import org.springframework.security.webauthn.WebAuthnManager;
 import org.springframework.util.Assert;
 import org.springframework.web.filter.OncePerRequestFilter;
 
