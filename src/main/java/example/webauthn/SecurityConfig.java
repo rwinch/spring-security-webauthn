@@ -6,13 +6,9 @@ import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.web.DefaultSecurityFilterChain;
-import org.springframework.security.webauthn.MapPublicKeyCredentialUserEntityRepository;
+import org.springframework.security.web.authentication.ui.DefaultLoginPageGeneratingFilter;
+import org.springframework.security.web.webauthn.registration.PublicKeyCredentialCreationOptionsFilter;
 
-import static org.springframework.security.config.webauthn.WebAuthnConfigurer.webAuthn;
-
-/**
- * @author Rob Winch
- */
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
@@ -20,17 +16,13 @@ public class SecurityConfig {
 	@Bean
 	DefaultSecurityFilterChain springSecurity(HttpSecurity http) throws Exception {
 		http
-			.formLogin(Customizer.withDefaults())
-			.authorizeHttpRequests(requests -> requests
-				.anyRequest().authenticated()
-			)
-			.apply(webAuthn())
-			;
+				.formLogin(Customizer.withDefaults())
+				.authorizeHttpRequests(requests -> requests
+						.anyRequest().authenticated()
+				)
+				// FIXME: create DSL and change the location
+				.addFilterBefore(new PublicKeyCredentialCreationOptionsFilter(), DefaultLoginPageGeneratingFilter.class);
+		;
 		return http.build();
-	}
-
-	@Bean
-	public MapPublicKeyCredentialUserEntityRepository authenticatorRepository() {
-		return new MapPublicKeyCredentialUserEntityRepository();
 	}
 }
