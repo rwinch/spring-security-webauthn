@@ -2,6 +2,9 @@ package org.springframework.security.webauthn.api.registration;
 
 public class ImmutableAuthenticationExtensionsClientInput<T> implements AuthenticationExtensionsClientInput<T> {
 
+	/**
+	 * https://www.w3.org/TR/webauthn-3/#sctn-authenticator-credential-properties-extension
+	 */
 	public static final AuthenticationExtensionsClientInput<Boolean> credProps = new ImmutableAuthenticationExtensionsClientInput<>("credProps", true);
 
 	public static final AuthenticationExtensionsClientInput<Boolean> credProtect = new ImmutableAuthenticationExtensionsClientInput<>("credProtect", true);

@@ -1,9 +1,12 @@
 package org.springframework.security.webauthn.api.registration;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import org.springframework.security.webauthn.jackson.COSEAlgorithmIdentifierDeserializer;
 import org.springframework.security.webauthn.jackson.COSEAlgorithmIdentifierSerializer;
 
 @JsonSerialize(using = COSEAlgorithmIdentifierSerializer.class) // FIXME: Should externalize the JSON mappings
+@JsonDeserialize(using = COSEAlgorithmIdentifierDeserializer.class) // FIXME: SHould externalize
 public enum COSEAlgorithmIdentifier {
 	EdDSA(-8),
 	ES256(-7),

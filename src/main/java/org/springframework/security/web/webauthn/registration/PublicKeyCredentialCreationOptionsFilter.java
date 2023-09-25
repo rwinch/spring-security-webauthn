@@ -11,14 +11,11 @@ import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.security.web.util.matcher.RequestMatcher;
-import org.springframework.security.webauthn.api.core.BufferSource;
 import org.springframework.security.webauthn.api.registration.*;
-import org.springframework.security.webauthn.management.WebAuthnManager;
+import org.springframework.security.webauthn.management.WebAuthnRelyingPartyOperations;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
-import java.time.Duration;
-import java.util.function.Supplier;
 
 
 public class PublicKeyCredentialCreationOptionsFilter extends OncePerRequestFilter {
@@ -27,7 +24,7 @@ public class PublicKeyCredentialCreationOptionsFilter extends OncePerRequestFilt
 	// FIXME: consider require post since changes state
 	private RequestMatcher matcher = new AntPathRequestMatcher("/webauthn/registration/options");
 
-	private WebAuthnManager manager = new WebAuthnManager();
+	private WebAuthnRelyingPartyOperations manager = new WebAuthnRelyingPartyOperations();
 
 	private ObjectMapper objectMapper = new ObjectMapper();
 
