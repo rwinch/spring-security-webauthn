@@ -6,4 +6,6 @@ import org.springframework.security.webauthn.api.registration.PublicKeyCredentia
 
 public interface PublicKeyCredentialCreationOptionsRepository {
 	void save(HttpServletRequest request, HttpServletResponse response, PublicKeyCredentialCreationOptions options);
+
+	PublicKeyCredentialCreationOptions load(HttpServletRequest request);
 }

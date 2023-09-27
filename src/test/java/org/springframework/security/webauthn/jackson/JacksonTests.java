@@ -4,11 +4,14 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.skyscreamer.jsonassert.JSONAssert;
+import org.springframework.security.webauthn.api.authentication.PublicKeyCredentialRequestOptions;
 import org.springframework.security.webauthn.api.core.ArrayBuffer;
 import org.springframework.security.webauthn.api.core.BufferSource;
 import org.springframework.security.webauthn.api.registration.*;
+import org.springframework.security.webauthn.management.WebAuthnRelyingPartyOperations;
 
 import java.time.Duration;
+import java.util.Arrays;
 import java.util.Base64;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -135,5 +138,31 @@ class JacksonTests {
 				.build();
 
 		assertThat(publicKeyCredential).usingRecursiveComparison().isEqualTo(expected);
+	}
+
+
+	@Test
+	void writeAuthenticationOptions() throws Exception {
+		WebAuthnRelyingPartyOperations relyingPartyOperations = new WebAuthnRelyingPartyOperations();
+		PublicKeyCredentialRequestOptions credentialRequestOptions = PublicKeyCredentialRequestOptions.builder()
+				.allowCredentials(Arrays.asList())
+				.challenge(BufferSource.fromBase64("I69THX904Q8ONhCgUgOu2PCQCcEjTDiNmokdbgsAsYU"))
+				.rpId("localhost")
+				.timeout(Duration.ofMinutes(5))
+				.userVerification(UserVerificationRequirement.REQUIRED)
+				.build();
+		String actual = this.mapper.writeValueAsString(credentialRequestOptions);
+
+		String expected = """
+		{
+    "challenge": "I69THX904Q8ONhCgUgOu2PCQCcEjTDiNmokdbgsAsYU",
+    "allowCredentials": [],
+    "timeout": 300000,
+    "userVerification": "required",
+    "rpId": "localhost"
+  }
+  
+""";
+		JSONAssert.assertEquals(expected, actual, false);
 	}
 }
