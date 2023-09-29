@@ -29,6 +29,19 @@ public class BufferSource {
 		return ENCODER.encodeToString(getBytes());
 	}
 
+	@Override
+	public int hashCode() {
+		return getBytesAsBase64().hashCode();
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (obj instanceof BufferSource buffer) {
+			return buffer.getBytesAsBase64().equals(getBytesAsBase64());
+		}
+		return false;
+	}
+
 	public static BufferSource fromBase64(String base64String) {
 		byte[] bytes = DECODER.decode(base64String);
 		return new BufferSource(bytes);

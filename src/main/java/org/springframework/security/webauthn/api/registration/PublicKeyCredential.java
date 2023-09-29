@@ -22,16 +22,17 @@ public class PublicKeyCredential<R extends AuthenticatorResponse> {
 
 	private final R response;
 
+	private final AuthenticatorAttachment authenticatorAttachment;
+
 	private final AuthenticationExtensionsClientOutputs clientExtensionResults;
 
-	// FIXME: Figure out if this needs to have authenticatorAttachment property too. It isn't listed in the spec as far as I can tell, but it is in the body of the request from SimpleWebAuthn
 
-
-	private PublicKeyCredential(String id, PublicKeyCredentialType type, ArrayBuffer rawId, R response, AuthenticationExtensionsClientOutputs clientExtensionResults) {
+	private PublicKeyCredential(String id, PublicKeyCredentialType type, ArrayBuffer rawId, R response, AuthenticatorAttachment authenticatorAttachment, AuthenticationExtensionsClientOutputs clientExtensionResults) {
 		this.id = id;
 		this.type = type;
 		this.rawId = rawId;
 		this.response = response;
+		this.authenticatorAttachment = authenticatorAttachment;
 		this.clientExtensionResults = clientExtensionResults;
 	}
 
@@ -65,6 +66,7 @@ public class PublicKeyCredential<R extends AuthenticatorResponse> {
 		private PublicKeyCredentialType type;
 		private ArrayBuffer rawId;
 		private R response;
+		private AuthenticatorAttachment authenticatorAttachment;
 		private AuthenticationExtensionsClientOutputs clientExtensionResults;
 
 		private PublicKeyCredentialBuilder() {
@@ -94,13 +96,18 @@ public class PublicKeyCredential<R extends AuthenticatorResponse> {
 			return this;
 		}
 
+		public PublicKeyCredentialBuilder authenticatorAttachment(AuthenticatorAttachment authenticatorAttachment) {
+			this.authenticatorAttachment = authenticatorAttachment;
+			return this;
+		}
+
 		public PublicKeyCredentialBuilder clientExtensionResults(AuthenticationExtensionsClientOutputs clientExtensionResults) {
 			this.clientExtensionResults = clientExtensionResults;
 			return this;
 		}
 
 		public PublicKeyCredential<R> build() {
-			return new PublicKeyCredential(this.id, this.type, this.rawId, this.response, this.clientExtensionResults);
+			return new PublicKeyCredential(this.id, this.type, this.rawId, this.response, this.authenticatorAttachment, this.clientExtensionResults);
 		}
 	}
 }

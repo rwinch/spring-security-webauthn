@@ -20,9 +20,16 @@ import java.io.IOException;
 public class PublicKeyCredentialRequestOptionsFilter extends OncePerRequestFilter {
 	private RequestMatcher matcher = new AntPathRequestMatcher("/webauthn/authenticate/options");
 
-	private WebAuthnRelyingPartyOperations rpOptions = new WebAuthnRelyingPartyOperations();
+	private final WebAuthnRelyingPartyOperations rpOptions;
+
+	private PublicKeyCredentialRequestOptionsRepository repository = new HttpSessionPublicKeyCredentialRequestOptionsRepository();
 
 	private final ObjectMapper mapper = new ObjectMapper();
+
+	public PublicKeyCredentialRequestOptionsFilter(WebAuthnRelyingPartyOperations rpOptions) {
+		this.rpOptions = rpOptions;
+	}
+
 
 	@Override
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
@@ -34,6 +41,7 @@ public class PublicKeyCredentialRequestOptionsFilter extends OncePerRequestFilte
 		SecurityContext context = SecurityContextHolder.getContext();
 
 		PublicKeyCredentialRequestOptions credentialRequestOptions = this.rpOptions.createCredentialRequestOptions(context.getAuthentication());
+		this.repository.save(request, response, credentialRequestOptions);
 		response.setHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE);
 		this.mapper.writeValue(response.getWriter(), credentialRequestOptions);
 

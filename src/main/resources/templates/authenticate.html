@@ -12,10 +12,10 @@ Error:
 <div id="error"></div>
 <script type="text/javascript" id="registration-script" th:data-csrf-token="${_csrf.token}" th:data-csrf-header-name="${_csrf.headerName}">
   <!--
-    const config = document.getElementById('registration-script').dataset
-    const csrfToken = config.csrfToken
-    const csrfHeaderName = config.csrfHeaderName
-    const { startAuthentication } = SimpleWebAuthnBrowser;
+  const config = document.getElementById('registration-script').dataset
+  const csrfToken = config.csrfToken
+  const csrfHeaderName = config.csrfHeaderName
+  const { startAuthentication } = SimpleWebAuthnBrowser;
 
     // <button>
     const elemBegin = document.getElementById('authenticate');
@@ -46,7 +46,7 @@ Error:
 
         // POST the response to the endpoint that calls
         // @simplewebauthn/server -> verifyAuthenticationResponse()
-        const verificationResp = await fetch('/verify-authentication', {
+        const verificationResp = await fetch('/webauthn/authenticate', {
         method: 'POST',
         headers: {
         'Content-Type': 'application/json',

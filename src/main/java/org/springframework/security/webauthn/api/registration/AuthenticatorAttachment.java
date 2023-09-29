@@ -1,5 +1,10 @@
 package org.springframework.security.webauthn.api.registration;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import org.springframework.security.webauthn.jackson.AuthenticatorAttachmentDeserializer;
+
+@JsonDeserialize(using = AuthenticatorAttachmentDeserializer.class)
 public enum AuthenticatorAttachment {
 
 	/**
@@ -24,5 +29,9 @@ public enum AuthenticatorAttachment {
 
 	AuthenticatorAttachment(String value) {
 		this.value = value;
+	}
+
+	public String getValue() {
+		return this.value;
 	}
 }

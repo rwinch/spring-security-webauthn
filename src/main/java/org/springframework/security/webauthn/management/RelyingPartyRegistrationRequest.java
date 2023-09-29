@@ -4,13 +4,13 @@ import org.springframework.security.webauthn.api.registration.AuthenticatorAttes
 import org.springframework.security.webauthn.api.registration.PublicKeyCredential;
 import org.springframework.security.webauthn.api.registration.PublicKeyCredentialCreationOptions;
 
-public class RegistrationRequest {
+public class RelyingPartyRegistrationRequest {
 
 	private final PublicKeyCredentialCreationOptions options;
 
 	private final PublicKeyCredential<AuthenticatorAttestationResponse> credential;
 
-	public RegistrationRequest(PublicKeyCredentialCreationOptions options, PublicKeyCredential<AuthenticatorAttestationResponse> credential) {
+	public RelyingPartyRegistrationRequest(PublicKeyCredentialCreationOptions options, PublicKeyCredential<AuthenticatorAttestationResponse> credential) {
 		this.options = options;
 		this.credential = credential;
 	}

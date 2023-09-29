@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.skyscreamer.jsonassert.JSONAssert;
+import org.springframework.security.webauthn.api.authentication.AuthenticatorAssertionResponse;
 import org.springframework.security.webauthn.api.authentication.PublicKeyCredentialRequestOptions;
 import org.springframework.security.webauthn.api.core.ArrayBuffer;
 import org.springframework.security.webauthn.api.core.BufferSource;
@@ -164,5 +165,45 @@ class JacksonTests {
   
 """;
 		JSONAssert.assertEquals(expected, actual, false);
+	}
+
+
+	@Test
+	void readPublicKeyCredentialAuthenticatorAssertionResponse() throws Exception {
+		String json = """
+			{
+			   "id": "IquGb208Fffq2cROa1ZxMg",
+			   "rawId": "IquGb208Fffq2cROa1ZxMg",
+			   "response": {
+				 "authenticatorData": "SZYN5YgOjGh0NBcPZHZgW4_krrmihjLHmVzzuoMdl2MdAAAAAA",
+				 "clientDataJSON": "eyJ0eXBlIjoid2ViYXV0aG4uZ2V0IiwiY2hhbGxlbmdlIjoiaDB2Z3dHUWpvQ3pBekRVc216UHBrLUpWSUpSUmduMEw0S1ZTWU5SY0VaYyIsIm9yaWdpbiI6Imh0dHA6Ly9sb2NhbGhvc3Q6ODA4MCIsImNyb3NzT3JpZ2luIjpmYWxzZX0",
+				 "signature": "MEUCIAdfzPAn3voyXynwa0IXk1S0envMY5KP3NEe9aj4B2BuAiEAm_KJhQoWXdvfhbzwACU3NM4ltQe7_Il46qFUwtpuTdg",
+				 "userHandle": "oWJtkJ6vJ_m5b84LB4_K7QKTCTEwLIjCh4tFMCGHO4w"
+			   },
+			   "type": "public-key",
+			   "clientExtensionResults": {},
+			   "authenticatorAttachment": "cross-platform"
+			 }
+		""";
+		PublicKeyCredential<AuthenticatorAssertionResponse> publicKeyCredential = this.mapper.readValue(json, new TypeReference<PublicKeyCredential<AuthenticatorAssertionResponse>>() {
+		});
+
+		DefaultAuthenticationExtensionsClientOutputs clientExtensionResults = new DefaultAuthenticationExtensionsClientOutputs();
+
+		PublicKeyCredential<AuthenticatorAssertionResponse> expected = PublicKeyCredential.builder()
+				.id("IquGb208Fffq2cROa1ZxMg")
+				.rawId(ArrayBuffer.fromBase64("IquGb208Fffq2cROa1ZxMg"))
+				.response(AuthenticatorAssertionResponse.builder()
+						.authenticatorData(ArrayBuffer.fromBase64("SZYN5YgOjGh0NBcPZHZgW4_krrmihjLHmVzzuoMdl2MdAAAAAA"))
+						.clientDataJSON(ArrayBuffer.fromBase64("eyJ0eXBlIjoid2ViYXV0aG4uZ2V0IiwiY2hhbGxlbmdlIjoiaDB2Z3dHUWpvQ3pBekRVc216UHBrLUpWSUpSUmduMEw0S1ZTWU5SY0VaYyIsIm9yaWdpbiI6Imh0dHA6Ly9sb2NhbGhvc3Q6ODA4MCIsImNyb3NzT3JpZ2luIjpmYWxzZX0"))
+						.signature(ArrayBuffer.fromBase64("MEUCIAdfzPAn3voyXynwa0IXk1S0envMY5KP3NEe9aj4B2BuAiEAm_KJhQoWXdvfhbzwACU3NM4ltQe7_Il46qFUwtpuTdg"))
+						.userHandle(ArrayBuffer.fromBase64("oWJtkJ6vJ_m5b84LB4_K7QKTCTEwLIjCh4tFMCGHO4w"))
+						.build())
+				.type(PublicKeyCredentialType.PUBLIC_KEY)
+				.clientExtensionResults(clientExtensionResults)
+				.authenticatorAttachment(AuthenticatorAttachment.CROSS_PLATFORM)
+				.build();
+
+		assertThat(publicKeyCredential).usingRecursiveComparison().isEqualTo(expected);
 	}
 }

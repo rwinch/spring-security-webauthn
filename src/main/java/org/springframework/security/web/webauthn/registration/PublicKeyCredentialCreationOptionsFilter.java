@@ -24,9 +24,13 @@ public class PublicKeyCredentialCreationOptionsFilter extends OncePerRequestFilt
 	// FIXME: consider require post since changes state
 	private RequestMatcher matcher = new AntPathRequestMatcher("/webauthn/registration/options");
 
-	private WebAuthnRelyingPartyOperations manager = new WebAuthnRelyingPartyOperations();
+	private final WebAuthnRelyingPartyOperations rpOperations;
 
 	private ObjectMapper objectMapper = new ObjectMapper();
+
+	public PublicKeyCredentialCreationOptionsFilter(WebAuthnRelyingPartyOperations rpOperations) {
+		this.rpOperations = rpOperations;
+	}
 
 	@Override
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
@@ -36,7 +40,7 @@ public class PublicKeyCredentialCreationOptionsFilter extends OncePerRequestFilt
 		}
 
 		SecurityContext context = SecurityContextHolder.getContext();
-		PublicKeyCredentialCreationOptions options = this.manager.createPublicKeyCredentialCreationOptions(context.getAuthentication());
+		PublicKeyCredentialCreationOptions options = this.rpOperations.createPublicKeyCredentialCreationOptions(context.getAuthentication());
 		this.repository.save(request, response, options);
 		response.setHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE);
 		this.objectMapper.writeValue(response.getWriter(), options);

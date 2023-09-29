@@ -9,22 +9,28 @@ import org.springframework.security.web.DefaultSecurityFilterChain;
 import org.springframework.security.web.authentication.ui.DefaultLoginPageGeneratingFilter;
 import org.springframework.security.web.webauthn.authentication.PublicKeyCredentialRequestOptionsFilter;
 import org.springframework.security.web.webauthn.registration.PublicKeyCredentialCreationOptionsFilter;
+import org.springframework.security.webauthn.management.WebAuthnRelyingPartyOperations;
 
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
 
 	@Bean
-	DefaultSecurityFilterChain springSecurity(HttpSecurity http) throws Exception {
+	DefaultSecurityFilterChain springSecurity(HttpSecurity http, WebAuthnRelyingPartyOperations rpOperations) throws Exception {
 		http
 				.formLogin(Customizer.withDefaults())
 				.authorizeHttpRequests(requests -> requests
 						.anyRequest().authenticated()
 				)
 				// FIXME: create DSL and change the location
-				.addFilterBefore(new PublicKeyCredentialCreationOptionsFilter(), DefaultLoginPageGeneratingFilter.class)
-				.addFilterBefore(new PublicKeyCredentialRequestOptionsFilter(), DefaultLoginPageGeneratingFilter.class);
+				.addFilterBefore(new PublicKeyCredentialCreationOptionsFilter(rpOperations), DefaultLoginPageGeneratingFilter.class)
+				.addFilterBefore(new PublicKeyCredentialRequestOptionsFilter(rpOperations), DefaultLoginPageGeneratingFilter.class);
 		;
 		return http.build();
+	}
+
+	@Bean
+	WebAuthnRelyingPartyOperations webAuthnRelyingPartyOperations() {
+		return new WebAuthnRelyingPartyOperations();
 	}
 }

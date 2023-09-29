@@ -2,8 +2,6 @@ package org.springframework.security.webauthn.management;
 
 import com.yubico.webauthn.*;
 import com.yubico.webauthn.data.ByteArray;
-import com.yubico.webauthn.data.RelyingPartyIdentity;
-import com.yubico.webauthn.data.UserIdentity;
 import com.yubico.webauthn.data.exception.Base64UrlException;
 import com.yubico.webauthn.exception.AssertionFailedException;
 import com.yubico.webauthn.exception.RegistrationFailedException;
@@ -14,32 +12,31 @@ import org.springframework.security.webauthn.api.registration.*;
 
 import java.io.IOException;
 import java.time.Duration;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
 public class WebAuthnRelyingPartyOperations {
+	private final CredentialRepository credentialRepository = new SpringSecurityCredentialRepository();
+
+	private PublicKeyCredentialUserEntityRepository userEntities = new MapPublicKeyCredentialUserEntityRepository();
+
+	private Map<String,RegisteredCredential> base64IdToRegisteredCredential = new HashMap<>();
+
 	PublicKeyCredentialRpEntity rp = PublicKeyCredentialRpEntity.builder()
 			.id("localhost")
-			.name("SimpleWebAuthn Example")
+			.name("Spring Security Relying Party")
 			.build();
 
-	// FIXME: Pass in the host, perhaps pass PublicKeyCredentialUserEntity
+
+	// FIXME: Pass in the host (can have an allow list), perhaps pass PublicKeyCredentialUserEntity
 	public PublicKeyCredentialCreationOptions createPublicKeyCredentialCreationOptions(Authentication authentication) {
 		// FIXME: Remove hard coded values
 		AuthenticatorSelectionCriteria authenticatorSelection = AuthenticatorSelectionCriteria.builder()
 				.userVerification(UserVerificationRequirement.PREFERRED)
 				.residentKey(ResidentKeyRequirement.REQUIRED) // REQUIRED
 				.build();
-		BufferSource challenge = BufferSource.fromBase64("IBQnuY1Z0K1HqBoFWCp2xlJl8-oq_aFIXzyT_F0-0GU");
 
-		BufferSource userId = BufferSource.fromBase64("oWJtkJ6vJ_m5b84LB4_K7QKTCTEwLIjCh4tFMCGHO4w");
-		PublicKeyCredentialUserEntity userEntity = PublicKeyCredentialUserEntity.builder()
-				.displayName("user@localhost")
-				.id(userId)
-				.name("user@localhost")
-				.build();
+
+		PublicKeyCredentialUserEntity userEntity = findOrCreateAndSave(authentication.getName());
 		DefaultAuthenticationExtensionsClientInputs clientInputs = new DefaultAuthenticationExtensionsClientInputs();
 		clientInputs.add(ImmutableAuthenticationExtensionsClientInput.credProps);
 		PublicKeyCredentialCreationOptions options = PublicKeyCredentialCreationOptions.builder()
@@ -47,7 +44,7 @@ public class WebAuthnRelyingPartyOperations {
 				.user(userEntity)
 				.pubKeyCredParams(PublicKeyCredentialParameters.ES256, PublicKeyCredentialParameters.RS256)
 				.authenticatorSelection(authenticatorSelection)
-				.challenge(challenge)
+				.challenge(BufferSource.random())
 				.rp(this.rp)
 				.extensions(clientInputs)
 				.timeout(Duration.ofMinutes(10))
@@ -55,25 +52,50 @@ public class WebAuthnRelyingPartyOperations {
 		return options;
 	}
 
-	public void registerCredential(RegistrationRequest registrationRequest) {
-		com.yubico.webauthn.data.PublicKeyCredentialCreationOptions yubicoOptions = YubicoConverter.createCreationOptions(registrationRequest.getCreationOptions());
+	private PublicKeyCredentialUserEntity findOrCreateAndSave(String username) {
+		final PublicKeyCredentialUserEntity foundUserEntity = this.userEntities.findByUsername(username);
+		if (foundUserEntity != null) {
+			return foundUserEntity;
+		}
+
+		PublicKeyCredentialUserEntity userEntity = PublicKeyCredentialUserEntity.builder()
+					.displayName(username)
+					.id(BufferSource.random())
+					.name(username)
+					.build();
+		this.userEntities.save(username, userEntity);
+		return userEntity;
+	}
+
+	public void registerCredential(RelyingPartyRegistrationRequest relyingPartyRegistrationRequest) {
+		PublicKeyCredential<AuthenticatorAttestationResponse> credential = relyingPartyRegistrationRequest.getCredential();
+		com.yubico.webauthn.data.PublicKeyCredentialCreationOptions yubicoOptions = YubicoConverter.createCreationOptions(relyingPartyRegistrationRequest.getCreationOptions());
 
 		RelyingParty rp = RelyingParty.builder()
 				.identity(yubicoOptions.getRp())
-				.credentialRepository(new InMemoryCredentialRepository())
+				.credentialRepository(this.credentialRepository)
 				.origins(Collections.singleton("http://localhost:8080"))
 				.build();
 		try {
-			rp.finishRegistration(FinishRegistrationOptions.builder()
+			RegistrationResult registrationResult = rp.finishRegistration(FinishRegistrationOptions.builder()
 					.request(yubicoOptions)
-					.response(YubicoConverter.convertPublicKeyCredential(registrationRequest.getCredential()))
+					.response(YubicoConverter.convertPublicKeyCredential(credential))
 					.build());
-			System.out.println("done");
+
+
+
+			RegisteredCredential yubicoCredential = RegisteredCredential.builder()
+					.credentialId(new ByteArray(credential.getRawId().getBytes()))
+					.userHandle(new ByteArray(relyingPartyRegistrationRequest.getCreationOptions().getUser().getId().getBytes()))
+					.publicKeyCose(registrationResult.getPublicKeyCose())
+					.build();
+			this.base64IdToRegisteredCredential.put(yubicoCredential.getCredentialId().getBase64Url(), yubicoCredential);
 		}
 		catch (RegistrationFailedException | Base64UrlException | IOException f) {
 			throw new RuntimeException(f);
 
 		}
+
 
 	}
 
@@ -87,26 +109,25 @@ public class WebAuthnRelyingPartyOperations {
 				.build();
 	}
 
-	public void authenticate(AuthenticationRequest request) {
+	public String authenticate(AuthenticationRequest request) {
 		RelyingParty rp = RelyingParty.builder()
 				.identity(YubicoConverter.rpIdentity(this.rp))
-				.credentialRepository(new InMemoryCredentialRepository())
+				.credentialRepository(this.credentialRepository)
 				.origins(Collections.singleton("http://localhost:8080"))
 				.build();
 
 		try {
-			AssertionResult assertionResult = rp.finishAssertion(FinishAssertionOptions.builder()
-					.request(AssertionRequest.builder()
-						.publicKeyCredentialRequestOptions(YubicoConverter.createCreationOptions(request.getRequestOptions()))
-							.build())
-					.response(null)
-					.build());
+			AssertionResult assertionResult = rp.finishAssertion(YubicoConverter.convertFinish(request));
+			if (assertionResult.isSuccess()) {
+				return assertionResult.getUsername();
+			}
+			throw new RuntimeException("Not successful " + assertionResult);
 		} catch (AssertionFailedException e) {
 			throw new RuntimeException(e);
 		}
 	}
 
-	static class InMemoryCredentialRepository implements CredentialRepository {
+	class SpringSecurityCredentialRepository implements CredentialRepository {
 
 		@Override
 		public Set<com.yubico.webauthn.data.PublicKeyCredentialDescriptor> getCredentialIdsForUsername(String username) {
@@ -115,22 +136,28 @@ public class WebAuthnRelyingPartyOperations {
 
 		@Override
 		public Optional<ByteArray> getUserHandleForUsername(String username) {
-			return Optional.empty();
+			PublicKeyCredentialUserEntity userEntity = WebAuthnRelyingPartyOperations.this.userEntities.findByUsername(username);
+			return Optional.ofNullable(userEntity)
+				.map(PublicKeyCredentialUserEntity::getId)
+				.map(YubicoConverter::convertByteArray);
 		}
 
 		@Override
 		public Optional<String> getUsernameForUserHandle(ByteArray userHandle) {
-			return Optional.empty();
+			BufferSource userId = new BufferSource(userHandle.getBytes());
+			String username = WebAuthnRelyingPartyOperations.this.userEntities.findUsernameByUserEntityId(userId);
+			return Optional.ofNullable(username); // authenticate
 		}
 
 		@Override
 		public Optional<RegisteredCredential> lookup(ByteArray credentialId, ByteArray userHandle) {
-			return Optional.empty();
+			RegisteredCredential registeredCredential = WebAuthnRelyingPartyOperations.this.base64IdToRegisteredCredential.get(credentialId.getBase64Url());
+			return Optional.ofNullable(registeredCredential); // authenticate
 		}
 
 		@Override
 		public Set<RegisteredCredential> lookupAll(ByteArray credentialId) {
-			return Collections.emptySet();
+			return Collections.emptySet(); // registration
 		}
 	}
 }
