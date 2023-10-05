@@ -46,7 +46,7 @@ Error:
 
         // POST the response to the endpoint that calls
         // @simplewebauthn/server -> verifyAuthenticationResponse()
-        const verificationResp = await fetch('/webauthn/authenticate', {
+        const verificationResp = await fetch('/login/webauthn', {
         method: 'POST',
         headers: {
         'Content-Type': 'application/json',
@@ -69,5 +69,6 @@ Error:
       });
   //-->
 </script>
+<a href="/webauthn/register">Register</a> | <a href="/login/webauthn">Authenticate</a> | <a href="/logout">Log Out</a>
 </body>
 </html>

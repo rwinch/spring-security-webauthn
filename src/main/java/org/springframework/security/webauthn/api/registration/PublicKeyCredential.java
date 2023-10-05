@@ -72,10 +72,6 @@ public class PublicKeyCredential<R extends AuthenticatorResponse> {
 		private PublicKeyCredentialBuilder() {
 		}
 
-		public static PublicKeyCredentialBuilder aPublicKeyCredential() {
-			return new PublicKeyCredentialBuilder();
-		}
-
 		public PublicKeyCredentialBuilder id(String id) {
 			this.id = id;
 			return this;

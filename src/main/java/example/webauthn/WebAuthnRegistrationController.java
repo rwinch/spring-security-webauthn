@@ -1,6 +1,13 @@
 package example.webauthn;
 
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
 import org.springframework.security.web.webauthn.authentication.HttpSessionPublicKeyCredentialRequestOptionsRepository;
 import org.springframework.security.web.webauthn.authentication.PublicKeyCredentialRequestOptionsRepository;
 import org.springframework.security.web.webauthn.registration.HttpSessionPublicKeyCredentialCreationOptionsRepository;
@@ -12,7 +19,7 @@ import org.springframework.security.webauthn.api.registration.PublicKeyCredentia
 import org.springframework.security.webauthn.api.registration.PublicKeyCredentialCreationOptions;
 import org.springframework.security.webauthn.management.AuthenticationRequest;
 import org.springframework.security.webauthn.management.RelyingPartyRegistrationRequest;
-import org.springframework.security.webauthn.management.WebAuthnRelyingPartyOperations;
+import org.springframework.security.webauthn.management.YubicoWebAuthnRelyingPartyOperations;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -26,22 +33,25 @@ import java.util.UUID;
 @Controller
 public class WebAuthnRegistrationController {
 
-	final WebAuthnRelyingPartyOperations rpOptions;
+	final YubicoWebAuthnRelyingPartyOperations rpOptions;
+
+	private final UserDetailsService users;
 
 	private PublicKeyCredentialCreationOptionsRepository creationOptionsRepository = new HttpSessionPublicKeyCredentialCreationOptionsRepository();
 
 	private PublicKeyCredentialRequestOptionsRepository requestOptionsRepository = new HttpSessionPublicKeyCredentialRequestOptionsRepository();
 
-	public WebAuthnRegistrationController(WebAuthnRelyingPartyOperations rpOptions) {
+	public WebAuthnRegistrationController(YubicoWebAuthnRelyingPartyOperations rpOptions, UserDetailsService users) {
 		this.rpOptions = rpOptions;
+		this.users = users;
 	}
 
-	@GetMapping("/webauthn/registration")
+	@GetMapping("/webauthn/register")
 	String register() {
-		return "registration";
+		return "register";
 	}
 
-	@GetMapping("/webauthn/authenticate")
+	@GetMapping("/login/webauthn")
 	String authenticate() {
 		return "authenticate";
 	}
@@ -77,8 +87,8 @@ public class WebAuthnRegistrationController {
 	 * @return
 	 * @throws Exception
 	 */
-	@PostMapping("/webauthn/registration")
-	@ResponseBody
+//	@PostMapping("/webauthn/registration")
+//	@ResponseBody
 	Map<String,String> register(HttpServletRequest request, @RequestBody PublicKeyCredential<AuthenticatorAttestationResponse> credentials) throws Exception {
 		PublicKeyCredentialCreationOptions options = this.creationOptionsRepository.load(request);
 		this.rpOptions.registerCredential(new RelyingPartyRegistrationRequest(options, credentials));
@@ -118,20 +128,20 @@ public class WebAuthnRegistrationController {
 	 * @return
 	 * @throws Exception
 	 */
-	@PostMapping("/webauthn/authenticate")
-	@ResponseBody
-	Map<String,String> authenticate(HttpServletRequest request, @RequestBody PublicKeyCredential<AuthenticatorAssertionResponse> publicKey) throws Exception {
+//	@PostMapping("/login/webauthn")
+//	@ResponseBody
+	Map<String,String> authenticate(HttpServletRequest request, HttpServletResponse response, @RequestBody PublicKeyCredential<AuthenticatorAssertionResponse> publicKey) throws Exception {
 		PublicKeyCredentialRequestOptions requestOptions = this.requestOptionsRepository.load(request);
 		String username = this.rpOptions.authenticate(new AuthenticationRequest(requestOptions, publicKey));
+		UserDetails userDetails = this.users.loadUserByUsername(username);
+		UsernamePasswordAuthenticationToken authenticated = UsernamePasswordAuthenticationToken.authenticated(userDetails, userDetails.getPassword(), userDetails.getAuthorities());
+		SecurityContext newContext = SecurityContextHolder.createEmptyContext();
+		newContext.setAuthentication(authenticated);
+		SecurityContextHolder.setContext(newContext);
+
+		new HttpSessionSecurityContextRepository().saveContext(newContext, request, response);
 		System.out.println(username);
 		return Map.of("verified", "true");
-	}
-
-	@GetMapping("/prototype")
-	String prototype(Map<String, String> model) {
-		model.put("credentialId", Base64.getEncoder().encodeToString(UUID.randomUUID().toString().getBytes()));
-		model.put("challenge", Base64.getEncoder().encodeToString(UUID.randomUUID().toString().getBytes()));
-		return "prototype";
 	}
 
 /**

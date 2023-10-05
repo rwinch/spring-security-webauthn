@@ -9,12 +9,15 @@ import org.springframework.security.webauthn.api.authentication.PublicKeyCredent
 import org.springframework.security.webauthn.api.core.ArrayBuffer;
 import org.springframework.security.webauthn.api.core.BufferSource;
 import org.springframework.security.webauthn.api.registration.*;
+import org.springframework.security.webauthn.api.registration.AuthenticatorAttachment;
 import org.springframework.security.webauthn.api.registration.AuthenticatorAttestationResponse;
+import org.springframework.security.webauthn.api.registration.AuthenticatorSelectionCriteria;
 import org.springframework.security.webauthn.api.registration.AuthenticatorTransport;
 import org.springframework.security.webauthn.api.registration.PublicKeyCredential;
 import org.springframework.security.webauthn.api.registration.PublicKeyCredentialCreationOptions;
 import org.springframework.security.webauthn.api.registration.PublicKeyCredentialDescriptor;
 import org.springframework.security.webauthn.api.registration.PublicKeyCredentialParameters;
+import org.springframework.security.webauthn.api.registration.ResidentKeyRequirement;
 import org.springframework.security.webauthn.api.registration.UserVerificationRequirement;
 
 import java.io.IOException;
@@ -33,7 +36,42 @@ final class YubicoConverter {
 				.user(createUser(user))
 				.challenge(new ByteArray(creationOptions.getChallenge().getBytes()))
 				.pubKeyCredParams(YubicoConverter.convertPublicKeyCredential(creationOptions.getPubKeyCredParams()))
+				.authenticatorSelection(convertAuthenticationSelectorCriteria(creationOptions.getAuthenticatorSelection()))
 				.build();
+	}
+
+	private static com.yubico.webauthn.data.AuthenticatorSelectionCriteria convertAuthenticationSelectorCriteria(AuthenticatorSelectionCriteria authenticatorSelection) {
+		if (authenticatorSelection == null) {
+			return null;
+		}
+		return com.yubico.webauthn.data.AuthenticatorSelectionCriteria.builder()
+				.userVerification(convertUserVerivication(authenticatorSelection.getUserVerification()))
+				.authenticatorAttachment(convertAuthenticatorAttachment(authenticatorSelection.getAuthenticatorAttachment()))
+				.residentKey(convertResidentKey(authenticatorSelection.getResidentKey()))
+				.build();
+	}
+
+	private static com.yubico.webauthn.data.ResidentKeyRequirement convertResidentKey(ResidentKeyRequirement residentKey) {
+		if (ResidentKeyRequirement.PREFERRED == residentKey) {
+			return com.yubico.webauthn.data.ResidentKeyRequirement.PREFERRED;
+		}
+		if (ResidentKeyRequirement.DISCOURAGED == residentKey) {
+			return com.yubico.webauthn.data.ResidentKeyRequirement.DISCOURAGED;
+		}
+		if (ResidentKeyRequirement.DISCOURAGED == residentKey) {
+			return com.yubico.webauthn.data.ResidentKeyRequirement.DISCOURAGED;
+		}
+		return null;
+	}
+
+	private static com.yubico.webauthn.data.AuthenticatorAttachment convertAuthenticatorAttachment(AuthenticatorAttachment authenticatorAttachment) {
+		if (AuthenticatorAttachment.PLATFORM == authenticatorAttachment) {
+			return com.yubico.webauthn.data.AuthenticatorAttachment.PLATFORM;
+		}
+		if (AuthenticatorAttachment.CROSS_PLATFORM == authenticatorAttachment) {
+			return com.yubico.webauthn.data.AuthenticatorAttachment.CROSS_PLATFORM;
+		}
+		return null;
 	}
 
 	private static UserIdentity createUser(PublicKeyCredentialUserEntity user) {

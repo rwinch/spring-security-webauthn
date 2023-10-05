@@ -12,7 +12,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.security.web.util.matcher.RequestMatcher;
 import org.springframework.security.webauthn.api.authentication.PublicKeyCredentialRequestOptions;
-import org.springframework.security.webauthn.management.WebAuthnRelyingPartyOperations;
+import org.springframework.security.webauthn.management.YubicoWebAuthnRelyingPartyOperations;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
@@ -20,13 +20,13 @@ import java.io.IOException;
 public class PublicKeyCredentialRequestOptionsFilter extends OncePerRequestFilter {
 	private RequestMatcher matcher = new AntPathRequestMatcher("/webauthn/authenticate/options");
 
-	private final WebAuthnRelyingPartyOperations rpOptions;
+	private final YubicoWebAuthnRelyingPartyOperations rpOptions;
 
 	private PublicKeyCredentialRequestOptionsRepository repository = new HttpSessionPublicKeyCredentialRequestOptionsRepository();
 
 	private final ObjectMapper mapper = new ObjectMapper();
 
-	public PublicKeyCredentialRequestOptionsFilter(WebAuthnRelyingPartyOperations rpOptions) {
+	public PublicKeyCredentialRequestOptionsFilter(YubicoWebAuthnRelyingPartyOperations rpOptions) {
 		this.rpOptions = rpOptions;
 	}
 

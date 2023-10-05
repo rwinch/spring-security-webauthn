@@ -1,0 +1,20 @@
+spring:
+  security:
+    user:
+      password: password
+  ssl:
+    bundle:
+      jks:
+        mybundle:
+          key:
+            alias: "application"
+          keystore:
+            location: "classpath:keystore.p12"
+            password: "password"
+            type: "PKCS12"
+#server:
+#  port: 8443
+#  ssl:
+#    key-store: "classpath:keystore.p12"
+#    key-store-password: "password"
+#    key-password: "password"

@@ -4,16 +4,16 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.skyscreamer.jsonassert.JSONAssert;
+import org.springframework.security.webauthn.api.TestPublicKeyCredentialCreationOptions;
 import org.springframework.security.webauthn.api.authentication.AuthenticatorAssertionResponse;
 import org.springframework.security.webauthn.api.authentication.PublicKeyCredentialRequestOptions;
 import org.springframework.security.webauthn.api.core.ArrayBuffer;
 import org.springframework.security.webauthn.api.core.BufferSource;
 import org.springframework.security.webauthn.api.registration.*;
-import org.springframework.security.webauthn.management.WebAuthnRelyingPartyOperations;
+import org.springframework.security.webauthn.management.YubicoWebAuthnRelyingPartyOperations;
 
 import java.time.Duration;
 import java.util.Arrays;
-import java.util.Base64;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -56,37 +56,10 @@ class JacksonTests {
 				}
 				""";
 
-		AuthenticatorSelectionCriteria authenticatorSelection = AuthenticatorSelectionCriteria.builder()
-				.userVerification(UserVerificationRequirement.PREFERRED)
-				.residentKey(ResidentKeyRequirement.DISCOURAGED)
-				.build();
-		BufferSource challenge = BufferSource.fromBase64("IBQnuY1Z0K1HqBoFWCp2xlJl8-oq_aFIXzyT_F0-0GU");
-		PublicKeyCredentialRpEntity rp = PublicKeyCredentialRpEntity.builder()
-				.id("localhost")
-				.name("SimpleWebAuthn Example")
-				.build();
-		BufferSource userId = BufferSource.fromBase64("oWJtkJ6vJ_m5b84LB4_K7QKTCTEwLIjCh4tFMCGHO4w");
-		PublicKeyCredentialUserEntity userEntity = PublicKeyCredentialUserEntity.builder()
-				.displayName("user@localhost")
-				.id(userId)
-				.name("user@localhost")
-				.build();
-		DefaultAuthenticationExtensionsClientInputs clientInputs = new DefaultAuthenticationExtensionsClientInputs();
-		clientInputs.add(ImmutableAuthenticationExtensionsClientInput.credProps);
-		PublicKeyCredentialCreationOptions options = PublicKeyCredentialCreationOptions.builder()
-				.attestation(AttestationConveyancePreference.NONE)
-				.user(userEntity)
-				.pubKeyCredParams(PublicKeyCredentialParameters.RS256, PublicKeyCredentialParameters.ES256)
-				.authenticatorSelection(authenticatorSelection)
-				.challenge(challenge)
-				.rp(rp)
-				.extensions(clientInputs)
-				.timeout(Duration.ofMillis(60000))
-				.build();
+		PublicKeyCredentialCreationOptions options = TestPublicKeyCredentialCreationOptions.createPublicKeyCredentialCreationOptions()
+			.build();
 
 		String string = this.mapper.writeValueAsString(options);
-
-		System.out.println(string);
 
 		JSONAssert.assertEquals(expected, string, false);
 	}
@@ -144,7 +117,10 @@ class JacksonTests {
 
 	@Test
 	void writeAuthenticationOptions() throws Exception {
-		WebAuthnRelyingPartyOperations relyingPartyOperations = new WebAuthnRelyingPartyOperations();
+		YubicoWebAuthnRelyingPartyOperations relyingPartyOperations = new YubicoWebAuthnRelyingPartyOperations(PublicKeyCredentialRpEntity.builder()
+				.id("localhost")
+				.name("Spring Security Relying Party")
+				.build());
 		PublicKeyCredentialRequestOptions credentialRequestOptions = PublicKeyCredentialRequestOptions.builder()
 				.allowCredentials(Arrays.asList())
 				.challenge(BufferSource.fromBase64("I69THX904Q8ONhCgUgOu2PCQCcEjTDiNmokdbgsAsYU"))

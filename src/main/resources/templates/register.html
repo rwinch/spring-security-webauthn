@@ -32,13 +32,14 @@ Error:
 
     // GET registration options from the endpoint that calls
     // @simplewebauthn/server -> generateRegistrationOptions()
-    const resp = await fetch('/webauthn/registration/options');
+    const resp = await fetch('/webauthn/register/options');
 
     let attResp;
     try {
       // Pass the options to the authenticator and wait for a response
       attResp = await startRegistration(await resp.json());
     } catch (error) {
+      // FIXME: For error handling see https://www.w3.org/TR/webauthn-3/#sctn-op-make-cred
       // Some basic error handling
       if (error.name === 'InvalidStateError') {
         elemError.innerText = 'Error: Authenticator was probably already registered by user';
@@ -51,7 +52,7 @@ Error:
 
     // POST the response to the endpoint that calls
     // @simplewebauthn/server -> verifyRegistrationResponse()
-    const verificationResp = await fetch('/webauthn/registration', {
+    const verificationResp = await fetch('/webauthn/register', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -74,5 +75,6 @@ Error:
   });
   //-->
 </script>
+<a href="/webauthn/register">Register</a> | <a href="/login/webauthn">Authenticate</a> | <a href="/logout">Log Out</a>
 </body>
 </html>
