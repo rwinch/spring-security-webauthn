@@ -8,11 +8,9 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.HttpInputMessage;
 import org.springframework.http.HttpMethod;
-import org.springframework.http.HttpRequest;
 import org.springframework.http.converter.GenericHttpMessageConverter;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.http.server.ServletServerHttpRequest;
-import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.security.web.util.matcher.RequestMatcher;
 import org.springframework.security.webauthn.api.registration.AuthenticatorAttestationResponse;
 import org.springframework.security.webauthn.api.registration.PublicKeyCredential;
@@ -44,6 +42,7 @@ public class WebAuthnRegistrationFilter extends OncePerRequestFilter {
 		}
 		JavaType type = TypeFactory.defaultInstance().constructParametricType(PublicKeyCredential.class, AuthenticatorAttestationResponse.class);
 		HttpInputMessage inputMessage = new ServletServerHttpRequest(request);
+		// FIXME: Read RegistrationRequest(PublicKeyCredential,String label)
 		PublicKeyCredential<AuthenticatorAttestationResponse> credentials = (PublicKeyCredential<AuthenticatorAttestationResponse>) this.converter.read(type, getClass(), inputMessage);
 		PublicKeyCredentialCreationOptions options = this.creationOptionsRepository.load(request);
 		this.rpOptions.registerCredential(new RelyingPartyRegistrationRequest(options, credentials));

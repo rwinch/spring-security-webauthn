@@ -10,6 +10,8 @@ import org.springframework.security.webauthn.api.authentication.PublicKeyCredent
 import org.springframework.security.webauthn.api.core.ArrayBuffer;
 import org.springframework.security.webauthn.api.core.BufferSource;
 import org.springframework.security.webauthn.api.registration.*;
+import org.springframework.security.webauthn.management.MapUserCredentialRepository;
+import org.springframework.security.webauthn.management.UserCredentialRepository;
 import org.springframework.security.webauthn.management.YubicoWebAuthnRelyingPartyOperations;
 
 import java.time.Duration;
@@ -19,6 +21,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 class JacksonTests {
 	private ObjectMapper mapper = new ObjectMapper();
+	private UserCredentialRepository credentials = new MapUserCredentialRepository();
+	
 	@Test
 	void writePublicKeyCredentialCreationOptions() throws Exception {
 		String expected = """
@@ -117,7 +121,7 @@ class JacksonTests {
 
 	@Test
 	void writeAuthenticationOptions() throws Exception {
-		YubicoWebAuthnRelyingPartyOperations relyingPartyOperations = new YubicoWebAuthnRelyingPartyOperations(PublicKeyCredentialRpEntity.builder()
+		YubicoWebAuthnRelyingPartyOperations relyingPartyOperations = new YubicoWebAuthnRelyingPartyOperations(credentials, PublicKeyCredentialRpEntity.builder()
 				.id("localhost")
 				.name("Spring Security Relying Party")
 				.build());

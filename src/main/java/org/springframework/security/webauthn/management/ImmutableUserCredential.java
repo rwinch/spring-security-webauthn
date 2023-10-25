@@ -1,5 +1,7 @@
 package org.springframework.security.webauthn.management;
 
+import java.time.Instant;
+
 import org.springframework.security.webauthn.api.core.ArrayBuffer;
 import org.springframework.security.webauthn.api.core.BufferSource;
 
@@ -17,13 +19,27 @@ public class ImmutableUserCredential implements UserCredential {
 
 	private final OptionalBoolean backupState;
 
-	private ImmutableUserCredential(ArrayBuffer credentialId, BufferSource userEntityUserId, PublicKeyCose publicKeyCose, long signatureCount, OptionalBoolean backupEligible, OptionalBoolean backupState) {
+	private final Instant created;
+
+	private final Instant lastUsed;
+
+	private final String label;
+
+	private ImmutableUserCredential(ArrayBuffer credentialId, BufferSource userEntityUserId,
+			PublicKeyCose publicKeyCose, long signatureCount,
+			OptionalBoolean backupEligible, OptionalBoolean backupState,
+			Instant created,
+			Instant lastUsed,
+			String label) {
 		this.credentialId = credentialId;
 		this.userEntityUserId = userEntityUserId;
 		this.publicKeyCose = publicKeyCose;
 		this.signatureCount = signatureCount;
 		this.backupEligible = backupEligible;
 		this.backupState = backupState;
+		this.created = created;
+		this.lastUsed = lastUsed;
+		this.label = label;
 	}
 
 	@Override
@@ -56,6 +72,18 @@ public class ImmutableUserCredential implements UserCredential {
 		return this.backupState;
 	}
 
+	public Instant getCreated() {
+		return created;
+	}
+
+	public Instant getLastUsed() {
+		return lastUsed;
+	}
+
+	public String getLabel() {
+		return label;
+	}
+
 	@Override
 	public int hashCode() {
 		return this.credentialId.hashCode();
@@ -80,6 +108,9 @@ public class ImmutableUserCredential implements UserCredential {
 		private long signatureCount;
 		private OptionalBoolean backupEligible;
 		private OptionalBoolean backupState;
+		private Instant created = Instant.now();
+		private Instant lastUsed = Instant.now();
+		private String label;
 
 		private ImmutableUserCredentialBuilder() {
 		}
@@ -114,8 +145,24 @@ public class ImmutableUserCredential implements UserCredential {
 			return this;
 		}
 
+		public ImmutableUserCredentialBuilder created(Instant created) {
+			this.created = created;
+			return this;
+		}
+
+		public ImmutableUserCredentialBuilder lastUsed(Instant lastUsed) {
+			this.lastUsed = lastUsed;
+			return this;
+		}
+
+		public ImmutableUserCredentialBuilder label(String label) {
+			this.label = label;
+			return this;
+		}
+
 		public ImmutableUserCredential build() {
-			return new ImmutableUserCredential(this.credentialId, this.userEntityUserId, this.publicKeyCose, this.signatureCount, this.backupEligible, this.backupState);
+			return new ImmutableUserCredential(this.credentialId, this.userEntityUserId, this.publicKeyCose, this.signatureCount, this.backupEligible, this.backupState, this.created, this.lastUsed, this.label);
 		}
 	}
+
 }

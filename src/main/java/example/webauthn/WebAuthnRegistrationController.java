@@ -17,18 +17,14 @@ import org.springframework.security.webauthn.api.authentication.PublicKeyCredent
 import org.springframework.security.webauthn.api.registration.AuthenticatorAttestationResponse;
 import org.springframework.security.webauthn.api.registration.PublicKeyCredential;
 import org.springframework.security.webauthn.api.registration.PublicKeyCredentialCreationOptions;
-import org.springframework.security.webauthn.management.AuthenticationRequest;
-import org.springframework.security.webauthn.management.RelyingPartyRegistrationRequest;
-import org.springframework.security.webauthn.management.YubicoWebAuthnRelyingPartyOperations;
+import org.springframework.security.webauthn.api.registration.PublicKeyCredentialUserEntity;
+import org.springframework.security.webauthn.management.*;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.ResponseBody;
 
-import java.util.Base64;
+import java.security.Principal;
 import java.util.Map;
-import java.util.UUID;
 
 @Controller
 public class WebAuthnRegistrationController {
@@ -37,17 +33,27 @@ public class WebAuthnRegistrationController {
 
 	private final UserDetailsService users;
 
+	private final UserCredentialRepository credentials;
+
+	private final PublicKeyCredentialUserEntityRepository userEntities;
+
 	private PublicKeyCredentialCreationOptionsRepository creationOptionsRepository = new HttpSessionPublicKeyCredentialCreationOptionsRepository();
 
 	private PublicKeyCredentialRequestOptionsRepository requestOptionsRepository = new HttpSessionPublicKeyCredentialRequestOptionsRepository();
 
-	public WebAuthnRegistrationController(YubicoWebAuthnRelyingPartyOperations rpOptions, UserDetailsService users) {
+	public WebAuthnRegistrationController(YubicoWebAuthnRelyingPartyOperations rpOptions, UserDetailsService users, UserCredentialRepository credentials, PublicKeyCredentialUserEntityRepository userEntities) {
 		this.rpOptions = rpOptions;
 		this.users = users;
+		this.credentials = credentials;
+		this.userEntities = userEntities;
 	}
 
 	@GetMapping("/webauthn/register")
-	String register() {
+	String register(Map<String, Object> model, Principal principal) {
+		PublicKeyCredentialUserEntity userEntity = this.userEntities.findByUsername(principal.getName());
+		if (userEntity != null) {
+			model.put("credentials", this.credentials.findByUserId(userEntity.getId()));
+		}
 		return "register";
 	}
 

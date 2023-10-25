@@ -18,12 +18,13 @@ import java.util.Map;
 import static org.assertj.core.api.Assertions.*;
 
 class YubicoWebAuthnRelyingPartyOperationsTests {
+	private UserCredentialRepository credentials = new MapUserCredentialRepository();
 	// AuthenticatorDataFlags.Bitmasks
 	private static byte UP = 0x01;
 	private static byte UV = 0x04;
 	private static byte BS = 0x10;
 
-	YubicoWebAuthnRelyingPartyOperations rpOperations = new YubicoWebAuthnRelyingPartyOperations(PublicKeyCredentialRpEntity.builder()
+	YubicoWebAuthnRelyingPartyOperations rpOperations = new YubicoWebAuthnRelyingPartyOperations(credentials, PublicKeyCredentialRpEntity.builder()
 		.id("localhost")
 		.name("Spring Security Relying Party")
 		.build());
@@ -90,7 +91,7 @@ class YubicoWebAuthnRelyingPartyOperationsTests {
 	 */
 	@Test
 	void registerCredentialWhenClientDataJSONDoesNotMatchHash() {
-		this.rpOperations = new YubicoWebAuthnRelyingPartyOperations(PublicKeyCredentialRpEntity.builder()
+		this.rpOperations = new YubicoWebAuthnRelyingPartyOperations(credentials, PublicKeyCredentialRpEntity.builder()
 				.id("invalid")
 				.name("Spring Security Relying Party")
 				.build());
@@ -187,13 +188,13 @@ class YubicoWebAuthnRelyingPartyOperationsTests {
 		PublicKeyCredentialCreationOptions options = TestPublicKeyCredentialCreationOptions.createPublicKeyCredentialCreationOptions()
 				.pubKeyCredParams(PublicKeyCredentialParameters.RS1)
 				.build();
-		PublicKeyCredential publicKey = TestPublicKeyCredential.createPublicKeyCredential()
+		PublicKeyCredential<AuthenticatorAttestationResponse> publicKey = TestPublicKeyCredential.createPublicKeyCredential()
 				.build();
 		RelyingPartyRegistrationRequest registrationRequest = new RelyingPartyRegistrationRequest(options, publicKey);
 
 		assertThatThrownBy(() -> this.rpOperations.registerCredential(registrationRequest)).hasMessageContaining("Unrequested credential key algorithm");
 	}
-
+/*  */
 	/**
 	 * https://www.w3.org/TR/webauthn-3/#sctn-registering-a-new-credential
 	 *

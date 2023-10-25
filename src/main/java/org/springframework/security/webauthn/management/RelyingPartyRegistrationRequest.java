@@ -10,6 +10,7 @@ public class RelyingPartyRegistrationRequest {
 
 	private final PublicKeyCredential<AuthenticatorAttestationResponse> credential;
 
+
 	public RelyingPartyRegistrationRequest(PublicKeyCredentialCreationOptions options, PublicKeyCredential<AuthenticatorAttestationResponse> credential) {
 		this.options = options;
 		this.credential = credential;

@@ -31,6 +31,6 @@ public class MapUserCredentialRepository implements UserCredentialRepository {
 
 	@Override
 	public List<UserCredential> findByUserId(BufferSource userId) {
-		return Collections.unmodifiableList(this.userEntityIdToUserCredentials.get(userId));
+		return Collections.unmodifiableList(this.userEntityIdToUserCredentials.getOrDefault(userId, Collections.emptyList()));
 	}
 }

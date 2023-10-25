@@ -20,20 +20,26 @@ public class YubicoWebAuthnRelyingPartyOperations implements WebAuthnRelyingPart
 
 	private PublicKeyCredentialUserEntityRepository userEntities = new MapPublicKeyCredentialUserEntityRepository();
 
-	private UserCredentialRepository credentials = new MapUserCredentialRepository();
+	private final UserCredentialRepository credentials;
 
-	private Set<String> allowedOrigins = Collections.singleton("http://localhost:8080");
+	private Set<String> allowedOrigins = Collections.singleton("https://localhost.example:8443");
 
 	private final PublicKeyCredentialRpEntity rp;
 
-	public YubicoWebAuthnRelyingPartyOperations(PublicKeyCredentialRpEntity rpEntity) {
+	public YubicoWebAuthnRelyingPartyOperations(UserCredentialRepository credentials, PublicKeyCredentialRpEntity rpEntity) {
+		this.credentials = credentials;
 		this.rp = rpEntity;
+	}
+
+	public void setUserEntities(PublicKeyCredentialUserEntityRepository userEntities) {
+		this.userEntities = userEntities;
 	}
 
 
 	// FIXME: Pass in the host (can have an allow list), perhaps pass PublicKeyCredentialUserEntity
 	@Override
 	public PublicKeyCredentialCreationOptions createPublicKeyCredentialCreationOptions(Authentication authentication) {
+
 		// FIXME: Remove hard coded values
 		AuthenticatorSelectionCriteria authenticatorSelection = AuthenticatorSelectionCriteria.builder()
 				.userVerification(UserVerificationRequirement.PREFERRED)
@@ -42,6 +48,7 @@ public class YubicoWebAuthnRelyingPartyOperations implements WebAuthnRelyingPart
 
 
 		PublicKeyCredentialUserEntity userEntity = findUserEntityOrCreateAndSave(authentication.getName());
+		List<UserCredential> userCredentials = this.credentials.findByUserId(userEntity.getId());
 		DefaultAuthenticationExtensionsClientInputs clientInputs = new DefaultAuthenticationExtensionsClientInputs();
 		clientInputs.add(ImmutableAuthenticationExtensionsClientInput.credProps);
 		PublicKeyCredentialCreationOptions options = PublicKeyCredentialCreationOptions.builder()
@@ -52,9 +59,18 @@ public class YubicoWebAuthnRelyingPartyOperations implements WebAuthnRelyingPart
 				.challenge(BufferSource.random())
 				.rp(this.rp)
 				.extensions(clientInputs)
+				.excludeCredentials(convertCredentials(userCredentials))
 				.timeout(Duration.ofMinutes(10))
 				.build();
 		return options;
+	}
+
+	private List<PublicKeyCredentialDescriptor> convertCredentials(List<UserCredential> userCredentials) {
+		List result = new ArrayList();
+		for (UserCredential userCredential : userCredentials) {
+			// result.add(PublicKeyCredentialDescriptor.)
+		}
+		return null;
 	}
 
 	private PublicKeyCredentialUserEntity findUserEntityOrCreateAndSave(String username) {
@@ -82,8 +98,6 @@ public class YubicoWebAuthnRelyingPartyOperations implements WebAuthnRelyingPart
 					.request(yubicoOptions)
 					.response(YubicoConverter.convertPublicKeyCredential(credential))
 					.build());
-
-
 
 			ImmutableUserCredential userCredential = ImmutableUserCredential.builder()
 					.credentialId(credential.getRawId())

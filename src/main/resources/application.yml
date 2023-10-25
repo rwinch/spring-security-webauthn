@@ -4,17 +4,15 @@ spring:
       password: password
   ssl:
     bundle:
-      jks:
-        mybundle:
-          key:
-            alias: "application"
+      pem:
+        localhost:
           keystore:
-            location: "classpath:keystore.p12"
-            password: "password"
-            type: "PKCS12"
-#server:
-#  port: 8443
-#  ssl:
-#    key-store: "classpath:keystore.p12"
+            certificate: "classpath:localhost.example.pem"
+            private-key: "classpath:localhost.example-key.pem"
+server:
+  port: 8443
+  ssl:
+    bundle: localhost
+#    key-store: "classpath:localhost-key.pem"
 #    key-store-password: "password"
 #    key-password: "password"

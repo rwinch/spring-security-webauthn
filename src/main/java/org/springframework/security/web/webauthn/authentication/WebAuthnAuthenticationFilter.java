@@ -53,6 +53,7 @@ public class WebAuthnAuthenticationFilter extends AbstractAuthenticationProcessi
 
 	@Override
 	protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authResult) throws IOException, ServletException {
+		// FIXME: create an authenticationsuccesshandler
 		response.getWriter().write("{ \"verified\" : \"true\" }");
 		super.successfulAuthentication(request, response, chain, authResult);
 	}

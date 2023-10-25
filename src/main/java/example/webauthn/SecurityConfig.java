@@ -8,23 +8,27 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.DefaultSecurityFilterChain;
+import org.springframework.security.web.access.intercept.AuthorizationFilter;
 import org.springframework.security.web.access.intercept.FilterSecurityInterceptor;
 import org.springframework.security.web.authentication.ui.DefaultLoginPageGeneratingFilter;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 import org.springframework.security.web.webauthn.authentication.PublicKeyCredentialRequestOptionsFilter;
 import org.springframework.security.web.webauthn.authentication.WebAuthnAuthenticationFilter;
+import org.springframework.security.web.webauthn.registration.DefaultRegistrationPageGeneratingFilter;
 import org.springframework.security.web.webauthn.registration.PublicKeyCredentialCreationOptionsFilter;
 import org.springframework.security.web.webauthn.registration.WebAuthnRegistrationFilter;
 import org.springframework.security.webauthn.api.registration.PublicKeyCredentialRpEntity;
 import org.springframework.security.webauthn.authentication.WebAuthnAuthenticationProvider;
-import org.springframework.security.webauthn.management.YubicoWebAuthnRelyingPartyOperations;
+import org.springframework.security.webauthn.management.*;
 
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
 
 	@Bean
-	DefaultSecurityFilterChain springSecurity(HttpSecurity http, YubicoWebAuthnRelyingPartyOperations rpOperations, UserDetailsService userDetailsService) throws Exception {
+	DefaultSecurityFilterChain springSecurity(HttpSecurity http, YubicoWebAuthnRelyingPartyOperations rpOperations, UserDetailsService userDetailsService, 
+			PublicKeyCredentialUserEntityRepository userEntityRepository,
+			UserCredentialRepository userCredentials) throws Exception {
 		WebAuthnAuthenticationFilter webAuthnAuthnFilter = new WebAuthnAuthenticationFilter();
 		webAuthnAuthnFilter.setAuthenticationManager(new ProviderManager(new WebAuthnAuthenticationProvider(rpOperations, userDetailsService)));
 		http
@@ -35,18 +39,31 @@ public class SecurityConfig {
 				.anyRequest().authenticated()
 			)
 			.addFilterBefore(webAuthnAuthnFilter, BasicAuthenticationFilter.class)
-			.addFilterAfter(new WebAuthnRegistrationFilter(rpOperations), FilterSecurityInterceptor.class)
-			.addFilterBefore(new PublicKeyCredentialCreationOptionsFilter(rpOperations), DefaultLoginPageGeneratingFilter.class)
-			.addFilterBefore(new PublicKeyCredentialRequestOptionsFilter(rpOperations), DefaultLoginPageGeneratingFilter.class);
+			.addFilterAfter(new WebAuthnRegistrationFilter(rpOperations), AuthorizationFilter.class)
+			.addFilterBefore(new PublicKeyCredentialCreationOptionsFilter(rpOperations), AuthorizationFilter.class)
+			.addFilterBefore(new DefaultRegistrationPageGeneratingFilter(userEntityRepository, userCredentials), AuthorizationFilter.class)
+			.addFilterBefore(new PublicKeyCredentialRequestOptionsFilter(rpOperations), AuthorizationFilter.class);
 		;
 		return http.build();
 	}
 
 	@Bean
-	YubicoWebAuthnRelyingPartyOperations webAuthnRelyingPartyOperations() {
-		return new YubicoWebAuthnRelyingPartyOperations(PublicKeyCredentialRpEntity.builder()
-				.id("localhost")
+	MapUserCredentialRepository userCredentialRepository() {
+		return new MapUserCredentialRepository();
+	}
+
+	@Bean
+	PublicKeyCredentialUserEntityRepository userEntityRepository() {
+		return new MapPublicKeyCredentialUserEntityRepository();
+	}
+
+	@Bean
+	YubicoWebAuthnRelyingPartyOperations webAuthnRelyingPartyOperations(UserCredentialRepository credentials, PublicKeyCredentialUserEntityRepository userEntities) {
+		YubicoWebAuthnRelyingPartyOperations result =  new YubicoWebAuthnRelyingPartyOperations(credentials, PublicKeyCredentialRpEntity.builder()
+				.id("localhost.example")
 				.name("Spring Security Relying Party")
 				.build());
+		result.setUserEntities(userEntities);
+		return result;
 	}
 }

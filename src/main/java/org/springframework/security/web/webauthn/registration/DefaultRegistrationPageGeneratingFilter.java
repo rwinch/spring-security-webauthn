@@ -1,4 +1,50 @@
-<!-- --><html xmlns:th="https://www.thymeleaf.org">
+package org.springframework.security.web.webauthn.registration;
+
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.MediaType;
+import org.springframework.security.web.csrf.CsrfToken;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
+import org.springframework.security.web.util.matcher.RequestMatcher;
+import org.springframework.security.webauthn.api.registration.PublicKeyCredentialUserEntity;
+import org.springframework.security.webauthn.management.PublicKeyCredentialUserEntityRepository;
+import org.springframework.security.webauthn.management.UserCredential;
+import org.springframework.security.webauthn.management.UserCredentialRepository;
+import org.springframework.util.MimeType;
+import org.springframework.web.filter.OncePerRequestFilter;
+
+import java.io.IOException;
+import java.util.Collections;
+import java.util.List;
+
+public class DefaultRegistrationPageGeneratingFilter extends OncePerRequestFilter {
+  private RequestMatcher matcher = AntPathRequestMatcher.antMatcher(HttpMethod.GET, "/webauthn/register");
+	private final PublicKeyCredentialUserEntityRepository userEntityRepository;
+
+	private final UserCredentialRepository userCredentials;
+
+	public DefaultRegistrationPageGeneratingFilter(PublicKeyCredentialUserEntityRepository userEntityRepository, UserCredentialRepository userCredentials) {
+		this.userEntityRepository = userEntityRepository;
+		this.userCredentials = userCredentials;
+	}
+
+	@Override
+    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
+        throws ServletException, IOException {
+      if (!this.matcher.matches(request)) {
+        filterChain.doFilter(request, response);
+        return;
+      }
+		CsrfToken csrfToken = (CsrfToken) request.getAttribute(CsrfToken.class.getName());
+		String csrfDataAttr = "data-csrf-token=\""+csrfToken.getToken()+"\" data-csrf-header-name=\""+csrfToken.getHeaderName()+"\"";
+		response.setContentType(MediaType.TEXT_HTML_VALUE);
+		response.getWriter().write("""
+<html>
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
@@ -8,7 +54,10 @@
     <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-/Y6pD6FV/Vv2HJnA6t+vslU6fwYXjCFtcEpHbNJ0lyAFsXTsjBbfaDjzALeQsN6M" crossorigin="anonymous">
     <link href="https://getbootstrap.com/docs/4.0/examples/signin/signin.css" rel="stylesheet" crossorigin="anonymous"/>
     <script src="https://unpkg.com/@simplewebauthn/browser@8.3.1/dist/bundle/index.umd.min.js"></script>
-    <script type="text/javascript" id="registration-script" th:data-csrf-token="${_csrf.token}" th:data-csrf-header-name="${_csrf.headerName}">
+    <script type="text/javascript" id="registration-script" """
+	+ csrfDataAttr +
+	"""
+    >
       <!--
       document.addEventListener("DOMContentLoaded", function(event) {
         setup()
@@ -99,6 +148,22 @@
           <div id="error" class="alert alert-success" role="alert"></div>
         <button id="register" class="btn btn-lg btn-primary btn-block" type="submit">Register</button>
       </form>
+      """
+		+ credentials(request.getRemoteUser()) +
+"""
     </div>
 </body>
 </html>
+				""");
+	}
+
+	private String credentials(String username) {
+		PublicKeyCredentialUserEntity userEntity = this.userEntityRepository.findByUsername(username);List<UserCredential> credentials = userEntity == null ? Collections.emptyList() : this.userCredentials.findByUserId(userEntity.getId());
+
+		String html = "<table>";
+		for (UserCredential credential : credentials) {
+			html += "<tr><td>"+credential.getCredentialId()+"</td></tr>";
+		}
+		return html;
+	}
+}
