@@ -14,6 +14,7 @@ import org.springframework.security.webauthn.api.core.BufferSource;
 import org.springframework.security.webauthn.api.registration.*;
 
 import java.util.Map;
+import java.util.Set;
 
 import static org.assertj.core.api.Assertions.*;
 
@@ -24,10 +25,13 @@ class YubicoWebAuthnRelyingPartyOperationsTests {
 	private static byte UV = 0x04;
 	private static byte BS = 0x10;
 
-	YubicoWebAuthnRelyingPartyOperations rpOperations = new YubicoWebAuthnRelyingPartyOperations(credentials, PublicKeyCredentialRpEntity.builder()
+	YubicoWebAuthnRelyingPartyOperations rpOperations = new YubicoWebAuthnRelyingPartyOperations(this.credentials, PublicKeyCredentialRpEntity.builder()
 		.id("localhost")
 		.name("Spring Security Relying Party")
-		.build());
+		.build(),
+		Set.of("http://localhost:8080"));
+
+	String label = "Phone";
 
 	/**
 	 * https://www.w3.org/TR/webauthn-3/#sctn-registering-a-new-credential
@@ -42,7 +46,7 @@ class YubicoWebAuthnRelyingPartyOperationsTests {
 		responseBldr.clientDataJSON(new ArrayBuffer(Utf8.encode("{\"type\":\"webauthn.INVALID\",\"challenge\":\"IBQnuY1Z0K1HqBoFWCp2xlJl8-oq_aFIXzyT_F0-0GU\",\"origin\":\"http://localhost:8080\",\"crossOrigin\":false}")));
 		PublicKeyCredential publicKey = TestPublicKeyCredential.createPublicKeyCredential(responseBldr.build())
 				.build();
-		RelyingPartyRegistrationRequest registrationRequest = new RelyingPartyRegistrationRequest(options, publicKey);
+		RelyingPartyRegistrationRequest registrationRequest = new RelyingPartyRegistrationRequest(options, new RelyingPartyPublicKey(publicKey, this.label));
 
 		assertThatThrownBy(() -> this.rpOperations.registerCredential(registrationRequest)).hasMessageContaining("webauthn.create");
 	}
@@ -61,7 +65,7 @@ class YubicoWebAuthnRelyingPartyOperationsTests {
 		responseBldr.clientDataJSON(new ArrayBuffer(Utf8.encode("{\"type\":\"webauthn.create\",\"challenge\":\"IBQnuY1Z0K1HqBoFWCp2xlJl8-oq_aFIXzyT_F0-0GU\",\"origin\":\"http://localhost:8080\",\"crossOrigin\":false}")));
 		PublicKeyCredential publicKey = TestPublicKeyCredential.createPublicKeyCredential(responseBldr.build())
 				.build();
-		RelyingPartyRegistrationRequest registrationRequest = new RelyingPartyRegistrationRequest(options, publicKey);
+		RelyingPartyRegistrationRequest registrationRequest = new RelyingPartyRegistrationRequest(options, new RelyingPartyPublicKey(publicKey, this.label));
 
 		assertThatThrownBy(() -> this.rpOperations.registerCredential(registrationRequest)).hasMessageContaining("challenge");
 	}
@@ -79,7 +83,7 @@ class YubicoWebAuthnRelyingPartyOperationsTests {
 		responseBldr.clientDataJSON(new ArrayBuffer(Utf8.encode("{\"type\":\"webauthn.create\",\"challenge\":\"IBQnuY1Z0K1HqBoFWCp2xlJl8-oq_aFIXzyT_F0-0GU\",\"origin\":\"https://example.com\",\"crossOrigin\":false}")));
 		PublicKeyCredential publicKey = TestPublicKeyCredential.createPublicKeyCredential(responseBldr.build())
 				.build();
-		RelyingPartyRegistrationRequest registrationRequest = new RelyingPartyRegistrationRequest(options, publicKey);
+		RelyingPartyRegistrationRequest registrationRequest = new RelyingPartyRegistrationRequest(options, new RelyingPartyPublicKey(publicKey, this.label));
 
 		assertThatThrownBy(() -> this.rpOperations.registerCredential(registrationRequest)).hasMessageContaining("origin");
 	}
@@ -91,17 +95,18 @@ class YubicoWebAuthnRelyingPartyOperationsTests {
 	 */
 	@Test
 	void registerCredentialWhenClientDataJSONDoesNotMatchHash() {
-		this.rpOperations = new YubicoWebAuthnRelyingPartyOperations(credentials, PublicKeyCredentialRpEntity.builder()
+		this.rpOperations = new YubicoWebAuthnRelyingPartyOperations(this.credentials, PublicKeyCredentialRpEntity.builder()
 				.id("invalid")
 				.name("Spring Security Relying Party")
-				.build());
+				.build(),
+				Set.of("http://localhost:8080"));
 		PublicKeyCredentialCreationOptions options = TestPublicKeyCredentialCreationOptions.createPublicKeyCredentialCreationOptions()
 				.rp(PublicKeyCredentialRpEntity.builder().id("invalid").name("Spring Security").build())
 				.build();
 		AuthenticatorAttestationResponse.AuthenticatorAttestationResponseBuilder responseBldr = TestAuthenticatorAttestationResponse.createAuthenticatorAttestationResponse();
 		PublicKeyCredential publicKey = TestPublicKeyCredential.createPublicKeyCredential(responseBldr.build())
 				.build();
-		RelyingPartyRegistrationRequest registrationRequest = new RelyingPartyRegistrationRequest(options, publicKey);
+		RelyingPartyRegistrationRequest registrationRequest = new RelyingPartyRegistrationRequest(options, new RelyingPartyPublicKey(publicKey, this.label));
 
 		assertThatThrownBy(() -> this.rpOperations.registerCredential(registrationRequest)).hasMessageContaining("hash");
 	}
@@ -118,7 +123,7 @@ class YubicoWebAuthnRelyingPartyOperationsTests {
 
 		PublicKeyCredential publicKey = TestPublicKeyCredential.createPublicKeyCredential(setFlag(UP))
 				.build();
-		RelyingPartyRegistrationRequest registrationRequest = new RelyingPartyRegistrationRequest(options, publicKey);
+		RelyingPartyRegistrationRequest registrationRequest = new RelyingPartyRegistrationRequest(options, new RelyingPartyPublicKey(publicKey, this.label));
 
 		assertThatThrownBy(() -> this.rpOperations.registerCredential(registrationRequest)).hasMessageContaining("User Presence");
 	}
@@ -137,7 +142,7 @@ class YubicoWebAuthnRelyingPartyOperationsTests {
 				.build();
 		PublicKeyCredential publicKey = TestPublicKeyCredential.createPublicKeyCredential(setFlag(UV))
 				.build();
-		RelyingPartyRegistrationRequest registrationRequest = new RelyingPartyRegistrationRequest(options, publicKey);
+		RelyingPartyRegistrationRequest registrationRequest = new RelyingPartyRegistrationRequest(options, new RelyingPartyPublicKey(publicKey, this.label));
 
 		assertThatThrownBy(() -> this.rpOperations.registerCredential(registrationRequest)).hasMessageContaining("User Verification is required");
 	}
@@ -153,7 +158,7 @@ class YubicoWebAuthnRelyingPartyOperationsTests {
 				.build();
 		PublicKeyCredential publicKey = TestPublicKeyCredential.createPublicKeyCredential(setFlag(BS))
 				.build();
-		RelyingPartyRegistrationRequest registrationRequest = new RelyingPartyRegistrationRequest(options, publicKey);
+		RelyingPartyRegistrationRequest registrationRequest = new RelyingPartyRegistrationRequest(options, new RelyingPartyPublicKey(publicKey, this.label));
 
 		assertThatThrownBy(() -> this.rpOperations.registerCredential(registrationRequest)).hasMessageContaining("Flag combination is invalid");
 	}
@@ -190,7 +195,7 @@ class YubicoWebAuthnRelyingPartyOperationsTests {
 				.build();
 		PublicKeyCredential<AuthenticatorAttestationResponse> publicKey = TestPublicKeyCredential.createPublicKeyCredential()
 				.build();
-		RelyingPartyRegistrationRequest registrationRequest = new RelyingPartyRegistrationRequest(options, publicKey);
+		RelyingPartyRegistrationRequest registrationRequest = new RelyingPartyRegistrationRequest(options, new RelyingPartyPublicKey(publicKey, this.label));
 
 		assertThatThrownBy(() -> this.rpOperations.registerCredential(registrationRequest)).hasMessageContaining("Unrequested credential key algorithm");
 	}
@@ -221,7 +226,7 @@ class YubicoWebAuthnRelyingPartyOperationsTests {
 				.build();
 		PublicKeyCredential publicKey = TestPublicKeyCredential.createPublicKeyCredential(setFmt("packed"))
 				.build();
-		RelyingPartyRegistrationRequest registrationRequest = new RelyingPartyRegistrationRequest(options, publicKey);
+		RelyingPartyRegistrationRequest registrationRequest = new RelyingPartyRegistrationRequest(options, new RelyingPartyPublicKey(publicKey, this.label));
 
 		assertThatThrownBy(() -> this.rpOperations.registerCredential(registrationRequest)).hasMessageContaining("Flag combination is invalid");
 	}

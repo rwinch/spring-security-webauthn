@@ -95,11 +95,11 @@ public class WebAuthnRegistrationController {
 	 */
 //	@PostMapping("/webauthn/registration")
 //	@ResponseBody
-	Map<String,String> register(HttpServletRequest request, @RequestBody PublicKeyCredential<AuthenticatorAttestationResponse> credentials) throws Exception {
-		PublicKeyCredentialCreationOptions options = this.creationOptionsRepository.load(request);
-		this.rpOptions.registerCredential(new RelyingPartyRegistrationRequest(options, credentials));
-		return Map.of("verified", "true");
-	}
+//	Map<String,String> register(HttpServletRequest request, @RequestBody PublicKeyCredential<AuthenticatorAttestationResponse> credentials) throws Exception {
+//		PublicKeyCredentialCreationOptions options = this.creationOptionsRepository.load(request);
+//		this.rpOptions.registerCredential(new RelyingPartyRegistrationRequest(options, credentials));
+//		return Map.of("verified", "true");
+//	}
 
 	/**
 	 * {

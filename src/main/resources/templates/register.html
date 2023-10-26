@@ -64,13 +64,21 @@
 
             // POST the response to the endpoint that calls
             // @simplewebauthn/server -> verifyRegistrationResponse()
+            const registrationRequest = {
+              "publicKey": {
+                "credential": attResp,
+                "label": "Rob",
+              }
+            }
+            const registrationRequestJSON = JSON.stringify(registrationRequest, null, 2)
+            console.log(registrationRequestJSON)
             const verificationResp = await fetch('/webauthn/register', {
               method: 'POST',
               headers: {
                 'Content-Type': 'application/json',
                 [csrfHeaderName]: csrfToken,
               },
-              body: JSON.stringify(attResp),
+              body: registrationRequestJSON,
             });
 
             // Wait for the results of verification

@@ -1,7 +1,5 @@
 package org.springframework.security.web.webauthn.registration;
 
-import com.fasterxml.jackson.databind.JavaType;
-import com.fasterxml.jackson.databind.type.TypeFactory;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -12,9 +10,8 @@ import org.springframework.http.converter.GenericHttpMessageConverter;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.http.server.ServletServerHttpRequest;
 import org.springframework.security.web.util.matcher.RequestMatcher;
-import org.springframework.security.webauthn.api.registration.AuthenticatorAttestationResponse;
-import org.springframework.security.webauthn.api.registration.PublicKeyCredential;
 import org.springframework.security.webauthn.api.registration.PublicKeyCredentialCreationOptions;
+import org.springframework.security.webauthn.management.RelyingPartyPublicKey;
 import org.springframework.security.webauthn.management.RelyingPartyRegistrationRequest;
 import org.springframework.security.webauthn.management.WebAuthnRelyingPartyOperations;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -40,12 +37,24 @@ public class WebAuthnRegistrationFilter extends OncePerRequestFilter {
 			filterChain.doFilter(request, response);
 			return;
 		}
-		JavaType type = TypeFactory.defaultInstance().constructParametricType(PublicKeyCredential.class, AuthenticatorAttestationResponse.class);
 		HttpInputMessage inputMessage = new ServletServerHttpRequest(request);
 		// FIXME: Read RegistrationRequest(PublicKeyCredential,String label)
-		PublicKeyCredential<AuthenticatorAttestationResponse> credentials = (PublicKeyCredential<AuthenticatorAttestationResponse>) this.converter.read(type, getClass(), inputMessage);
+		RelyingPartyRequest relyingPartyRequest = (RelyingPartyRequest) this.converter.read(RelyingPartyRequest.class, getClass(), inputMessage);
 		PublicKeyCredentialCreationOptions options = this.creationOptionsRepository.load(request);
-		this.rpOptions.registerCredential(new RelyingPartyRegistrationRequest(options, credentials));
+		this.rpOptions.registerCredential(new RelyingPartyRegistrationRequest(options, relyingPartyRequest.getPublicKey()));
 		response.getWriter().write("{ \"verified\": \"true\" }");
+	}
+
+	// FIXME: make private
+	public static class RelyingPartyRequest {
+		private RelyingPartyPublicKey publicKey;
+
+		public RelyingPartyPublicKey getPublicKey() {
+			return this.publicKey;
+		}
+
+		public void setPublicKey(RelyingPartyPublicKey publicKey) {
+			this.publicKey = publicKey;
+		}
 	}
 }

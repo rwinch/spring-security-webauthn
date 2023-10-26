@@ -22,13 +22,14 @@ public class YubicoWebAuthnRelyingPartyOperations implements WebAuthnRelyingPart
 
 	private final UserCredentialRepository credentials;
 
-	private Set<String> allowedOrigins = Collections.singleton("https://localhost.example:8443");
+	private final Set<String> allowedOrigins;
 
 	private final PublicKeyCredentialRpEntity rp;
 
-	public YubicoWebAuthnRelyingPartyOperations(UserCredentialRepository credentials, PublicKeyCredentialRpEntity rpEntity) {
+	public YubicoWebAuthnRelyingPartyOperations(UserCredentialRepository credentials, PublicKeyCredentialRpEntity rpEntity, Set<String> allowedOrigins) {
 		this.credentials = credentials;
 		this.rp = rpEntity;
+		this.allowedOrigins = allowedOrigins;
 	}
 
 	public void setUserEntities(PublicKeyCredentialUserEntityRepository userEntities) {
@@ -90,7 +91,8 @@ public class YubicoWebAuthnRelyingPartyOperations implements WebAuthnRelyingPart
 
 	@Override
 	public void registerCredential(RelyingPartyRegistrationRequest relyingPartyRegistrationRequest) {
-		PublicKeyCredential<AuthenticatorAttestationResponse> credential = relyingPartyRegistrationRequest.getCredential();
+		RelyingPartyPublicKey registrationRequest = relyingPartyRegistrationRequest.getPublicKey();
+		PublicKeyCredential<AuthenticatorAttestationResponse> credential = registrationRequest.getCredential();
 		com.yubico.webauthn.data.PublicKeyCredentialCreationOptions yubicoOptions = YubicoConverter.createCreationOptions(relyingPartyRegistrationRequest.getCreationOptions());
 
 		try {
@@ -100,6 +102,7 @@ public class YubicoWebAuthnRelyingPartyOperations implements WebAuthnRelyingPart
 					.build());
 
 			ImmutableUserCredential userCredential = ImmutableUserCredential.builder()
+					.label(registrationRequest.getLabel())
 					.credentialId(credential.getRawId())
 					.userEntityUserId(relyingPartyRegistrationRequest.getCreationOptions().getUser().getId())
 					.publicKeyCose(new ImmutablePublicKeyCose(registrationResult.getPublicKeyCose().getBytes()))

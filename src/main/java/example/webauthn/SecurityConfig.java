@@ -21,12 +21,14 @@ import org.springframework.security.webauthn.api.registration.PublicKeyCredentia
 import org.springframework.security.webauthn.authentication.WebAuthnAuthenticationProvider;
 import org.springframework.security.webauthn.management.*;
 
+import java.util.Set;
+
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
 
 	@Bean
-	DefaultSecurityFilterChain springSecurity(HttpSecurity http, YubicoWebAuthnRelyingPartyOperations rpOperations, UserDetailsService userDetailsService, 
+	DefaultSecurityFilterChain springSecurity(HttpSecurity http, YubicoWebAuthnRelyingPartyOperations rpOperations, UserDetailsService userDetailsService,
 			PublicKeyCredentialUserEntityRepository userEntityRepository,
 			UserCredentialRepository userCredentials) throws Exception {
 		WebAuthnAuthenticationFilter webAuthnAuthnFilter = new WebAuthnAuthenticationFilter();
@@ -41,7 +43,7 @@ public class SecurityConfig {
 			.addFilterBefore(webAuthnAuthnFilter, BasicAuthenticationFilter.class)
 			.addFilterAfter(new WebAuthnRegistrationFilter(rpOperations), AuthorizationFilter.class)
 			.addFilterBefore(new PublicKeyCredentialCreationOptionsFilter(rpOperations), AuthorizationFilter.class)
-			.addFilterBefore(new DefaultRegistrationPageGeneratingFilter(userEntityRepository, userCredentials), AuthorizationFilter.class)
+//			.addFilterBefore(new DefaultRegistrationPageGeneratingFilter(userEntityRepository, userCredentials), AuthorizationFilter.class)
 			.addFilterBefore(new PublicKeyCredentialRequestOptionsFilter(rpOperations), AuthorizationFilter.class);
 		;
 		return http.build();
@@ -62,7 +64,8 @@ public class SecurityConfig {
 		YubicoWebAuthnRelyingPartyOperations result =  new YubicoWebAuthnRelyingPartyOperations(credentials, PublicKeyCredentialRpEntity.builder()
 				.id("localhost.example")
 				.name("Spring Security Relying Party")
-				.build());
+				.build(),
+				Set.of("https://localhost.example:8443"));
 		result.setUserEntities(userEntities);
 		return result;
 	}
