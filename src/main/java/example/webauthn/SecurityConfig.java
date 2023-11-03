@@ -41,9 +41,9 @@ public class SecurityConfig {
 				.anyRequest().authenticated()
 			)
 			.addFilterBefore(webAuthnAuthnFilter, BasicAuthenticationFilter.class)
-			.addFilterAfter(new WebAuthnRegistrationFilter(rpOperations), AuthorizationFilter.class)
+			.addFilterAfter(new WebAuthnRegistrationFilter(userCredentials, rpOperations), AuthorizationFilter.class)
 			.addFilterBefore(new PublicKeyCredentialCreationOptionsFilter(rpOperations), AuthorizationFilter.class)
-//			.addFilterBefore(new DefaultRegistrationPageGeneratingFilter(userEntityRepository, userCredentials), AuthorizationFilter.class)
+			.addFilterAfter(new DefaultRegistrationPageGeneratingFilter(userEntityRepository, userCredentials), AuthorizationFilter.class)
 			.addFilterBefore(new PublicKeyCredentialRequestOptionsFilter(rpOperations), AuthorizationFilter.class);
 		;
 		return http.build();
@@ -60,8 +60,8 @@ public class SecurityConfig {
 	}
 
 	@Bean
-	YubicoWebAuthnRelyingPartyOperations webAuthnRelyingPartyOperations(UserCredentialRepository credentials, PublicKeyCredentialUserEntityRepository userEntities) {
-		YubicoWebAuthnRelyingPartyOperations result =  new YubicoWebAuthnRelyingPartyOperations(credentials, PublicKeyCredentialRpEntity.builder()
+	YubicoWebAuthnRelyingPartyOperations webAuthnRelyingPartyOperations(PublicKeyCredentialUserEntityRepository userEntities) {
+		YubicoWebAuthnRelyingPartyOperations result =  new YubicoWebAuthnRelyingPartyOperations(this.userCredentialRepository(), PublicKeyCredentialRpEntity.builder()
 				.id("localhost.example")
 				.name("Spring Security Relying Party")
 				.build(),

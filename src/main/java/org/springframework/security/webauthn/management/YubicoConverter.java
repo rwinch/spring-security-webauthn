@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.yubico.webauthn.AssertionRequest;
 import com.yubico.webauthn.FinishAssertionOptions;
 import com.yubico.webauthn.data.*;
+import com.yubico.webauthn.data.AttestationConveyancePreference;
 import com.yubico.webauthn.data.exception.Base64UrlException;
 import org.springframework.security.webauthn.api.authentication.PublicKeyCredentialRequestOptions;
 import org.springframework.security.webauthn.api.core.ArrayBuffer;
@@ -37,7 +38,24 @@ final class YubicoConverter {
 				.challenge(new ByteArray(creationOptions.getChallenge().getBytes()))
 				.pubKeyCredParams(YubicoConverter.convertPublicKeyCredential(creationOptions.getPubKeyCredParams()))
 				.authenticatorSelection(convertAuthenticationSelectorCriteria(creationOptions.getAuthenticatorSelection()))
+				.attestation(YubicoConverter.convertAttestation(creationOptions.getAttestation()))
 				.build();
+	}
+
+	private static AttestationConveyancePreference convertAttestation(org.springframework.security.webauthn.api.registration.AttestationConveyancePreference attestation) {
+		if (attestation == org.springframework.security.webauthn.api.registration.AttestationConveyancePreference.DIRECT) {
+			return AttestationConveyancePreference.DIRECT;
+		}
+		if (attestation == org.springframework.security.webauthn.api.registration.AttestationConveyancePreference.ENTERPRISE) {
+			return AttestationConveyancePreference.ENTERPRISE;
+		}
+		if (attestation == org.springframework.security.webauthn.api.registration.AttestationConveyancePreference.INDIRECT) {
+			return AttestationConveyancePreference.INDIRECT;
+		}
+		if (attestation == org.springframework.security.webauthn.api.registration.AttestationConveyancePreference.NONE) {
+			return AttestationConveyancePreference.NONE;
+		}
+		return null;
 	}
 
 	private static com.yubico.webauthn.data.AuthenticatorSelectionCriteria convertAuthenticationSelectorCriteria(AuthenticatorSelectionCriteria authenticatorSelection) {

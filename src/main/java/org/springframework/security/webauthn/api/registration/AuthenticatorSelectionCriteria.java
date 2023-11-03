@@ -28,9 +28,10 @@ public class AuthenticatorSelectionCriteria {
 		return this.userVerification;
 	}
 
-	public boolean isRequireResidentKey() {
-		return ResidentKeyRequirement.REQUIRED.equals(getResidentKey());
-	}
+	// FIXME: Do we need this for legacy or is it breaking the fmt
+//	public boolean isRequireResidentKey() {
+//		return ResidentKeyRequirement.REQUIRED.equals(getResidentKey());
+//	}
 
 	public static AuthenticatorSelectionCriteriaBuilder builder() {
 		return new AuthenticatorSelectionCriteriaBuilder();

@@ -8,7 +8,7 @@ public interface WebAuthnRelyingPartyOperations {
 	// FIXME: Pass in the host (can have an allow list), perhaps pass PublicKeyCredentialUserEntity
 	PublicKeyCredentialCreationOptions createPublicKeyCredentialCreationOptions(Authentication authentication);
 
-	void registerCredential(RelyingPartyRegistrationRequest relyingPartyRegistrationRequest);
+	UserCredential registerCredential(RelyingPartyRegistrationRequest relyingPartyRegistrationRequest);
 
 	PublicKeyCredentialRequestOptions createCredentialRequestOptions(Authentication authentication);
 

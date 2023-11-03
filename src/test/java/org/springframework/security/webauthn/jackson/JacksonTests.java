@@ -15,6 +15,7 @@ import org.springframework.security.webauthn.api.core.BufferSource;
 import org.springframework.security.webauthn.api.registration.*;
 import org.springframework.security.webauthn.management.*;
 
+import java.security.PublicKey;
 import java.time.Duration;
 import java.util.Arrays;
 import java.util.Set;
@@ -49,6 +50,67 @@ class JacksonTests {
 			   "authenticatorAttachment": "cross-platform"
 			 }
 		""";
+
+	@Test
+	void readAuthenticationExtensionsClientOutputs() throws Exception {
+		String json = """
+			{
+				"credProps": {
+					"rk": false
+				}
+			}
+			""";
+		DefaultAuthenticationExtensionsClientOutputs clientExtensionResults = new DefaultAuthenticationExtensionsClientOutputs();
+		clientExtensionResults.add(new CredentialPropertiesOutput(false));
+
+		AuthenticationExtensionsClientOutputs outputs = this.mapper.readValue(json, AuthenticationExtensionsClientOutputs.class);
+		assertThat(outputs).usingRecursiveComparison().isEqualTo(clientExtensionResults);
+	}
+
+	@Test
+	void readAuthenticationExtensionsClientOutputsWhenFieldAfter() throws Exception {
+		String json = """
+   			{
+				"clientOutputs": {
+					"credProps": {
+						"rk": false
+					}
+				},
+				"label": "Cell Phone"
+			}
+			""";
+		DefaultAuthenticationExtensionsClientOutputs clientExtensionResults = new DefaultAuthenticationExtensionsClientOutputs();
+		clientExtensionResults.add(new CredentialPropertiesOutput(false));
+
+		ClassWithOutputsAndAnotherField expected = new ClassWithOutputsAndAnotherField();
+		expected.setClientOutputs(clientExtensionResults);
+		expected.setLabel("Cell Phone");
+
+		ClassWithOutputsAndAnotherField actual = this.mapper.readValue(json, ClassWithOutputsAndAnotherField.class);
+		assertThat(actual).usingRecursiveComparison().isEqualTo(expected);
+	}
+
+	public static class ClassWithOutputsAndAnotherField {
+		private String label;
+
+		private AuthenticationExtensionsClientOutputs clientOutputs;
+
+		public String getLabel() {
+			return this.label;
+		}
+
+		public void setLabel(String label) {
+			this.label = label;
+		}
+
+		public AuthenticationExtensionsClientOutputs getClientOutputs() {
+			return this.clientOutputs;
+		}
+
+		public void setClientOutputs(AuthenticationExtensionsClientOutputs clientOutputs) {
+			this.clientOutputs = clientOutputs;
+		}
+	}
 
 	@Test
 	void writePublicKeyCredentialCreationOptions() throws Exception {
@@ -96,6 +158,16 @@ class JacksonTests {
 	}
 
 	@Test
+	void writeAuthenticatorAttachment() throws Exception {
+		AuthenticatorAttachment attachment = AuthenticatorAttachment.PLATFORM;
+
+
+		String string = this.mapper.writeValueAsString(attachment);
+
+		assertThat(string).isEqualTo("\"platform\"");
+	}
+
+	@Test
 	void readPublicKeyCredentialAuthenticatorAttestationResponse() throws Exception {
 
 		PublicKeyCredential<AuthenticatorAttestationResponse> publicKeyCredential = this.mapper.readValue(PUBLIC_KEY_JSON, new TypeReference<PublicKeyCredential<AuthenticatorAttestationResponse>>() {
@@ -117,6 +189,7 @@ class JacksonTests {
 						.build())
 				.type(PublicKeyCredentialType.PUBLIC_KEY)
 				.clientExtensionResults(clientExtensionResults)
+				.authenticatorAttachment(AuthenticatorAttachment.CROSS_PLATFORM)
 				.build();
 
 		assertThat(publicKeyCredential).usingRecursiveComparison().isEqualTo(expected);
@@ -124,7 +197,7 @@ class JacksonTests {
 
 	@Test
 	void writeAuthenticationOptions() throws Exception {
-		YubicoWebAuthnRelyingPartyOperations relyingPartyOperations = new YubicoWebAuthnRelyingPartyOperations(credentials, PublicKeyCredentialRpEntity.builder()
+		YubicoWebAuthnRelyingPartyOperations relyingPartyOperations = new YubicoWebAuthnRelyingPartyOperations(this.credentials, PublicKeyCredentialRpEntity.builder()
 				.id("localhost")
 				.name("Spring Security Relying Party")
 				.build(),
@@ -200,36 +273,14 @@ class JacksonTests {
 					"credential": %s
 				}
 			}
-			""".formatted("""
-			{
-			   "id": "AX6nVVERrH6opMafUGn3Z9EyNEy6cftfBKV_2YxYl1jdW8CSJxMKGXFV3bnrKTiMSJeInkG7C6B2lPt8E5i3KaM",
-			   "rawId": "AX6nVVERrH6opMafUGn3Z9EyNEy6cftfBKV_2YxYl1jdW8CSJxMKGXFV3bnrKTiMSJeInkG7C6B2lPt8E5i3KaM",
-			   "response": {
-				 "attestationObject": "o2NmbXRkbm9uZWdhdHRTdG10oGhhdXRoRGF0YVjFSZYN5YgOjGh0NBcPZHZgW4_krrmihjLHmVzzuoMdl2NFAAAAAAAAAAAAAAAAAAAAAAAAAAAAQQF-p1VREax-qKTGn1Bp92fRMjRMunH7XwSlf9mMWJdY3VvAkicTChlxVd256yk4jEiXiJ5BuwugdpT7fBOYtymjpQECAyYgASFYIJK-2epPEw0ujHN-gvVp2Hp3ef8CzU3zqwO5ylx8L2OsIlggK5x5OlTGEPxLS-85TAABum4aqVK4CSWJ7LYDdkjuBLk",
-				 "clientDataJSON": "eyJ0eXBlIjoid2ViYXV0aG4uY3JlYXRlIiwiY2hhbGxlbmdlIjoiSUJRbnVZMVowSzFIcUJvRldDcDJ4bEpsOC1vcV9hRklYenlUX0YwLTBHVSIsIm9yaWdpbiI6Imh0dHA6Ly9sb2NhbGhvc3Q6ODA4MCIsImNyb3NzT3JpZ2luIjpmYWxzZX0",
-				 "transports": [
-				   "hybrid",
-				   "internal"
-				 ],
-				 "publicKeyAlgorithm": -7,
-				 "publicKey": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEkr7Z6k8TDS6Mc36C9WnYend5_wLNTfOrA7nKXHwvY6wrnHk6VMYQ_EtL7zlMAAG6bhqpUrgJJYnstgN2SO4EuQ",
-				 "authenticatorData": "SZYN5YgOjGh0NBcPZHZgW4_krrmihjLHmVzzuoMdl2NFAAAAAAAAAAAAAAAAAAAAAAAAAAAAQQF-p1VREax-qKTGn1Bp92fRMjRMunH7XwSlf9mMWJdY3VvAkicTChlxVd256yk4jEiXiJ5BuwugdpT7fBOYtymjpQECAyYgASFYIJK-2epPEw0ujHN-gvVp2Hp3ef8CzU3zqwO5ylx8L2OsIlggK5x5OlTGEPxLS-85TAABum4aqVK4CSWJ7LYDdkjuBLk"
-			   },
-			   "type": "public-key",
-			   "clientExtensionResults": {
-				 "credProps": {
-				   "rk": false
-				 }
-			   }
-			 }
-		""");
+			""".formatted(PUBLIC_KEY_JSON);
 		WebAuthnRegistrationFilter.RelyingPartyRequest registrationRequest = this.mapper.readValue(json, WebAuthnRegistrationFilter.RelyingPartyRequest.class);
 
 
 		DefaultAuthenticationExtensionsClientOutputs clientExtensionResults = new DefaultAuthenticationExtensionsClientOutputs();
 		clientExtensionResults.add(new CredentialPropertiesOutput(false));
 
-		PublicKeyCredential<AuthenticatorAttestationResponse> expected = PublicKeyCredential.builder()
+		PublicKeyCredential<AuthenticatorAttestationResponse> credential = PublicKeyCredential.builder()
 				.id("AX6nVVERrH6opMafUGn3Z9EyNEy6cftfBKV_2YxYl1jdW8CSJxMKGXFV3bnrKTiMSJeInkG7C6B2lPt8E5i3KaM")
 				.rawId(ArrayBuffer.fromBase64("AX6nVVERrH6opMafUGn3Z9EyNEy6cftfBKV_2YxYl1jdW8CSJxMKGXFV3bnrKTiMSJeInkG7C6B2lPt8E5i3KaM"))
 				.response(AuthenticatorAttestationResponse.builder()
@@ -242,39 +293,12 @@ class JacksonTests {
 						.build())
 				.type(PublicKeyCredentialType.PUBLIC_KEY)
 				.clientExtensionResults(clientExtensionResults)
+				.authenticatorAttachment(AuthenticatorAttachment.CROSS_PLATFORM)
 				.build();
 
-		assertThat(registrationRequest).usingRecursiveComparison().isEqualTo(new Body(new PublicKey(expected, "Cell Phone")));
+		WebAuthnRegistrationFilter.RelyingPartyRequest expected = new WebAuthnRegistrationFilter.RelyingPartyRequest();
+		expected.setPublicKey(new RelyingPartyPublicKey(credential, "Cell Phone"));
+		assertThat(registrationRequest).usingRecursiveComparison().isEqualTo(expected);
 	}
 
-	static class Body {
-		private final PublicKey publicKey;
-
-		@JsonCreator
-		public Body(@JsonProperty("publicKey") PublicKey publicKey) {
-			this.publicKey = publicKey;
-		}
-
-		public PublicKey getPublicKey() {
-			return this.publicKey;
-		}
-	}
-	static class PublicKey {
-		private final PublicKeyCredential<AuthenticatorAttestationResponse> credential;
-		private final String label;
-
-		@JsonCreator
-		public PublicKey(@JsonProperty("credential") PublicKeyCredential<AuthenticatorAttestationResponse> credential, @JsonProperty("label") String label) {
-			this.credential = credential;
-			this.label = label;
-		}
-
-		public PublicKeyCredential<AuthenticatorAttestationResponse> getCredential() {
-			return this.credential;
-		}
-
-		public String getLabel() {
-			return this.label;
-		}
-	}
 }

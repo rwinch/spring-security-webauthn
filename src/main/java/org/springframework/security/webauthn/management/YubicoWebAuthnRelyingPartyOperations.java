@@ -1,6 +1,7 @@
 package org.springframework.security.webauthn.management;
 
 import com.yubico.webauthn.*;
+import com.yubico.webauthn.attestation.AttestationTrustSource;
 import com.yubico.webauthn.data.ByteArray;
 import com.yubico.webauthn.data.exception.Base64UrlException;
 import com.yubico.webauthn.exception.AssertionFailedException;
@@ -12,6 +13,7 @@ import org.springframework.security.webauthn.api.core.BufferSource;
 import org.springframework.security.webauthn.api.registration.*;
 
 import java.io.IOException;
+import java.security.cert.X509Certificate;
 import java.time.Duration;
 import java.util.*;
 
@@ -20,14 +22,14 @@ public class YubicoWebAuthnRelyingPartyOperations implements WebAuthnRelyingPart
 
 	private PublicKeyCredentialUserEntityRepository userEntities = new MapPublicKeyCredentialUserEntityRepository();
 
-	private final UserCredentialRepository credentials;
+	private final UserCredentialRepository userCredentials;
 
 	private final Set<String> allowedOrigins;
 
 	private final PublicKeyCredentialRpEntity rp;
 
-	public YubicoWebAuthnRelyingPartyOperations(UserCredentialRepository credentials, PublicKeyCredentialRpEntity rpEntity, Set<String> allowedOrigins) {
-		this.credentials = credentials;
+	public YubicoWebAuthnRelyingPartyOperations(UserCredentialRepository userCredentials, PublicKeyCredentialRpEntity rpEntity, Set<String> allowedOrigins) {
+		this.userCredentials = userCredentials;
 		this.rp = rpEntity;
 		this.allowedOrigins = allowedOrigins;
 	}
@@ -43,17 +45,18 @@ public class YubicoWebAuthnRelyingPartyOperations implements WebAuthnRelyingPart
 
 		// FIXME: Remove hard coded values
 		AuthenticatorSelectionCriteria authenticatorSelection = AuthenticatorSelectionCriteria.builder()
+				.authenticatorAttachment(AuthenticatorAttachment.CROSS_PLATFORM)
 				.userVerification(UserVerificationRequirement.PREFERRED)
 				.residentKey(ResidentKeyRequirement.REQUIRED) // REQUIRED
 				.build();
 
 
 		PublicKeyCredentialUserEntity userEntity = findUserEntityOrCreateAndSave(authentication.getName());
-		List<UserCredential> userCredentials = this.credentials.findByUserId(userEntity.getId());
+		List<UserCredential> userCredentials = this.userCredentials.findByUserId(userEntity.getId());
 		DefaultAuthenticationExtensionsClientInputs clientInputs = new DefaultAuthenticationExtensionsClientInputs();
 		clientInputs.add(ImmutableAuthenticationExtensionsClientInput.credProps);
 		PublicKeyCredentialCreationOptions options = PublicKeyCredentialCreationOptions.builder()
-				.attestation(AttestationConveyancePreference.NONE)
+				.attestation(AttestationConveyancePreference.DIRECT)
 				.user(userEntity)
 				.pubKeyCredParams(PublicKeyCredentialParameters.ES256, PublicKeyCredentialParameters.RS256)
 				.authenticatorSelection(authenticatorSelection)
@@ -90,7 +93,7 @@ public class YubicoWebAuthnRelyingPartyOperations implements WebAuthnRelyingPart
 	}
 
 	@Override
-	public void registerCredential(RelyingPartyRegistrationRequest relyingPartyRegistrationRequest) {
+	public UserCredential registerCredential(RelyingPartyRegistrationRequest relyingPartyRegistrationRequest) {
 		RelyingPartyPublicKey registrationRequest = relyingPartyRegistrationRequest.getPublicKey();
 		PublicKeyCredential<AuthenticatorAttestationResponse> credential = registrationRequest.getCredential();
 		com.yubico.webauthn.data.PublicKeyCredentialCreationOptions yubicoOptions = YubicoConverter.createCreationOptions(relyingPartyRegistrationRequest.getCreationOptions());
@@ -109,7 +112,8 @@ public class YubicoWebAuthnRelyingPartyOperations implements WebAuthnRelyingPart
 					.backupEligible(OptionalBoolean.fromBoolean(registrationResult.isBackupEligible()))
 					.backupState(OptionalBoolean.fromBoolean(registrationResult.isBackedUp()))
 					.build();
-			this.credentials.save(userCredential);
+			this.userCredentials.save(userCredential);
+			return userCredential;
 		}
 		catch (RegistrationFailedException | Base64UrlException | IOException f) {
 			throw new RuntimeException(f);
@@ -148,6 +152,10 @@ public class YubicoWebAuthnRelyingPartyOperations implements WebAuthnRelyingPart
 				.identity(YubicoConverter.rpIdentity(this.rp))
 				.credentialRepository(this.credentialRepository)
 				.origins(this.allowedOrigins)
+//				.allowUntrustedAttestation(false)
+//				.attestationTrustSource((List< X509Certificate > attestationCertificateChain, Optional<ByteArray> aaguid) -> {
+//					return AttestationTrustSource.TrustRootsResult.builder().trustRoots(Collections.emptySet()).build();
+//				})
 				// FIXME: how to configure other properties
 				.build();
 	}
@@ -188,7 +196,7 @@ public class YubicoWebAuthnRelyingPartyOperations implements WebAuthnRelyingPart
 		}
 
 		private RegisteredCredential findById(ByteArray credentialId) {
-			UserCredential credential = YubicoWebAuthnRelyingPartyOperations.this.credentials.findByCredentialId(new ArrayBuffer(credentialId.getBytes()));
+			UserCredential credential = YubicoWebAuthnRelyingPartyOperations.this.userCredentials.findByCredentialId(new ArrayBuffer(credentialId.getBytes()));
 			if (credential == null) {
 				return null;
 			}

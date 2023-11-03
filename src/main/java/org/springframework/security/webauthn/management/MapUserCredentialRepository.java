@@ -15,7 +15,12 @@ public class MapUserCredentialRepository implements UserCredentialRepository {
 	@Override
 	public void delete(ArrayBuffer credentialId) {
 		UserCredential userCredential = this.credentialIdToUserCredential.remove(credentialId);
-		this.userEntityIdToUserCredentials.get(userCredential).remove(userCredential);
+		if (userCredential != null) {
+			List<UserCredential> userCredentials = this.userEntityIdToUserCredentials.get(userCredential.getUserEntityUserId());
+			if (userCredentials != null) {
+				userCredentials.remove(userCredential);
+			}
+		}
 	}
 
 	@Override
