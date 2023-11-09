@@ -23,11 +23,17 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
+import org.springframework.http.converter.HttpMessageConverter;
+import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
+import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
+import org.springframework.http.server.ServletServerHttpResponse;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.security.web.util.matcher.RequestMatcher;
 import org.springframework.security.webauthn.api.registration.*;
+import org.springframework.security.webauthn.jackson.WebauthnJackson2Module;
+import org.springframework.security.webauthn.management.WebAuthnRelyingPartyOperations;
 import org.springframework.security.webauthn.management.YubicoWebAuthnRelyingPartyOperations;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -40,11 +46,11 @@ public class PublicKeyCredentialCreationOptionsFilter extends OncePerRequestFilt
 	// FIXME: consider require post since changes state
 	private RequestMatcher matcher = new AntPathRequestMatcher("/webauthn/register/options");
 
-	private final YubicoWebAuthnRelyingPartyOperations rpOperations;
+	private final WebAuthnRelyingPartyOperations rpOperations;
 
-	private ObjectMapper objectMapper = new ObjectMapper();
+	private final HttpMessageConverter<Object> converter = new MappingJackson2HttpMessageConverter(Jackson2ObjectMapperBuilder.json().modules(new WebauthnJackson2Module()).build());
 
-	public PublicKeyCredentialCreationOptionsFilter(YubicoWebAuthnRelyingPartyOperations rpOperations) {
+	public PublicKeyCredentialCreationOptionsFilter(WebAuthnRelyingPartyOperations rpOperations) {
 		this.rpOperations = rpOperations;
 	}
 
@@ -59,6 +65,6 @@ public class PublicKeyCredentialCreationOptionsFilter extends OncePerRequestFilt
 		PublicKeyCredentialCreationOptions options = this.rpOperations.createPublicKeyCredentialCreationOptions(context.getAuthentication());
 		this.repository.save(request, response, options);
 		response.setHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE);
-		this.objectMapper.writeValue(response.getWriter(), options);
+		this.converter.write(options, MediaType.APPLICATION_JSON, new ServletServerHttpResponse(response));
 	}
 }

@@ -24,11 +24,14 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.HttpInputMessage;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.converter.GenericHttpMessageConverter;
+import org.springframework.http.converter.HttpMessageConverter;
+import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.http.server.ServletServerHttpRequest;
 import org.springframework.security.web.util.matcher.RequestMatcher;
 import org.springframework.security.webauthn.api.core.ArrayBuffer;
 import org.springframework.security.webauthn.api.registration.PublicKeyCredentialCreationOptions;
+import org.springframework.security.webauthn.jackson.WebauthnJackson2Module;
 import org.springframework.security.webauthn.management.*;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -39,7 +42,7 @@ import static org.springframework.security.web.util.matcher.AntPathRequestMatche
 public class WebAuthnRegistrationFilter extends OncePerRequestFilter {
 	private final WebAuthnRelyingPartyOperations rpOptions;
 	private final UserCredentialRepository userCredentials;
-	private GenericHttpMessageConverter<Object> converter = new MappingJackson2HttpMessageConverter();
+	private final HttpMessageConverter<Object> converter = new MappingJackson2HttpMessageConverter(Jackson2ObjectMapperBuilder.json().modules(new WebauthnJackson2Module()).build());
 	private PublicKeyCredentialCreationOptionsRepository creationOptionsRepository = new HttpSessionPublicKeyCredentialCreationOptionsRepository();
 
 	private RequestMatcher matcher = antMatcher(HttpMethod.POST, "/webauthn/register");
@@ -69,7 +72,7 @@ public class WebAuthnRegistrationFilter extends OncePerRequestFilter {
 	private void registerCredential(HttpServletRequest request, HttpServletResponse response) throws IOException {
 		HttpInputMessage inputMessage = new ServletServerHttpRequest(request);
 		// FIXME: Read RegistrationRequest(PublicKeyCredential,String label)
-		RelyingPartyRequest relyingPartyRequest = (RelyingPartyRequest) this.converter.read(RelyingPartyRequest.class, getClass(), inputMessage);
+		RelyingPartyRequest relyingPartyRequest = (RelyingPartyRequest) this.converter.read(RelyingPartyRequest.class, inputMessage);
 		PublicKeyCredentialCreationOptions options = this.creationOptionsRepository.load(request);
 		this.rpOptions.registerCredential(new RelyingPartyRegistrationRequest(options, relyingPartyRequest.getPublicKey()));
 		response.getWriter().write("{ \"verified\": \"true\" }");

@@ -22,6 +22,8 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.converter.GenericHttpMessageConverter;
+import org.springframework.http.converter.HttpMessageConverter;
+import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.http.server.ServletServerHttpRequest;
 import org.springframework.lang.Nullable;
@@ -36,6 +38,7 @@ import org.springframework.security.webauthn.api.authentication.AuthenticatorAss
 import org.springframework.security.webauthn.api.authentication.PublicKeyCredentialRequestOptions;
 import org.springframework.security.webauthn.api.registration.PublicKeyCredential;
 import org.springframework.security.webauthn.authentication.WebAuthnAuthenticationRequestToken;
+import org.springframework.security.webauthn.jackson.WebauthnJackson2Module;
 import org.springframework.security.webauthn.management.AuthenticationRequest;
 
 import java.io.IOException;
@@ -48,7 +51,7 @@ import java.util.StringJoiner;
 import static org.springframework.security.web.util.matcher.AntPathRequestMatcher.antMatcher;
 
 public class WebAuthnAuthenticationFilter extends AbstractAuthenticationProcessingFilter  {
-	private GenericHttpMessageConverter<Object> converter = new MappingJackson2HttpMessageConverter();
+	private final GenericHttpMessageConverter<Object> converter = new MappingJackson2HttpMessageConverter(Jackson2ObjectMapperBuilder.json().modules(new WebauthnJackson2Module()).build());
 
 	private PublicKeyCredentialRequestOptionsRepository requestOptionsRepository = new HttpSessionPublicKeyCredentialRequestOptionsRepository();
 
@@ -62,7 +65,7 @@ public class WebAuthnAuthenticationFilter extends AbstractAuthenticationProcessi
 	public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException, IOException, ServletException {
 		ServletServerHttpRequest httpRequest = new ServletServerHttpRequest(request);
 		SyntheticParameterizedType type = new SyntheticParameterizedType(PublicKeyCredential.class, new Type[]{AuthenticatorAssertionResponse.class});
-		PublicKeyCredential<AuthenticatorAssertionResponse> publicKeyCredential = (PublicKeyCredential<AuthenticatorAssertionResponse>) this.converter.read(type, WebAuthnAuthenticationFilter.class, httpRequest);
+		PublicKeyCredential<AuthenticatorAssertionResponse> publicKeyCredential = (PublicKeyCredential<AuthenticatorAssertionResponse>) this.converter.read(type, getClass(), httpRequest);
 		PublicKeyCredentialRequestOptions requestOptions = this.requestOptionsRepository.load(request);
 		AuthenticationRequest authenticationRequest = new AuthenticationRequest(requestOptions, publicKeyCredential);
 		WebAuthnAuthenticationRequestToken token = new WebAuthnAuthenticationRequestToken(authenticationRequest);

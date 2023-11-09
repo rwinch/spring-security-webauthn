@@ -34,7 +34,7 @@ public class SecurityConfig {
 			.formLogin(Customizer.withDefaults())
 			.httpBasic(Customizer.withDefaults())
 			.authorizeHttpRequests(requests -> requests
-				.requestMatchers("/login/**").permitAll()
+				.requestMatchers("/login/**", "/message").permitAll()
 				.anyRequest().authenticated()
 			)
 			.with(new PasskeysConfigurer<>(), Customizer.withDefaults());

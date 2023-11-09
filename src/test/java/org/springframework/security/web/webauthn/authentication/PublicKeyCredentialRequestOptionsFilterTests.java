@@ -21,13 +21,19 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.security.webauthn.api.TestPublicKeyCredentialCreationOptions;
+import org.springframework.security.webauthn.api.TestPublicKeyCredentialRequestOptions;
+import org.springframework.security.webauthn.api.authentication.PublicKeyCredentialRequestOptions;
+import org.springframework.security.webauthn.api.registration.PublicKeyCredentialCreationOptions;
 import org.springframework.security.webauthn.management.WebAuthnRelyingPartyOperations;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verifyNoInteractions;
+import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -75,6 +81,20 @@ class PublicKeyCredentialRequestOptionsFilterTests {
 						assertThat(result.getResponse().getContentAsString()).isEmpty()
 				);
 		verifyNoInteractions(this.relyingPartyOperations, this.requestOptionsRepository);
+	}
+
+	@Test
+	void doFilterWhenMatches() throws Exception {
+		PublicKeyCredentialRequestOptions options = TestPublicKeyCredentialRequestOptions.create()
+				.build();
+		when(this.relyingPartyOperations.createCredentialRequestOptions(any())).thenReturn(options);
+
+		PublicKeyCredentialCreationOptions mockResult = this.relyingPartyOperations.createPublicKeyCredentialCreationOptions(null);
+		this.mockMvc.perform(get("/webauthn/authenticate/options"))
+				.andExpect(status().isOk())
+				.andDo((result) ->
+						assertThat(result.getResponse().getContentAsString()).isEqualTo("foo")
+				);
 	}
 
 }
