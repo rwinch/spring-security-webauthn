@@ -16,23 +16,18 @@
 
 package org.springframework.security.webauthn.api.authentication;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import org.springframework.security.webauthn.api.core.BufferSource;
 import org.springframework.security.webauthn.api.registration.AuthenticationExtensionsClientInputs;
 import org.springframework.security.webauthn.api.registration.DefaultAuthenticationExtensionsClientInputs;
 import org.springframework.security.webauthn.api.registration.PublicKeyCredentialDescriptor;
 import org.springframework.security.webauthn.api.registration.UserVerificationRequirement;
-import org.springframework.security.webauthn.jackson.DurationSerializer;
 
 import java.time.Duration;
 import java.util.List;
 
-@JsonInclude(content = JsonInclude.Include.NON_NULL)
 public class PublicKeyCredentialRequestOptions {
 	private final BufferSource challenge;
 
-	@JsonSerialize(using = DurationSerializer.class)
 	private final Duration timeout;
 
 	private final String rpId;
