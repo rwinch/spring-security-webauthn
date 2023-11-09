@@ -1,8 +1,6 @@
+
 package org.springframework.security.webauthn.api.registration;
 
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-
-@JsonDeserialize(using = CredentialPropertiesOutputDeserializer.class)
 public class CredentialPropertiesOutput implements AuthenticationExtensionsClientOutput<CredentialPropertiesOutput.ExtensionOutput> {
 	public static final String EXTENSION_ID = "credProps";
 

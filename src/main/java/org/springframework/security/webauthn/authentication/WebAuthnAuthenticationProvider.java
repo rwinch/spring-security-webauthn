@@ -1,6 +1,7 @@
 package org.springframework.security.webauthn.authentication;
 
 import org.springframework.security.authentication.AuthenticationProvider;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
@@ -21,9 +22,14 @@ public class WebAuthnAuthenticationProvider implements AuthenticationProvider {
 	@Override
 	public Authentication authenticate(Authentication authentication) throws AuthenticationException {
 		WebAuthnAuthenticationRequestToken webAuthnRequest = (WebAuthnAuthenticationRequestToken) authentication;
-		String username = this.relyingPartyOperations.authenticate(webAuthnRequest.getWebAuthnRequest());
-		UserDetails userDetails = this.userDetailsService.loadUserByUsername(username);
-		return UsernamePasswordAuthenticationToken.authenticated(userDetails, userDetails.getPassword(), userDetails.getAuthorities());
+		try {
+			String username = this.relyingPartyOperations.authenticate(webAuthnRequest.getWebAuthnRequest());
+			UserDetails userDetails = this.userDetailsService.loadUserByUsername(username);
+			return UsernamePasswordAuthenticationToken.authenticated(userDetails, userDetails.getPassword(), userDetails.getAuthorities());
+		}
+		catch (RuntimeException e) {
+			throw new BadCredentialsException(e.getMessage(), e);
+		}
 	}
 
 	@Override

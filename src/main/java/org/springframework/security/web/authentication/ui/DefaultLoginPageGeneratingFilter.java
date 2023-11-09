@@ -21,6 +21,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.Map;
 import java.util.function.Function;
+import java.util.regex.Pattern;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -66,6 +67,8 @@ public class DefaultLoginPageGeneratingFilter extends GenericFilterBean {
 
 	private boolean saml2LoginEnabled;
 
+	private boolean passkeysEnabled;
+
 	private String authenticationUrl;
 
 	private String usernameParameter;
@@ -79,6 +82,8 @@ public class DefaultLoginPageGeneratingFilter extends GenericFilterBean {
 	private Map<String, String> saml2AuthenticationUrlToProviderName;
 
 	private Function<HttpServletRequest, Map<String, String>> resolveHiddenInputs = (request) -> Collections.emptyMap();
+
+	private Function<HttpServletRequest, Map<String, String>> resolveHeaders = (request) -> Collections.emptyMap();
 
 	public DefaultLoginPageGeneratingFilter() {
 	}
@@ -112,6 +117,17 @@ public class DefaultLoginPageGeneratingFilter extends GenericFilterBean {
 		this.resolveHiddenInputs = resolveHiddenInputs;
 	}
 
+	/**
+	 * Sets a Function used to resolve a Map of the HTTP headers where the key is the
+	 * name of the header and the value is the value of the header. Typically, this is used
+	 * to resolve the CSRF token.
+	 * @param resolveHeaders the function to resolve the headers
+	 */
+	public void setResolveHeaders(Function<HttpServletRequest, Map<String, String>> resolveHeaders) {
+		Assert.notNull(resolveHeaders, "resolveHeaders cannot be null");
+		this.resolveHeaders = resolveHeaders;
+	}
+
 	public boolean isEnabled() {
 		return this.formLoginEnabled || this.oauth2LoginEnabled || this.saml2LoginEnabled;
 	}
@@ -142,6 +158,10 @@ public class DefaultLoginPageGeneratingFilter extends GenericFilterBean {
 
 	public void setSaml2LoginEnabled(boolean saml2LoginEnabled) {
 		this.saml2LoginEnabled = saml2LoginEnabled;
+	}
+
+	public void setPasskeysEnabled(boolean passkeysEnabled) {
+		this.passkeysEnabled = passkeysEnabled;
 	}
 
 	public void setAuthenticationUrl(String authenticationUrl) {
@@ -191,6 +211,7 @@ public class DefaultLoginPageGeneratingFilter extends GenericFilterBean {
 	private String generateLoginPageHtml(HttpServletRequest request, boolean loginError, boolean logoutSuccess) {
 		String errorMsg = loginError ? getLoginErrorMessage(request) : "Invalid credentials";
 		String contextPath = request.getContextPath();
+		String loginPageUrl = contextPath + this.authenticationUrl;
 		StringBuilder sb = new StringBuilder();
 		sb.append("<!DOCTYPE html>\n");
 		sb.append("<html lang=\"en\">\n");
@@ -204,14 +225,19 @@ public class DefaultLoginPageGeneratingFilter extends GenericFilterBean {
 				+ "rel=\"stylesheet\" integrity=\"sha384-/Y6pD6FV/Vv2HJnA6t+vslU6fwYXjCFtcEpHbNJ0lyAFsXTsjBbfaDjzALeQsN6M\" crossorigin=\"anonymous\">\n");
 		sb.append("    <link href=\"https://getbootstrap.com/docs/4.0/examples/signin/signin.css\" "
 				+ "rel=\"stylesheet\" integrity=\"sha384-oOE/3m0LUMPub4kaC09mrdEhIc+e3exm4xOGxAmuFXhBNF4hcg/6MiAXAf5p0P56\" crossorigin=\"anonymous\"/>\n");
+		if (this.passkeysEnabled) {
+			String headers = createHeaders(request);
+			Map<String, Object> passkeyPageContext = Map.of("headers", headers,
+					"loginPageUrl", loginPageUrl);
+			sb.append(processTemplate(SCRIPT_TEMPLATE, passkeyPageContext));
+		}
 		sb.append("  </head>\n");
 		sb.append("  <body>\n");
 		sb.append("     <div class=\"container\">\n");
+		sb.append(createError(loginError, errorMsg) + createLogoutSuccess(logoutSuccess) + "\n");
 		if (this.formLoginEnabled) {
-			sb.append("      <form class=\"form-signin\" method=\"post\" action=\"" + contextPath
-					+ this.authenticationUrl + "\">\n");
+			sb.append("      <form class=\"form-signin\" method=\"post\" action=\"" + loginPageUrl + "\">\n");
 			sb.append("        <h2 class=\"form-signin-heading\">Please sign in</h2>\n");
-			sb.append(createError(loginError, errorMsg) + createLogoutSuccess(logoutSuccess) + "        <p>\n");
 			sb.append("          <label for=\"username\" class=\"sr-only\">Username</label>\n");
 			sb.append("          <input type=\"text\" id=\"username\" name=\"" + this.usernameParameter
 					+ "\" class=\"form-control\" placeholder=\"Username\" required autofocus>\n");
@@ -259,6 +285,12 @@ public class DefaultLoginPageGeneratingFilter extends GenericFilterBean {
 			}
 			sb.append("</table>\n");
 		}
+		if (this.passkeysEnabled) {
+			sb.append("<div class=\"form-signin\">\n");
+			sb.append("<h2 class=\"form-signin-heading\">Login with Passkeys</h2>");
+			sb.append("<button id=\"passkey-signin\" class=\"btn btn-lg btn-primary btn-block\" type=\"submit\">Sign in with a passkey</button>\n");
+			sb.append("</div>");
+		}
 		sb.append("</div>\n");
 		sb.append("</body></html>");
 		return sb.toString();
@@ -292,6 +324,93 @@ public class DefaultLoginPageGeneratingFilter extends GenericFilterBean {
 		return "<p><input type='checkbox' name='" + paramName + "'/> Remember me on this computer.</p>\n";
 	}
 
+	private String createHeaders(HttpServletRequest request) {
+		String javascriptHeadersEntries = "";
+		Map<String, String> headers = this.resolveHeaders.apply(request);
+		for (Map.Entry<String, String> header : headers.entrySet()) {
+			Map<String, Object> headerContext = Map.of(
+				"headerName", header.getKey(),
+				"headerValue", header.getValue());
+			javascriptHeadersEntries += processTemplate(HEADER_ENTRY_TEMPLATE, headerContext);
+		}
+		return javascriptHeadersEntries;
+	}
+
+	private static final String HEADER_ENTRY_TEMPLATE = """
+		"${headerName}" : "${headerValue}",
+	""";
+
+	private static String processTemplate(String template, Map<String,Object> context) {
+		for (Map.Entry<String, Object> entry : context.entrySet()) {
+			String pattern = Pattern.quote("${" + entry.getKey() + "}");
+			String value = String.valueOf(entry.getValue());
+			template = template.replaceAll(pattern, value);
+		}
+		return template;
+	}
+
+	private static final String SCRIPT_TEMPLATE = """
+		<script src="https://unpkg.com/@simplewebauthn/browser@8.3.1/dist/bundle/index.umd.min.js"></script>
+		<script type="text/javascript">
+		<!--
+			document.addEventListener("DOMContentLoaded", setup);
+
+			function setup() {
+				const { startAuthentication } = SimpleWebAuthnBrowser;
+
+				// <button>
+				const passkeySignin = document.getElementById('passkey-signin');
+
+				// Start authentication when the user clicks a button
+				passkeySignin.addEventListener('click', async () => {
+
+					// GET authentication options from the endpoint that calls
+					// @simplewebauthn/server -> generateAuthenticationOptions()
+					const resp = await fetch('/webauthn/authenticate/options');
+
+					let asseResp;
+					try {
+						// Pass the options to the authenticator and wait for a response
+						asseResp = await startAuthentication(await resp.json());
+					} catch (error) {
+						// Some basic error handling
+						// FIXME: there is no elemError
+						elemError.innerText = error;
+						throw error;
+					}
+
+					// POST the response to the endpoint that calls
+					// @simplewebauthn/server -> verifyAuthenticationResponse()
+					const authenticationResponse = await fetch('/login/webauthn',
+						{
+							method: 'POST',
+							headers: {
+								'Content-Type': 'application/json',
+								${headers}
+							},
+							body: JSON.stringify(asseResp),
+						}
+					)
+					.then(response => {
+						if (response.ok) {
+							return response.json()
+						} else {
+							return { 'errorUrl': '${loginPageUrl}?error' }
+						}
+					});
+
+					// Show UI appropriate for the `verified` status
+					if (authenticationResponse && authenticationResponse.authenticated) {
+						window.location.href = authenticationResponse.redirectUrl;
+					} else {
+						window.location.href = authenticationResponse.errorUrl
+					}
+				});
+			}
+		//-->
+		</script>
+	""";
+
 	private boolean isLogoutSuccess(HttpServletRequest request) {
 		return this.logoutSuccessUrl != null && matches(request, this.logoutSuccessUrl);
 	}
@@ -308,14 +427,14 @@ public class DefaultLoginPageGeneratingFilter extends GenericFilterBean {
 		if (!isError) {
 			return "";
 		}
-		return "<div class=\"alert alert-danger\" role=\"alert\">" + HtmlUtils.htmlEscape(message) + "</div>";
+		return "<div class=\"form-signin alert alert-danger\" role=\"alert\">" + HtmlUtils.htmlEscape(message) + "</div>";
 	}
 
 	private String createLogoutSuccess(boolean isLogoutSuccess) {
 		if (!isLogoutSuccess) {
 			return "";
 		}
-		return "<div class=\"alert alert-success\" role=\"alert\">You have been signed out</div>";
+		return "<div class=\"form-signin alert alert-success\" role=\"alert\">You have been signed out</div>";
 	}
 
 	private boolean matches(HttpServletRequest request, String url) {

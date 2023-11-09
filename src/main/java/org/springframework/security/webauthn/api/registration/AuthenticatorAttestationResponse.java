@@ -13,7 +13,6 @@ import java.util.List;
 /**
  * https://www.w3.org/TR/webauthn-3/#authenticatorattestationresponse
  */
-@JsonDeserialize(builder = AuthenticatorAttestationResponse.AuthenticatorAttestationResponseBuilder.class) // FIXME: Externalize @JsonDeserialize
 public class AuthenticatorAttestationResponse extends AuthenticatorResponse {
 	private final ArrayBuffer attestationObject;
 

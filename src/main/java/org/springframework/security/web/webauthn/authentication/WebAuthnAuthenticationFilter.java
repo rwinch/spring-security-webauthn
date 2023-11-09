@@ -1,21 +1,21 @@
 package org.springframework.security.web.webauthn.authentication;
 
-import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.converter.GenericHttpMessageConverter;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
-import org.springframework.http.converter.json.MappingJacksonInputMessage;
 import org.springframework.http.server.ServletServerHttpRequest;
 import org.springframework.lang.Nullable;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter;
+import org.springframework.security.web.authentication.AuthenticationEntryPointFailureHandler;
+import org.springframework.security.web.authentication.HttpStatusEntryPoint;
+import org.springframework.security.web.authentication.JsonSavedRequestAwareAuthenticationSuccessHandler;
 import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
-import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.security.webauthn.api.authentication.AuthenticatorAssertionResponse;
 import org.springframework.security.webauthn.api.authentication.PublicKeyCredentialRequestOptions;
 import org.springframework.security.webauthn.api.registration.PublicKeyCredential;
@@ -39,6 +39,8 @@ public class WebAuthnAuthenticationFilter extends AbstractAuthenticationProcessi
 	public WebAuthnAuthenticationFilter() {
 		super(antMatcher(HttpMethod.POST, "/login/webauthn"));
 		setSecurityContextRepository(new HttpSessionSecurityContextRepository());
+		setAuthenticationFailureHandler(new AuthenticationEntryPointFailureHandler(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED)));
+		setAuthenticationSuccessHandler(new JsonSavedRequestAwareAuthenticationSuccessHandler());
 	}
 	@Override
 	public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException, IOException, ServletException {
@@ -49,13 +51,6 @@ public class WebAuthnAuthenticationFilter extends AbstractAuthenticationProcessi
 		AuthenticationRequest authenticationRequest = new AuthenticationRequest(requestOptions, publicKeyCredential);
 		WebAuthnAuthenticationRequestToken token = new WebAuthnAuthenticationRequestToken(authenticationRequest);
 		return getAuthenticationManager().authenticate(token);
-	}
-
-	@Override
-	protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authResult) throws IOException, ServletException {
-		// FIXME: create an authenticationsuccesshandler
-		response.getWriter().write("{ \"verified\" : \"true\" }");
-		super.successfulAuthentication(request, response, chain, authResult);
 	}
 
 	private static final class SyntheticParameterizedType implements ParameterizedType, Serializable {

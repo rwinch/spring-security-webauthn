@@ -1,9 +1,8 @@
 package org.springframework.security.webauthn.jackson;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.skyscreamer.jsonassert.JSONAssert;
 import org.springframework.security.web.webauthn.registration.WebAuthnRegistrationFilter;
@@ -15,7 +14,6 @@ import org.springframework.security.webauthn.api.core.BufferSource;
 import org.springframework.security.webauthn.api.registration.*;
 import org.springframework.security.webauthn.management.*;
 
-import java.security.PublicKey;
 import java.time.Duration;
 import java.util.Arrays;
 import java.util.Set;
@@ -23,8 +21,6 @@ import java.util.Set;
 import static org.assertj.core.api.Assertions.assertThat;
 
 class JacksonTests {
-	private ObjectMapper mapper = new ObjectMapper();
-	private UserCredentialRepository credentials = new MapUserCredentialRepository();
 
 	private static final String PUBLIC_KEY_JSON = """
 			{
@@ -50,6 +46,32 @@ class JacksonTests {
 			   "authenticatorAttachment": "cross-platform"
 			 }
 		""";
+
+	private ObjectMapper mapper;
+	@BeforeEach
+	void setup () {
+		this.mapper = new ObjectMapper();
+		this.mapper.registerModule(new WebauthnJackson2Module());
+	}
+
+	@Test
+	void readAuthenticatorTransport() throws Exception {
+		AuthenticatorTransport transport = this.mapper.readValue("\"hybrid\"", AuthenticatorTransport.class);
+
+		assertThat(transport).isEqualTo(AuthenticatorTransport.HYBRID);
+	}
+
+	@Test
+	void readAuthenticatorAttachment() throws Exception {
+		AuthenticatorAttachment value = this.mapper.readValue("\"cross-platform\"", AuthenticatorAttachment.class);
+		assertThat(value).isEqualTo(AuthenticatorAttachment.CROSS_PLATFORM);
+	}
+
+	@Test
+	void writeAuthenticatorAttachment() throws Exception {
+		String value = this.mapper.writeValueAsString(AuthenticatorAttachment.CROSS_PLATFORM);
+		assertThat(value).isEqualTo("\"cross-platform\"");
+	}
 
 	@Test
 	void readAuthenticationExtensionsClientOutputs() throws Exception {
@@ -118,7 +140,6 @@ class JacksonTests {
 				{
 				    "attestation": "none",
 				    "authenticatorSelection": {
-				        "requireResidentKey": false,
 				        "residentKey": "discouraged"
 				    },
 				    "challenge": "IBQnuY1Z0K1HqBoFWCp2xlJl8-oq_aFIXzyT_F0-0GU",
@@ -158,16 +179,6 @@ class JacksonTests {
 	}
 
 	@Test
-	void writeAuthenticatorAttachment() throws Exception {
-		AuthenticatorAttachment attachment = AuthenticatorAttachment.PLATFORM;
-
-
-		String string = this.mapper.writeValueAsString(attachment);
-
-		assertThat(string).isEqualTo("\"platform\"");
-	}
-
-	@Test
 	void readPublicKeyCredentialAuthenticatorAttestationResponse() throws Exception {
 
 		PublicKeyCredential<AuthenticatorAttestationResponse> publicKeyCredential = this.mapper.readValue(PUBLIC_KEY_JSON, new TypeReference<PublicKeyCredential<AuthenticatorAttestationResponse>>() {
@@ -197,11 +208,6 @@ class JacksonTests {
 
 	@Test
 	void writeAuthenticationOptions() throws Exception {
-		YubicoWebAuthnRelyingPartyOperations relyingPartyOperations = new YubicoWebAuthnRelyingPartyOperations(this.credentials, PublicKeyCredentialRpEntity.builder()
-				.id("localhost")
-				.name("Spring Security Relying Party")
-				.build(),
-				Set.of("http://localhost:8080"));
 		PublicKeyCredentialRequestOptions credentialRequestOptions = PublicKeyCredentialRequestOptions.builder()
 				.allowCredentials(Arrays.asList())
 				.challenge(BufferSource.fromBase64("I69THX904Q8ONhCgUgOu2PCQCcEjTDiNmokdbgsAsYU"))

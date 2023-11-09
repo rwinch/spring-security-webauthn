@@ -1,9 +1,9 @@
-package org.springframework.security.webauthn.api.core;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
+package org.springframework.security.webauthn.api.core;
 
 import java.util.Base64;
 
+// FIXME: Consider replacing with UrlBase64String
 public class ArrayBuffer {
 
 	private static final Base64.Encoder ENCODER = Base64.getUrlEncoder().withoutPadding();
@@ -37,7 +37,6 @@ public class ArrayBuffer {
 	}
 
 
-	@JsonCreator // FIXME: Externalize @JsonCreator
 	public static ArrayBuffer fromBase64(String value) {
 		byte[] bytes = Base64.getUrlDecoder().decode(value);
 		return new ArrayBuffer(bytes);

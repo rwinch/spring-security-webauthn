@@ -1,12 +1,6 @@
+
 package org.springframework.security.webauthn.api.registration;
 
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import org.springframework.security.webauthn.jackson.AuthenticatorAttachmentDeserializer;
-import org.springframework.security.webauthn.jackson.AuthenticatorAttachmentSerializer;
-
-@JsonDeserialize(using = AuthenticatorAttachmentDeserializer.class)
-@JsonSerialize(using = AuthenticatorAttachmentSerializer.class)
 public enum AuthenticatorAttachment {
 
 	/**

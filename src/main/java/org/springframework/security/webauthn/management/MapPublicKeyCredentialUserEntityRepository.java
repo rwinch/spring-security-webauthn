@@ -12,6 +12,10 @@ public class MapPublicKeyCredentialUserEntityRepository implements PublicKeyCred
 
 	private final Map<BufferSource,String> idToUsername = new HashMap<>();
 
+	public MapPublicKeyCredentialUserEntityRepository() {
+		System.out.println("created MPKCUER");
+	}
+
 	@Override
 	public String findUsernameByUserEntityId(BufferSource id) {
 		return this.idToUsername.get(id);

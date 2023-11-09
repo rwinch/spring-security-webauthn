@@ -25,7 +25,7 @@ class YubicoWebAuthnRelyingPartyOperationsTests {
 	private static byte UV = 0x04;
 	private static byte BS = 0x10;
 
-	YubicoWebAuthnRelyingPartyOperations rpOperations = new YubicoWebAuthnRelyingPartyOperations(this.credentials, PublicKeyCredentialRpEntity.builder()
+	YubicoWebAuthnRelyingPartyOperations rpOperations = new YubicoWebAuthnRelyingPartyOperations(new MapPublicKeyCredentialUserEntityRepository(), this.credentials, PublicKeyCredentialRpEntity.builder()
 		.id("localhost")
 		.name("Spring Security Relying Party")
 		.build(),
@@ -95,7 +95,7 @@ class YubicoWebAuthnRelyingPartyOperationsTests {
 	 */
 	@Test
 	void registerCredentialWhenClientDataJSONDoesNotMatchHash() {
-		this.rpOperations = new YubicoWebAuthnRelyingPartyOperations(this.credentials, PublicKeyCredentialRpEntity.builder()
+		this.rpOperations = new YubicoWebAuthnRelyingPartyOperations(new MapPublicKeyCredentialUserEntityRepository(), this.credentials, PublicKeyCredentialRpEntity.builder()
 				.id("invalid")
 				.name("Spring Security Relying Party")
 				.build(),

@@ -1,7 +1,6 @@
 package org.springframework.security.webauthn.management;
 
 import com.yubico.webauthn.*;
-import com.yubico.webauthn.attestation.AttestationTrustSource;
 import com.yubico.webauthn.data.ByteArray;
 import com.yubico.webauthn.data.exception.Base64UrlException;
 import com.yubico.webauthn.exception.AssertionFailedException;
@@ -13,14 +12,13 @@ import org.springframework.security.webauthn.api.core.BufferSource;
 import org.springframework.security.webauthn.api.registration.*;
 
 import java.io.IOException;
-import java.security.cert.X509Certificate;
 import java.time.Duration;
 import java.util.*;
 
 public class YubicoWebAuthnRelyingPartyOperations implements WebAuthnRelyingPartyOperations {
 	private final CredentialRepository credentialRepository = new SpringSecurityCredentialRepository();
 
-	private PublicKeyCredentialUserEntityRepository userEntities = new MapPublicKeyCredentialUserEntityRepository();
+	private final PublicKeyCredentialUserEntityRepository userEntities;
 
 	private final UserCredentialRepository userCredentials;
 
@@ -28,16 +26,12 @@ public class YubicoWebAuthnRelyingPartyOperations implements WebAuthnRelyingPart
 
 	private final PublicKeyCredentialRpEntity rp;
 
-	public YubicoWebAuthnRelyingPartyOperations(UserCredentialRepository userCredentials, PublicKeyCredentialRpEntity rpEntity, Set<String> allowedOrigins) {
+	public YubicoWebAuthnRelyingPartyOperations(PublicKeyCredentialUserEntityRepository userEntities, UserCredentialRepository userCredentials, PublicKeyCredentialRpEntity rpEntity, Set<String> allowedOrigins) {
+		this.userEntities = userEntities;
 		this.userCredentials = userCredentials;
 		this.rp = rpEntity;
 		this.allowedOrigins = allowedOrigins;
 	}
-
-	public void setUserEntities(PublicKeyCredentialUserEntityRepository userEntities) {
-		this.userEntities = userEntities;
-	}
-
 
 	// FIXME: Pass in the host (can have an allow list), perhaps pass PublicKeyCredentialUserEntity
 	@Override

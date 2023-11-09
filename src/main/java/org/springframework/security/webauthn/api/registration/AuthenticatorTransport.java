@@ -1,9 +1,6 @@
+
 package org.springframework.security.webauthn.api.registration;
 
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import org.springframework.security.webauthn.jackson.AuthenticatorTransportDeserializer;
-
-@JsonDeserialize(using = AuthenticatorTransportDeserializer.class)
 public enum AuthenticatorTransport {
 	USB("usb"),
 	NFC("nfc"),

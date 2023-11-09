@@ -1,11 +1,8 @@
 package org.springframework.security.webauthn.api.authentication;
 
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 import org.springframework.security.webauthn.api.core.ArrayBuffer;
 import org.springframework.security.webauthn.api.registration.AuthenticatorResponse;
 
-@JsonDeserialize(builder = AuthenticatorAssertionResponse.AuthenticatorAssertionResponseBuilder.class)
 public class AuthenticatorAssertionResponse extends AuthenticatorResponse  {
 
 	private final ArrayBuffer authenticatorData;
@@ -43,7 +40,7 @@ public class AuthenticatorAssertionResponse extends AuthenticatorResponse  {
 		return new AuthenticatorAssertionResponseBuilder();
 	}
 
-	@JsonPOJOBuilder(withPrefix = "")
+
 	public static final class AuthenticatorAssertionResponseBuilder {
 		private ArrayBuffer authenticatorData;
 		private ArrayBuffer signature;

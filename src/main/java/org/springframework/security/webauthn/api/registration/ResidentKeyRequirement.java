@@ -1,9 +1,6 @@
+
 package org.springframework.security.webauthn.api.registration;
 
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import org.springframework.security.webauthn.jackson.ResidentKeyRequirementSerializer;
-
-@JsonSerialize(using = ResidentKeyRequirementSerializer.class)
 public enum ResidentKeyRequirement {
 
 	/**

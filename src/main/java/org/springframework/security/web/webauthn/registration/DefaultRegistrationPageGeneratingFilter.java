@@ -27,12 +27,12 @@ public class DefaultRegistrationPageGeneratingFilter extends OncePerRequestFilte
 
 	private RequestMatcher matcher = AntPathRequestMatcher.antMatcher(HttpMethod.GET, "/webauthn/register");
 
-	private final PublicKeyCredentialUserEntityRepository userEntityRepository;
+	private final PublicKeyCredentialUserEntityRepository userEntities;
 
 	private final UserCredentialRepository userCredentials;
 
-	public DefaultRegistrationPageGeneratingFilter(PublicKeyCredentialUserEntityRepository userEntityRepository, UserCredentialRepository userCredentials) {
-		this.userEntityRepository = userEntityRepository;
+	public DefaultRegistrationPageGeneratingFilter(PublicKeyCredentialUserEntityRepository userEntities, UserCredentialRepository userCredentials) {
+		this.userEntities = userEntities;
 		this.userCredentials = userCredentials;
 	}
 
@@ -43,6 +43,7 @@ public class DefaultRegistrationPageGeneratingFilter extends OncePerRequestFilte
 			filterChain.doFilter(request, response);
 			return;
 		}
+
 		boolean success = request.getParameterMap().containsKey("success");
 		CsrfToken csrfToken = (CsrfToken) request.getAttribute(CsrfToken.class.getName());
 		response.setContentType(MediaType.TEXT_HTML_VALUE);
@@ -57,7 +58,7 @@ public class DefaultRegistrationPageGeneratingFilter extends OncePerRequestFilte
 	}
 
 	private String passkeyRows(String username, Map<String,Object> baseContext) {
-		PublicKeyCredentialUserEntity userEntity = this.userEntityRepository.findByUsername(username);
+		PublicKeyCredentialUserEntity userEntity = this.userEntities.findByUsername(username);
 		List<UserCredential> credentials = userEntity == null ? Collections.emptyList() : this.userCredentials.findByUserId(userEntity.getId());
 		if (credentials.isEmpty()) {
 			return """
@@ -178,7 +179,7 @@ public class DefaultRegistrationPageGeneratingFilter extends OncePerRequestFilte
 			
 							// Show UI appropriate for the `verified` status
 							if (verificationJSON && verificationJSON.verified) {
-								window.location = '${contextPath}/webauthn/register?success'
+								window.location.href = '${contextPath}/webauthn/register?success'
 							} else {
 								setVisibility(elemError, true)
 								elemError.innerHTML = `Oh no, something went wrong! Response: <pre>${JSON.stringify(verificationJSON,null,2)}</pre>`;

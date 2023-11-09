@@ -1,8 +1,6 @@
+
 package org.springframework.security.webauthn.api.registration;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
-
-@JsonInclude(JsonInclude.Include.NON_NULL)
 public class AuthenticatorSelectionCriteria {
 	private final AuthenticatorAttachment authenticatorAttachment;
 
@@ -27,11 +25,6 @@ public class AuthenticatorSelectionCriteria {
 	public UserVerificationRequirement getUserVerification() {
 		return this.userVerification;
 	}
-
-	// FIXME: Do we need this for legacy or is it breaking the fmt
-//	public boolean isRequireResidentKey() {
-//		return ResidentKeyRequirement.REQUIRED.equals(getResidentKey());
-//	}
 
 	public static AuthenticatorSelectionCriteriaBuilder builder() {
 		return new AuthenticatorSelectionCriteriaBuilder();

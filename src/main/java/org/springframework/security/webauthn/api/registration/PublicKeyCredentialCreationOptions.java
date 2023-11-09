@@ -1,9 +1,6 @@
 package org.springframework.security.webauthn.api.registration;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import org.springframework.security.webauthn.api.core.BufferSource;
-import org.springframework.security.webauthn.jackson.DurationSerializer;
 
 import java.time.Duration;
 import java.util.ArrayList;
@@ -13,7 +10,6 @@ import java.util.List;
 /**
  * https://www.w3.org/TR/webauthn-3/#dictionary-makecredentialoptions
  */
-@JsonInclude(JsonInclude.Include.NON_NULL)
 public class PublicKeyCredentialCreationOptions {
 	/**
 	 * This member contains data about the Relying Party responsible for the request.
@@ -49,8 +45,6 @@ public class PublicKeyCredentialCreationOptions {
 	 */
 	private final List<PublicKeyCredentialParameters> pubKeyCredParams;
 
-	// FIXME: @JsonSerialize should be removed in favor of externalized configuration
-	@JsonSerialize(using = DurationSerializer.class)
 	private Duration timeout;
 
 	private final List<PublicKeyCredentialDescriptor> excludeCredentials;

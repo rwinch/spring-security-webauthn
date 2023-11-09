@@ -1,4 +1,4 @@
-package org.springframework.security.webauthn.api.registration;
+package org.springframework.security.webauthn.jackson;
 
 import com.fasterxml.jackson.core.JacksonException;
 import com.fasterxml.jackson.core.JsonParser;
@@ -6,6 +6,9 @@ import com.fasterxml.jackson.core.JsonToken;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
+import org.springframework.security.webauthn.api.registration.AuthenticationExtensionsClientOutputs;
+import org.springframework.security.webauthn.api.registration.CredentialPropertiesOutput;
+import org.springframework.security.webauthn.api.registration.DefaultAuthenticationExtensionsClientOutputs;
 
 import java.io.IOException;
 import java.util.Map;

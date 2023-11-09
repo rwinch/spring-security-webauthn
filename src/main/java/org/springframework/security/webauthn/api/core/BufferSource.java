@@ -1,12 +1,11 @@
-package org.springframework.security.webauthn.api.core;
 
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import org.springframework.security.webauthn.jackson.BufferSourceSerializer;
+package org.springframework.security.webauthn.api.core;
 
 import java.security.SecureRandom;
 import java.util.Base64;
 
-@JsonSerialize(using = BufferSourceSerializer.class) // FIXME This should be done via mixins
+// FIXME: Consider replacing with UrlBase64String
+
 public class BufferSource {
 
 	private static final Base64.Encoder ENCODER = Base64.getUrlEncoder().withoutPadding();

@@ -1,14 +1,10 @@
 package org.springframework.security.webauthn.api.registration;
 
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 import org.springframework.security.webauthn.api.core.ArrayBuffer;
 
 /**
  * https://www.w3.org/TR/webauthn-3/#iface-pkcredential
  */
-
-@JsonDeserialize(builder = PublicKeyCredential.PublicKeyCredentialBuilder.class)  // FIXME: Externalize JsonDeserialize
 public class PublicKeyCredential<R extends AuthenticatorResponse> {
 	/**
 	 * This attribute is inherited from Credential, though PublicKeyCredential overrides Credential's getter, instead
@@ -60,7 +56,6 @@ public class PublicKeyCredential<R extends AuthenticatorResponse> {
 		return new PublicKeyCredentialBuilder<T>();
 	}
 
-	@JsonPOJOBuilder(withPrefix = "") // FIXME: Externalize JsonPOJOBuilder
 	public static final class PublicKeyCredentialBuilder<R extends AuthenticatorResponse> {
 		private String id;
 		private PublicKeyCredentialType type;

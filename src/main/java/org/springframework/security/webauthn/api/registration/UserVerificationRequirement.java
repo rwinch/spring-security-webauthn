@@ -1,11 +1,8 @@
 package org.springframework.security.webauthn.api.registration;
 
 
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.yubico.webauthn.data.AuthenticatorDataFlags;
-import org.springframework.security.webauthn.jackson.UserVerificationRequirementSerializer;
 
-@JsonSerialize(using = UserVerificationRequirementSerializer.class)
 public enum UserVerificationRequirement {
 
 	/**
