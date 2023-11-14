@@ -30,14 +30,14 @@ public class TestPublicKeyCredentialCreationOptions {
 				.build();
 		BufferSource challenge = BufferSource.fromBase64("IBQnuY1Z0K1HqBoFWCp2xlJl8-oq_aFIXzyT_F0-0GU");
 		PublicKeyCredentialRpEntity rp = PublicKeyCredentialRpEntity.builder()
-				.id("localhost")
+				.id("example.localhost")
 				.name("SimpleWebAuthn Example")
 				.build();
 		BufferSource userId = BufferSource.fromBase64("oWJtkJ6vJ_m5b84LB4_K7QKTCTEwLIjCh4tFMCGHO4w");
 		PublicKeyCredentialUserEntity userEntity = PublicKeyCredentialUserEntity.builder()
-				.displayName("user@localhost")
+				.displayName("user@example.localhost")
 				.id(userId)
-				.name("user@localhost")
+				.name("user@example.localhost")
 				.build();
 		DefaultAuthenticationExtensionsClientInputs clientInputs = new DefaultAuthenticationExtensionsClientInputs();
 		clientInputs.add(ImmutableAuthenticationExtensionsClientInput.credProps);

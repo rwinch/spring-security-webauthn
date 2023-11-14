@@ -5,14 +5,11 @@ spring:
   ssl:
     bundle:
       pem:
-        localhost:
+        example.localhost:
           keystore:
-            certificate: "classpath:localhost.example.pem"
-            private-key: "classpath:localhost.example-key.pem"
+            certificate: "classpath:example.localhost.pem"
+            private-key: "classpath:example.localhost-key.pem"
 server:
   port: 8443
   ssl:
-    bundle: localhost
-#    key-store: "classpath:localhost-key.pem"
-#    key-store-password: "password"
-#    key-password: "password"
+    bundle: example.localhost

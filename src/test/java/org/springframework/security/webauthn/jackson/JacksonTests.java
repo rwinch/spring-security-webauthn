@@ -174,14 +174,14 @@ class JacksonTests {
 				        }
 				    ],
 				    "rp": {
-				        "id": "localhost",
+				        "id": "example.localhost",
 				        "name": "SimpleWebAuthn Example"
 				    },
 				    "timeout": 60000,
 				    "user": {
-				        "displayName": "user@localhost",
+				        "displayName": "user@example.localhost",
 				        "id": "oWJtkJ6vJ_m5b84LB4_K7QKTCTEwLIjCh4tFMCGHO4w",
-				        "name": "user@localhost"
+				        "name": "user@example.localhost"
 				    }
 				}
 				""";
@@ -227,7 +227,7 @@ class JacksonTests {
 		PublicKeyCredentialRequestOptions credentialRequestOptions = PublicKeyCredentialRequestOptions.builder()
 				.allowCredentials(Arrays.asList())
 				.challenge(BufferSource.fromBase64("I69THX904Q8ONhCgUgOu2PCQCcEjTDiNmokdbgsAsYU"))
-				.rpId("localhost")
+				.rpId("example.localhost")
 				.timeout(Duration.ofMinutes(5))
 				.userVerification(UserVerificationRequirement.REQUIRED)
 				.build();
@@ -239,7 +239,7 @@ class JacksonTests {
     "allowCredentials": [],
     "timeout": 300000,
     "userVerification": "required",
-    "rpId": "localhost"
+    "rpId": "example.localhost"
   }
   
 """;

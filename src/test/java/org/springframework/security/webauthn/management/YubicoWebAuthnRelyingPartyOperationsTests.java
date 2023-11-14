@@ -42,10 +42,10 @@ class YubicoWebAuthnRelyingPartyOperationsTests {
 	private static byte BS = 0x10;
 
 	YubicoWebAuthnRelyingPartyOperations rpOperations = new YubicoWebAuthnRelyingPartyOperations(new MapPublicKeyCredentialUserEntityRepository(), this.credentials, PublicKeyCredentialRpEntity.builder()
-		.id("localhost")
+		.id("example.localhost")
 		.name("Spring Security Relying Party")
 		.build(),
-		Set.of("http://localhost:8080"));
+		Set.of("https://example.localhost:8080"));
 
 	String label = "Phone";
 
@@ -59,7 +59,7 @@ class YubicoWebAuthnRelyingPartyOperationsTests {
 		PublicKeyCredentialCreationOptions options = TestPublicKeyCredentialCreationOptions.createPublicKeyCredentialCreationOptions()
 				.build();
 		AuthenticatorAttestationResponse.AuthenticatorAttestationResponseBuilder responseBldr = TestAuthenticatorAttestationResponse.createAuthenticatorAttestationResponse();
-		responseBldr.clientDataJSON(new ArrayBuffer(Utf8.encode("{\"type\":\"webauthn.INVALID\",\"challenge\":\"IBQnuY1Z0K1HqBoFWCp2xlJl8-oq_aFIXzyT_F0-0GU\",\"origin\":\"http://localhost:8080\",\"crossOrigin\":false}")));
+		responseBldr.clientDataJSON(new ArrayBuffer(Utf8.encode("{\"type\":\"webauthn.INVALID\",\"challenge\":\"IBQnuY1Z0K1HqBoFWCp2xlJl8-oq_aFIXzyT_F0-0GU\",\"origin\":\"https://example.localhost:8080\",\"crossOrigin\":false}")));
 		PublicKeyCredential publicKey = TestPublicKeyCredential.createPublicKeyCredential(responseBldr.build())
 				.build();
 		RelyingPartyRegistrationRequest registrationRequest = new RelyingPartyRegistrationRequest(options, new RelyingPartyPublicKey(publicKey, this.label));
@@ -78,7 +78,7 @@ class YubicoWebAuthnRelyingPartyOperationsTests {
 				.challenge(BufferSource.fromBase64("h0vgwGQjoCzAzDUsmzPpk-JVIJRRgn0L4KVSYNRcEZc"))
 				.build();
 		AuthenticatorAttestationResponse.AuthenticatorAttestationResponseBuilder responseBldr = TestAuthenticatorAttestationResponse.createAuthenticatorAttestationResponse();
-		responseBldr.clientDataJSON(new ArrayBuffer(Utf8.encode("{\"type\":\"webauthn.create\",\"challenge\":\"IBQnuY1Z0K1HqBoFWCp2xlJl8-oq_aFIXzyT_F0-0GU\",\"origin\":\"http://localhost:8080\",\"crossOrigin\":false}")));
+		responseBldr.clientDataJSON(new ArrayBuffer(Utf8.encode("{\"type\":\"webauthn.create\",\"challenge\":\"IBQnuY1Z0K1HqBoFWCp2xlJl8-oq_aFIXzyT_F0-0GU\",\"origin\":\"https://example.localhost:8080\",\"crossOrigin\":false}")));
 		PublicKeyCredential publicKey = TestPublicKeyCredential.createPublicKeyCredential(responseBldr.build())
 				.build();
 		RelyingPartyRegistrationRequest registrationRequest = new RelyingPartyRegistrationRequest(options, new RelyingPartyPublicKey(publicKey, this.label));

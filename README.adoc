@@ -1,3 +1,33 @@
+This is a sample application to experiment with passkeys and eventually be merged into Spring Security.
+
+== https://example.localhost.example:8443
+
+Many Authenticators do will not work unless https is used & some will not work with localhost.
+This section discusses how to setup your workspace to use https://example.localhost:8443/ with a certificate that is signed by a trusted CA.
+
+=== Using a Valid Domain
+
+For security reasons, many Authenticators do not allow using localhost as the host for WebAuthn.
+The WebAuthn specification requires that the RP ID is a valid, effective domain.
+See https://github.com/w3c/webauthn/issues/1204[w3c/webauthn#1204] for details.
+
+ https://datatracker.ietf.org/doc/html/rfc2606#section-2[RFC2606 states] that .localhost is a valid TLD that is typically mapped to `127.0.0.1`.
+ This means that we can use example.localhost as our host name.
+
+ NOTE: If this does not resolve to 127.0.0.1, you can https://docs.rackspace.com/docs/modify-your-hosts-file[edit your hosts file] to map passkeys.localhost to 127.0.0.1.
+
++
+
+./etc/hosts
+----
+127.0.1.1	example.localhost
+----
+
+=== mkcert
+
+
+
+
 This repository is exploring multifactor authentication with webauthn. To follow along on the discussions see https://github.com/spring-projects/spring-security/pull/6842
 
 * Visit http://localhost:8080/

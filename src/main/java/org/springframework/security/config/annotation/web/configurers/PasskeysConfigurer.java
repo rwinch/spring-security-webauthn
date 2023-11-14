@@ -102,10 +102,10 @@ public class PasskeysConfigurer<B extends HttpSecurityBuilder<B>>
 
 	private YubicoWebAuthnRelyingPartyOperations webAuthnRelyingPartyOperations(PublicKeyCredentialUserEntityRepository userEntities, UserCredentialRepository userCredentials) {
 		YubicoWebAuthnRelyingPartyOperations result =  new YubicoWebAuthnRelyingPartyOperations(userEntities, userCredentials, PublicKeyCredentialRpEntity.builder()
-				.id("localhost.example")
+				.id("example.localhost")
 				.name("Spring Security Relying Party")
 				.build(),
-				Set.of("https://localhost.example:8443"));
+				Set.of("https://example.localhost:8443"));
 		return result;
 	}
 }

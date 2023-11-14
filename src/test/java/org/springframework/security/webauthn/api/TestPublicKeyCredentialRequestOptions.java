@@ -23,7 +23,7 @@ public class TestPublicKeyCredentialRequestOptions {
 
 	public static PublicKeyCredentialRequestOptions.PublicKeyCredentialRequestOptionsBuilder create() {
 		return PublicKeyCredentialRequestOptions.builder()
-				.rpId("localhost.example")
+				.rpId("example.localhost")
 				.challenge(BufferSource.fromBase64("cQfdGrj9zDg3zNBkOH3WPL954FTOShVy0-CoNgSewNM"));
 	}
 }
