@@ -55,7 +55,7 @@ public class YubicoWebAuthnRelyingPartyOperations implements WebAuthnRelyingPart
 
 		// FIXME: Remove hard coded values
 		AuthenticatorSelectionCriteria authenticatorSelection = AuthenticatorSelectionCriteria.builder()
-				.authenticatorAttachment(AuthenticatorAttachment.CROSS_PLATFORM)
+//				.authenticatorAttachment(AuthenticatorAttachment.CROSS_PLATFORM) // specifying this just limits to either platform or cross platform
 				.userVerification(UserVerificationRequirement.PREFERRED)
 				.residentKey(ResidentKeyRequirement.REQUIRED) // REQUIRED
 				.build();
