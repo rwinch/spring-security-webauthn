@@ -140,14 +140,10 @@ final class YubicoConverter {
 
 	private static void registerOutputWithBuilder(AuthenticationExtensionsClientOutput<?> output, ClientRegistrationExtensionOutputs.ClientRegistrationExtensionOutputsBuilder result) {
 		if (output instanceof CredentialPropertiesOutput credentialPropertiesOutput) {
-			// FIXME: Cannot create the extensions without JSON
-			String json = "{ \"rk\": " + credentialPropertiesOutput.getOutput().isRk() + "}";
-			ObjectMapper mapper = new ObjectMapper();
-			try {
-				result.credProps(mapper.readValue(json, Extensions.CredentialProperties.CredentialPropertiesOutput.class));
-			} catch(IOException e) {
-				throw new RuntimeException(e);
-			}
+			Extensions.CredentialProperties.CredentialPropertiesOutput yubicoOutput = Extensions.CredentialProperties.CredentialPropertiesOutput.builder()
+					.rk(credentialPropertiesOutput.getOutput().isRk())
+					.build();
+			result.credProps(yubicoOutput);
 		}
 	}
 
