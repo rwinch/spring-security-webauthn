@@ -132,9 +132,11 @@ final class YubicoConverter {
 
 	private static ClientRegistrationExtensionOutputs convertClientExtensionResults(AuthenticationExtensionsClientOutputs clientExtensionResults) {
 		ClientRegistrationExtensionOutputs.ClientRegistrationExtensionOutputsBuilder result = ClientRegistrationExtensionOutputs.builder();
-		clientExtensionResults.getOutputs().forEach(output -> {
-			registerOutputWithBuilder(output, result);
-		});
+		if (clientExtensionResults != null) {
+			clientExtensionResults.getOutputs().forEach(output -> {
+				registerOutputWithBuilder(output, result);
+			});
+		}
 		return result.build();
 	}
 

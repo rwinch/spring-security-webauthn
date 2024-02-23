@@ -350,13 +350,26 @@ public class DefaultLoginPageGeneratingFilter extends GenericFilterBean {
 	}
 
 	private static final String SCRIPT_TEMPLATE = """
-		<script src="https://unpkg.com/@simplewebauthn/browser@8.3.1/dist/bundle/index.umd.min.js"></script>
 		<script type="text/javascript">
 		<!--
 			document.addEventListener("DOMContentLoaded", setup);
+			const base64url = {
+				encode: function(buffer) {
+					const base64 = window.btoa(String.fromCharCode(...new Uint8Array(buffer)));
+					return base64.replace(/=/g, '').replace(/\\+/g, '-').replace(/\\//g, '_');
+				},
+				decode: function(base64url) {
+					const base64 = base64url.replace(/-/g, '+').replace(/_/g, '/');
+					const binStr = window.atob(base64);
+					const bin = new Uint8Array(binStr.length);
+					for (let i = 0; i < binStr.length; i++) {
+						bin[i] = binStr.charCodeAt(i);
+					}
+					return bin.buffer;
+				}
+			}
 
 			function setup() {
-				const { startAuthentication } = SimpleWebAuthnBrowser;
 
 				// <button>
 				const passkeySignin = document.getElementById('passkey-signin');
@@ -364,23 +377,18 @@ public class DefaultLoginPageGeneratingFilter extends GenericFilterBean {
 				// Start authentication when the user clicks a button
 				passkeySignin.addEventListener('click', async () => {
 
-					// GET authentication options from the endpoint that calls
-					// @simplewebauthn/server -> generateAuthenticationOptions()
-					const resp = await fetch('/webauthn/authenticate/options');
+					const optionsResponse = await fetch('/webauthn/authenticate/options');
+					const options = await optionsResponse.json();
+					options.challenge = base64url.decode(options.challenge);
 
-					let asseResp;
-					try {
-						// Pass the options to the authenticator and wait for a response
-						asseResp = await startAuthentication(await resp.json());
-					} catch (error) {
-						// Some basic error handling
-						// FIXME: there is no elemError
-						elemError.innerText = error;
-						throw error;
-					}
+					// Invoke the WebAuthn get() method.
+					const cred = await navigator.credentials.get({
+						publicKey: options,
+						// Request a conditional UI
+						mediation: 'conditional'
+					});
 
 					// POST the response to the endpoint that calls
-					// @simplewebauthn/server -> verifyAuthenticationResponse()
 					const authenticationResponse = await fetch('/login/webauthn',
 						{
 							method: 'POST',

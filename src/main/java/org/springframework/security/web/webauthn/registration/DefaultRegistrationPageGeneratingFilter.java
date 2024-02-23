@@ -112,7 +112,6 @@ public class DefaultRegistrationPageGeneratingFilter extends OncePerRequestFilte
 				<title>WebAuthn Registration</title>
 				<link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-/Y6pD6FV/Vv2HJnA6t+vslU6fwYXjCFtcEpHbNJ0lyAFsXTsjBbfaDjzALeQsN6M" crossorigin="anonymous">
 				<link href="https://getbootstrap.com/docs/4.0/examples/signin/signin.css" rel="stylesheet" crossorigin="anonymous"/>
-				<script src="https://unpkg.com/@simplewebauthn/browser@8.3.1/dist/bundle/index.umd.min.js"></script>
 				<script type="text/javascript" id="registration-script" data-csrf-token="${csrfToken}" data-csrf-header-name="${csrfHeaderName}">
 				<!--
 					document.addEventListener("DOMContentLoaded", function(event) {
@@ -121,11 +120,25 @@ public class DefaultRegistrationPageGeneratingFilter extends OncePerRequestFilte
 					function setVisibility(elmt, value) {
 						elmt.style.display = value ? 'block' : 'none'
 					}
+					const base64url = {
+						encode: function(buffer) {
+							const base64 = window.btoa(String.fromCharCode(...new Uint8Array(buffer)));
+							return base64.replace(/=/g, '').replace(/\\+/g, '-').replace(/\\//g, '_');
+						},
+						decode: function(base64url) {
+							const base64 = base64url.replace(/-/g, '+').replace(/_/g, '/');
+							const binStr = window.atob(base64);
+							const bin = new Uint8Array(binStr.length);
+							for (let i = 0; i < binStr.length; i++) {
+								bin[i] = binStr.charCodeAt(i);
+							}
+							return bin.buffer;
+						}
+					}
 					function setup() {
 						const config = document.getElementById('registration-script').dataset
 						const csrfToken = config.csrfToken
 						const csrfHeaderName = config.csrfHeaderName
-						const { startRegistration } = SimpleWebAuthnBrowser;
 						// <button>
 						const elemBegin = document.getElementById('register');
 						// <span>/<p>/etc...
@@ -150,29 +163,36 @@ public class DefaultRegistrationPageGeneratingFilter extends OncePerRequestFilte
 								return;
 							}
 
-							// GET registration options from the endpoint that calls
-							// @simplewebauthn/server -> generateRegistrationOptions()
-							const resp = await fetch('${contextPath}/webauthn/register/options');
-
-							let attResp;
-							try {
-								// Pass the options to the authenticator and wait for a response
-								const options = await resp.json()
-								attResp = await startRegistration(options);
-							} catch (error) {
-								// FIXME: For error handling see https://www.w3.org/TR/webauthn-3/#sctn-op-make-cred
-								// Some basic error handling
-								setVisibility(elemError, true)
-								if (error.name === 'InvalidStateError') {
-									elemError.innerText = 'Error: Authenticator was probably already registered by user';
-								} else {
-									elemError.innerText = error;
+							const optionsReponse = await fetch('/webauthn/register/options')
+							const options = await optionsReponse.json();
+							options.user.id = new TextEncoder().encode(options.user.id);
+							options.challenge = base64url.decode(options.challenge);
+							if (options.excludeCredentials) {
+								for (let cred of options.excludeCredentials) {
+									cred.id = base64url.decode(cred.id);
 								}
-								throw error;
 							}
+							const credential = await navigator.credentials.create({
+								publicKey: options,
+							});
+
+							credential.rawId = credential.id; // Pass a Base64URL encoded ID string.
+							 
+							// The authenticatorAttachment string in the PublicKeyCredential object is a new addition in WebAuthn L3.
+							if (credential.authenticatorAttachment) {
+								credential.authenticatorAttachment = credential.authenticatorAttachment;
+							}
+
+							// Base64URL encode some values.
+							credential.response.clientDataJSON = base64url.encode(credential.response.clientDataJSON);
+							credential.response.attestationObject = base64url.encode(credential.response.attestationObject);
+		
+							// Obtain transports.
+							credential.response.transports = credential.response.getTransports ? credential.response.getTransports() : [];
+
 							const registrationRequest = {
 								"publicKey": {
-									"credential": attResp,
+									"credential": credential,
 									"label": label,
 								}
 							}
@@ -180,7 +200,6 @@ public class DefaultRegistrationPageGeneratingFilter extends OncePerRequestFilte
 							console.log(registrationRequestJSON)
 
 							// POST the response to the endpoint that calls
-							// @simplewebauthn/server -> verifyRegistrationResponse()
 							const verificationResp = await fetch('${contextPath}/webauthn/register', {
 								method: 'POST',
 								headers: {
@@ -192,7 +211,7 @@ public class DefaultRegistrationPageGeneratingFilter extends OncePerRequestFilte
 
 							// Wait for the results of verification
 							const verificationJSON = await verificationResp.json();
-			
+
 							// Show UI appropriate for the `verified` status
 							if (verificationJSON && verificationJSON.verified) {
 								window.location.href = '${contextPath}/webauthn/register?success'
