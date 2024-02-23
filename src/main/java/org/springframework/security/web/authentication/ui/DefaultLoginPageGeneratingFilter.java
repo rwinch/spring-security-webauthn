@@ -240,7 +240,7 @@ public class DefaultLoginPageGeneratingFilter extends GenericFilterBean {
 			sb.append("        <h2 class=\"form-signin-heading\">Please sign in</h2>\n");
 			sb.append("          <label for=\"username\" class=\"sr-only\">Username</label>\n");
 			sb.append("          <input type=\"text\" id=\"username\" name=\"" + this.usernameParameter
-					+ "\" class=\"form-control\" placeholder=\"Username\" required autofocus>\n");
+					+ "\" class=\"form-control\" placeholder=\"Username\" autocomplete=\"username webauthn\" required autofocus>\n");
 			sb.append("        </p>\n");
 			sb.append("        <p>\n");
 			sb.append("          <label for=\"password\" class=\"sr-only\">Password</label>\n");
