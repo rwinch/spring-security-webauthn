@@ -56,7 +56,7 @@ public class PasskeysConfigurer<B extends HttpSecurityBuilder<B>>
 		webAuthnAuthnFilter.setAuthenticationManager(new ProviderManager(new WebAuthnAuthenticationProvider(rpOperations, userDetailsService)));
 		http.addFilterBefore(webAuthnAuthnFilter, BasicAuthenticationFilter.class);
 		http.addFilterAfter(new WebAuthnRegistrationFilter(userCredentials, rpOperations), AuthorizationFilter.class);
-		http.addFilterBefore(new PublicKeyCredentialCreationOptionsFilter(rpOperations), AuthorizationFilter.class);
+		http.addFilterAfter(new PublicKeyCredentialCreationOptionsFilter(rpOperations), AuthorizationFilter.class);
 		http.addFilterAfter(new DefaultRegistrationPageGeneratingFilter(userEntities, userCredentials), AuthorizationFilter.class);
 		http.addFilterBefore(new PublicKeyCredentialRequestOptionsFilter(rpOperations), AuthorizationFilter.class);
 		DefaultLoginPageGeneratingFilter loginPageGeneratingFilter = http
