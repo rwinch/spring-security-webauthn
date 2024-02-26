@@ -27,11 +27,6 @@ public class MapUserCredentialRepository implements UserCredentialRepository {
 
 	private final Map<BufferSource,List<UserCredential>> userEntityIdToUserCredentials = new HashMap<>();
 
-	public MapUserCredentialRepository() {
-		System.out.println("created");
-	}
-
-
 	@Override
 	public void delete(ArrayBuffer credentialId) {
 		UserCredential userCredential = this.credentialIdToUserCredential.remove(credentialId);
