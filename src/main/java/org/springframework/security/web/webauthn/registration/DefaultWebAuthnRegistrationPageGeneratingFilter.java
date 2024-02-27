@@ -32,6 +32,7 @@ import org.springframework.security.webauthn.management.UserCredential;
 import org.springframework.security.webauthn.management.UserCredentialRepository;
 import org.springframework.util.Assert;
 import org.springframework.web.filter.OncePerRequestFilter;
+import org.springframework.web.util.HtmlUtils;
 
 import java.io.IOException;
 import java.util.Collections;
@@ -100,7 +101,7 @@ public class DefaultWebAuthnRegistrationPageGeneratingFilter extends OncePerRequ
 		String html = "";
 		for (UserCredential credential : credentials) {
 			Map<String, Object> context = new HashMap<>(baseContext);
-			context.put("label", credential.getLabel());
+			context.put("label", HtmlUtils.htmlEscape(credential.getLabel()));
 			context.put("created", credential.getCreated());
 			context.put("lastUsed", credential.getLastUsed());
 			context.put("credentialId", credential.getCredentialId().getBytesAsBase64());
@@ -155,27 +156,24 @@ public class DefaultWebAuthnRegistrationPageGeneratingFilter extends OncePerRequ
 						const config = document.getElementById('registration-script').dataset
 						const csrfToken = config.csrfToken
 						const csrfHeaderName = config.csrfHeaderName
-						// <button>
-						const elemBegin = document.getElementById('register');
-						// <span>/<p>/etc...
-						const elemSuccess = document.getElementById('success');
-						// <span>/<p>/etc...
-						const elemError = document.getElementById('error');
-						setVisibility(elemSuccess, false)
-						setVisibility(elemError, false)
+						const register = document.getElementById('register');
+						const success = document.getElementById('success');
+						const error = document.getElementById('error');
+						setVisibility(success, false)
+						setVisibility(error, false)
 
 						// Start registration when the user clicks a button
-						elemBegin.addEventListener('click', async () => {
+						register.addEventListener('click', async () => {
 							// Reset success/error messages
-							setVisibility(elemSuccess, false)
-							setVisibility(elemError, false)
-							elemSuccess.innerHTML = '';
-							elemError.innerHTML = '';
+							setVisibility(success, false)
+							setVisibility(error, false)
+							success.innerHTML = '';
+							error.innerHTML = '';
 
 							const label = document.getElementById('label').value
 							if (!label) {
-								setVisibility(elemError, true)
-								elemError.innerText = 'Error: Passkey Label is required'
+								setVisibility(error, true)
+								error.innerText = 'Error: Passkey Label is required'
 								return;
 							}
 
@@ -193,7 +191,7 @@ public class DefaultWebAuthnRegistrationPageGeneratingFilter extends OncePerRequ
 							});
 
 							credential.rawId = credential.id; // Pass a Base64URL encoded ID string.
-							 
+
 							// The authenticatorAttachment string in the PublicKeyCredential object is a new addition in WebAuthn L3.
 							if (credential.authenticatorAttachment) {
 								credential.authenticatorAttachment = credential.authenticatorAttachment;
@@ -232,8 +230,8 @@ public class DefaultWebAuthnRegistrationPageGeneratingFilter extends OncePerRequ
 							if (verificationJSON && verificationJSON.verified) {
 								window.location.href = '${contextPath}/webauthn/register?success'
 							} else {
-								setVisibility(elemError, true)
-								elemError.innerHTML = `Oh no, something went wrong! Response: <pre>${JSON.stringify(verificationJSON,null,2)}</pre>`;
+								setVisibility(error, true)
+								error.innerHTML = `Registration failed! Response: <pre>${JSON.stringify(verificationJSON,null,2)}</pre>`;
 							}
 						});
 					}
