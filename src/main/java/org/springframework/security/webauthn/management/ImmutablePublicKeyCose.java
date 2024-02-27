@@ -17,6 +17,7 @@
 package org.springframework.security.webauthn.management;
 
 import java.util.Arrays;
+import java.util.Base64;
 
 public class ImmutablePublicKeyCose implements PublicKeyCose {
 	private final byte[] bytes;
@@ -28,5 +29,10 @@ public class ImmutablePublicKeyCose implements PublicKeyCose {
 	@Override
 	public byte[] getBytes() {
 		return Arrays.copyOf(this.bytes, this.bytes.length);
+	}
+
+	public static ImmutablePublicKeyCose fromBase64(String base64) {
+		byte[] decode = Base64.getUrlDecoder().decode(base64);
+		return new ImmutablePublicKeyCose(decode);
 	}
 }
