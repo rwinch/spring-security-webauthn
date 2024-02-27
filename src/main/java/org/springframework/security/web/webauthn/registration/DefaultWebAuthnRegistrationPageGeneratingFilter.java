@@ -1,5 +1,5 @@
 /*
- * Copyright 2002-2023 the original author or authors.
+ * Copyright 2002-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,6 +30,7 @@ import org.springframework.security.webauthn.api.registration.PublicKeyCredentia
 import org.springframework.security.webauthn.management.PublicKeyCredentialUserEntityRepository;
 import org.springframework.security.webauthn.management.UserCredential;
 import org.springframework.security.webauthn.management.UserCredentialRepository;
+import org.springframework.util.Assert;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
@@ -39,7 +40,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
 
-public class DefaultRegistrationPageGeneratingFilter extends OncePerRequestFilter {
+/**
+ * A {@link jakarta.servlet.Filter} that renders a default WebAuthn registration page.
+ *
+ * @author Rob Winch
+ * @since 6.3
+ */
+public class DefaultWebAuthnRegistrationPageGeneratingFilter extends OncePerRequestFilter {
 
 	private RequestMatcher matcher = AntPathRequestMatcher.antMatcher(HttpMethod.GET, "/webauthn/register");
 
@@ -47,7 +54,15 @@ public class DefaultRegistrationPageGeneratingFilter extends OncePerRequestFilte
 
 	private final UserCredentialRepository userCredentials;
 
-	public DefaultRegistrationPageGeneratingFilter(PublicKeyCredentialUserEntityRepository userEntities, UserCredentialRepository userCredentials) {
+	/**
+	 * Creates a new instance.
+	 *
+	 * @param userEntities the {@link PublicKeyCredentialUserEntity}
+	 * @param userCredentials
+	 */
+	public DefaultWebAuthnRegistrationPageGeneratingFilter(PublicKeyCredentialUserEntityRepository userEntities, UserCredentialRepository userCredentials) {
+		Assert.notNull(userEntities, "userEntities cannot be null");
+		Assert.notNull(userCredentials, "userCredentials cannot be null");
 		this.userEntities = userEntities;
 		this.userCredentials = userCredentials;
 	}
@@ -63,6 +78,7 @@ public class DefaultRegistrationPageGeneratingFilter extends OncePerRequestFilte
 		boolean success = request.getParameterMap().containsKey("success");
 		CsrfToken csrfToken = (CsrfToken) request.getAttribute(CsrfToken.class.getName());
 		response.setContentType(MediaType.TEXT_HTML_VALUE);
+		response.setStatus(HttpServletResponse.SC_OK);
 		Map<String, Object> context = new HashMap<>();
 		context.put("contextPath", request.getContextPath());
 		context.put("csrfToken", csrfToken.getToken());
@@ -163,8 +179,8 @@ public class DefaultRegistrationPageGeneratingFilter extends OncePerRequestFilte
 								return;
 							}
 
-							const optionsReponse = await fetch('/webauthn/register/options')
-							const options = await optionsReponse.json();
+							const optionsResponse = await fetch('${contextPath}/webauthn/register/options')
+							const options = await optionsResponse.json();
 							options.user.id = new TextEncoder().encode(options.user.id);
 							options.challenge = base64url.decode(options.challenge);
 							if (options.excludeCredentials) {
