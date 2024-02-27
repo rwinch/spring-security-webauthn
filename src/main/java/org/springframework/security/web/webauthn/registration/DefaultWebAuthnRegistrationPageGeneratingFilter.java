@@ -177,7 +177,13 @@ public class DefaultWebAuthnRegistrationPageGeneratingFilter extends OncePerRequ
 								return;
 							}
 
-							const optionsResponse = await fetch('${contextPath}/webauthn/register/options')
+							const optionsResponse = await fetch('${contextPath}/webauthn/register/options', {
+								method: 'POST',
+								headers: {
+									'Content-Type': 'application/json',
+									[csrfHeaderName]: csrfToken,
+								},
+							});
 							const options = await optionsResponse.json();
 							options.user.id = new TextEncoder().encode(options.user.id);
 							options.challenge = base64url.decode(options.challenge);

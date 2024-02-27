@@ -1,5 +1,5 @@
 /*
- * Copyright 2002-2023 the original author or authors.
+ * Copyright 2002-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,12 +16,12 @@
 
 package org.springframework.security.web.webauthn.registration;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
@@ -31,20 +31,21 @@ import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.security.web.util.matcher.RequestMatcher;
-import org.springframework.security.webauthn.api.registration.*;
+import org.springframework.security.webauthn.api.registration.PublicKeyCredentialCreationOptions;
 import org.springframework.security.webauthn.jackson.WebauthnJackson2Module;
 import org.springframework.security.webauthn.management.WebAuthnRelyingPartyOperations;
-import org.springframework.security.webauthn.management.YubicoWebAuthnRelyingPartyOperations;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 
-
+/**
+ * A {@link jakarta.servlet.Filter} that can be used to provide the
+ */
 public class PublicKeyCredentialCreationOptionsFilter extends OncePerRequestFilter {
+
 	private PublicKeyCredentialCreationOptionsRepository repository = new HttpSessionPublicKeyCredentialCreationOptionsRepository();
 
-	// FIXME: consider require post since changes state
-	private RequestMatcher matcher = new AntPathRequestMatcher("/webauthn/register/options");
+	private RequestMatcher matcher = AntPathRequestMatcher.antMatcher(HttpMethod.POST, "/webauthn/register/options");
 
 	private final WebAuthnRelyingPartyOperations rpOperations;
 
