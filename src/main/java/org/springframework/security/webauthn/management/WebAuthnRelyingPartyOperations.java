@@ -20,8 +20,16 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.webauthn.api.authentication.PublicKeyCredentialRequestOptions;
 import org.springframework.security.webauthn.api.registration.PublicKeyCredentialCreationOptions;
 
+// FIXME: Maybe use Supplier<Authentication> so that it isn't looked up unnecessarily
 public interface WebAuthnRelyingPartyOperations {
 	// FIXME: Pass in the host (can have an allow list), perhaps pass PublicKeyCredentialUserEntity
+
+	/**
+	 * Creates the {@link PublicKeyCredentialCreationOptions}.
+	 *
+	 * @param authentication
+	 * @return the {@link PublicKeyCredentialCreationOptions} for the {@link Authentication} passed in. Cannot be null.
+	 */
 	PublicKeyCredentialCreationOptions createPublicKeyCredentialCreationOptions(Authentication authentication);
 
 	UserCredential registerCredential(RelyingPartyRegistrationRequest relyingPartyRegistrationRequest);

@@ -16,6 +16,74 @@
 
 package org.springframework.security.webauthn.api.registration;
 
+import org.springframework.security.webauthn.api.core.BufferSource;
+
+import java.util.Arrays;
+import java.util.List;
+
 public class PublicKeyCredentialDescriptor {
-	private String type;
+
+	private final PublicKeyCredentialType type;
+
+	private final BufferSource id;
+
+	private final List<AuthenticatorTransport> transports;
+
+	private PublicKeyCredentialDescriptor(PublicKeyCredentialType type, BufferSource id, List<AuthenticatorTransport> transports) {
+		this.type = type;
+		this.id = id;
+		this.transports = transports;
+	}
+
+	public PublicKeyCredentialType getType() {
+		return this.type;
+	}
+
+	public BufferSource getId() {
+		return this.id;
+	}
+
+	public List<AuthenticatorTransport> getTransports() {
+		return this.transports;
+	}
+
+	public static PublicKeyCredentialDescriptorBuilder builder() {
+		return new PublicKeyCredentialDescriptorBuilder();
+	}
+
+	public static final class PublicKeyCredentialDescriptorBuilder {
+		private PublicKeyCredentialType type = PublicKeyCredentialType.PUBLIC_KEY;
+		private BufferSource id;
+		private List<AuthenticatorTransport> transports;
+
+		private PublicKeyCredentialDescriptorBuilder() {
+		}
+
+		public static PublicKeyCredentialDescriptorBuilder builder() {
+			return new PublicKeyCredentialDescriptorBuilder();
+		}
+
+		public PublicKeyCredentialDescriptorBuilder type(PublicKeyCredentialType type) {
+			this.type = type;
+			return this;
+		}
+
+		public PublicKeyCredentialDescriptorBuilder id(BufferSource id) {
+			this.id = id;
+			return this;
+		}
+
+		public PublicKeyCredentialDescriptorBuilder transports(List<AuthenticatorTransport> transports) {
+			this.transports = transports;
+			return this;
+		}
+
+		public PublicKeyCredentialDescriptorBuilder transports(AuthenticatorTransport... transports) {
+			return transports(Arrays.asList(transports));
+		}
+
+		public PublicKeyCredentialDescriptor build() {
+			return new PublicKeyCredentialDescriptor(this.type, this.id, this.transports);
+		}
+	}
 }

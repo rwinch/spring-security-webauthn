@@ -38,9 +38,7 @@ import org.springframework.security.webauthn.api.registration.ResidentKeyRequire
 import org.springframework.security.webauthn.api.registration.UserVerificationRequirement;
 
 import java.io.IOException;
-import java.util.Collections;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 final class YubicoConverter {
@@ -322,5 +320,17 @@ final class YubicoConverter {
 		return AssertionExtensionInputs.builder()
 				// FIXME: Need to do the conversions here
 				.build();
+	}
+
+	public static List<AuthenticatorTransport> transports(Optional<SortedSet<com.yubico.webauthn.data.AuthenticatorTransport>> transports) {
+		return transports
+			.orElse(Collections.emptySortedSet())
+			.stream()
+			.map(YubicoConverter::convertTransport)
+			.collect(Collectors.toList());
+	}
+
+	public static AuthenticatorTransport convertTransport(com.yubico.webauthn.data.AuthenticatorTransport transport) {
+		return AuthenticatorTransport.valueOf(transport.getId().toUpperCase());
 	}
 }

@@ -82,9 +82,14 @@ public class YubicoWebAuthnRelyingPartyOperations implements WebAuthnRelyingPart
 	private List<PublicKeyCredentialDescriptor> convertCredentials(List<UserCredential> userCredentials) {
 		List result = new ArrayList();
 		for (UserCredential userCredential : userCredentials) {
-			// result.add(PublicKeyCredentialDescriptor.)
+			BufferSource id = BufferSource.fromBase64(userCredential.getCredentialId().getBytesAsBase64());
+			PublicKeyCredentialDescriptor credentialDescriptor = PublicKeyCredentialDescriptor.builder()
+				.id(id)
+				.transports(userCredential.getTransports())
+				.build();
+			result.add(credentialDescriptor);
 		}
-		return null;
+		return result;
 	}
 
 	private PublicKeyCredentialUserEntity findUserEntityOrCreateAndSave(String username) {
@@ -121,6 +126,7 @@ public class YubicoWebAuthnRelyingPartyOperations implements WebAuthnRelyingPart
 					.publicKeyCose(new ImmutablePublicKeyCose(registrationResult.getPublicKeyCose().getBytes()))
 					.backupEligible(OptionalBoolean.fromBoolean(registrationResult.isBackupEligible()))
 					.backupState(OptionalBoolean.fromBoolean(registrationResult.isBackedUp()))
+					.transports(YubicoConverter.transports(registrationResult.getKeyId().getTransports()))
 					.build();
 			this.userCredentials.save(userCredential);
 			return userCredential;

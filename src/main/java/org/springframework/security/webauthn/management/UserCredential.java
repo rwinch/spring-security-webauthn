@@ -17,11 +17,15 @@
 package org.springframework.security.webauthn.management;
 
 import java.time.Instant;
+import java.util.List;
 
 import org.springframework.security.webauthn.api.core.ArrayBuffer;
 import org.springframework.security.webauthn.api.core.BufferSource;
+import org.springframework.security.webauthn.api.registration.AuthenticatorTransport;
 
 public interface UserCredential {
+
+	List<AuthenticatorTransport> getTransports();
 
 	ArrayBuffer getCredentialId();
 

@@ -27,31 +27,48 @@ import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.http.server.ServletServerHttpResponse;
+import org.springframework.security.authentication.AuthenticationTrustResolver;
+import org.springframework.security.authentication.AuthenticationTrustResolverImpl;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
+import org.springframework.security.core.context.SecurityContextHolderStrategy;
 import org.springframework.security.web.util.matcher.RequestMatcher;
+import org.springframework.security.web.util.matcher.RequestMatchers;
 import org.springframework.security.webauthn.api.registration.PublicKeyCredentialCreationOptions;
 import org.springframework.security.webauthn.jackson.WebauthnJackson2Module;
 import org.springframework.security.webauthn.management.WebAuthnRelyingPartyOperations;
+import org.springframework.util.Assert;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 
+import static org.springframework.security.web.util.matcher.AntPathRequestMatcher.antMatcher;
+
 /**
- * A {@link jakarta.servlet.Filter} that can be used to provide the
+ * A {@link jakarta.servlet.Filter} that renders the {@link PublicKeyCredentialCreationOptions}
+ * for <a href="https://w3c.github.io/webappsec-credential-management/#dom-credentialscontainer-create">creating</a> a
+ * new credential.
  */
 public class PublicKeyCredentialCreationOptionsFilter extends OncePerRequestFilter {
 
 	private PublicKeyCredentialCreationOptionsRepository repository = new HttpSessionPublicKeyCredentialCreationOptionsRepository();
 
-	private RequestMatcher matcher = AntPathRequestMatcher.antMatcher(HttpMethod.POST, "/webauthn/register/options");
+	private SecurityContextHolderStrategy securityContextHolderStrategy = SecurityContextHolder.getContextHolderStrategy();
+
+	private RequestMatcher matcher = RequestMatchers.allOf(antMatcher(HttpMethod.POST, "/webauthn/register/options"), new AuthenticatedRequestMatcher());
 
 	private final WebAuthnRelyingPartyOperations rpOperations;
 
 	private final HttpMessageConverter<Object> converter = new MappingJackson2HttpMessageConverter(Jackson2ObjectMapperBuilder.json().modules(new WebauthnJackson2Module()).build());
 
+	/**
+	 * Creates a new instance.
+	 *
+	 * @param rpOperations the {@link WebAuthnRelyingPartyOperations} to use. Cannot be null.
+	 */
 	public PublicKeyCredentialCreationOptionsFilter(WebAuthnRelyingPartyOperations rpOperations) {
+		Assert.notNull(rpOperations, "rpOperations cannot be null");
 		this.rpOperations = rpOperations;
 	}
 
@@ -62,10 +79,25 @@ public class PublicKeyCredentialCreationOptionsFilter extends OncePerRequestFilt
 			return;
 		}
 
-		SecurityContext context = SecurityContextHolder.getContext();
+		SecurityContext context = this.securityContextHolderStrategy.getContext();
 		PublicKeyCredentialCreationOptions options = this.rpOperations.createPublicKeyCredentialCreationOptions(context.getAuthentication());
 		this.repository.save(request, response, options);
+		response.setStatus(HttpServletResponse.SC_OK);
 		response.setHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE);
 		this.converter.write(options, MediaType.APPLICATION_JSON, new ServletServerHttpResponse(response));
 	}
+
+	private final class AuthenticatedRequestMatcher implements RequestMatcher {
+
+		private final AuthenticationTrustResolver resolver = new AuthenticationTrustResolverImpl();
+
+		@Override
+		public boolean matches(HttpServletRequest request) {
+			SecurityContext context = PublicKeyCredentialCreationOptionsFilter.this.securityContextHolderStrategy.getContext();
+			Authentication authentication = context.getAuthentication();
+			return this.resolver.isAuthenticated(authentication);
+		}
+
+	}
+
 }

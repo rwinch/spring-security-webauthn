@@ -24,7 +24,11 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
- * https://www.w3.org/TR/webauthn-3/#dictionary-makecredentialoptions
+ * Represents the
+ * <a href="https://www.w3.org/TR/webauthn-3/#dictdef-publickeycredentialcreationoptions">PublicKeyCredentialCreationOptions</a>
+ * which is an argument to
+ * <a href="https://w3c.github.io/webappsec-credential-management/#dom-credentialscontainer-create">creating</a> a
+ * new credential.
  */
 public class PublicKeyCredentialCreationOptions {
 	/**

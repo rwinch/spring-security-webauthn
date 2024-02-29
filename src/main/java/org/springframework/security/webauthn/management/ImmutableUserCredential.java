@@ -17,9 +17,13 @@
 package org.springframework.security.webauthn.management;
 
 import java.time.Instant;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 import org.springframework.security.webauthn.api.core.ArrayBuffer;
 import org.springframework.security.webauthn.api.core.BufferSource;
+import org.springframework.security.webauthn.api.registration.AuthenticatorTransport;
 
 public class ImmutableUserCredential implements UserCredential {
 
@@ -41,12 +45,15 @@ public class ImmutableUserCredential implements UserCredential {
 
 	private final String label;
 
+	private final List<AuthenticatorTransport> transports;
+
 	private ImmutableUserCredential(ArrayBuffer credentialId, BufferSource userEntityUserId,
-			PublicKeyCose publicKeyCose, long signatureCount,
-			OptionalBoolean backupEligible, OptionalBoolean backupState,
-			Instant created,
-			Instant lastUsed,
-			String label) {
+									PublicKeyCose publicKeyCose, long signatureCount,
+									OptionalBoolean backupEligible, OptionalBoolean backupState,
+									Instant created,
+									Instant lastUsed,
+									String label,
+									List<AuthenticatorTransport> transports) {
 		this.credentialId = credentialId;
 		this.userEntityUserId = userEntityUserId;
 		this.publicKeyCose = publicKeyCose;
@@ -56,6 +63,7 @@ public class ImmutableUserCredential implements UserCredential {
 		this.created = created;
 		this.lastUsed = lastUsed;
 		this.label = label;
+		this.transports = transports;
 	}
 
 	@Override
@@ -88,6 +96,11 @@ public class ImmutableUserCredential implements UserCredential {
 		return this.backupState;
 	}
 
+	@Override
+	public List<AuthenticatorTransport> getTransports() {
+		return this.transports;
+	}
+
 	public Instant getCreated() {
 		return created;
 	}
@@ -118,6 +131,8 @@ public class ImmutableUserCredential implements UserCredential {
 	}
 
 	public static final class ImmutableUserCredentialBuilder {
+
+		private List<AuthenticatorTransport> transports = new ArrayList<>();
 		private ArrayBuffer credentialId;
 		private BufferSource userEntityUserId;
 		private PublicKeyCose publicKeyCose;
@@ -129,6 +144,15 @@ public class ImmutableUserCredential implements UserCredential {
 		private String label;
 
 		private ImmutableUserCredentialBuilder() {
+		}
+
+		public ImmutableUserCredentialBuilder transports(List<AuthenticatorTransport> transports) {
+			this.transports = transports;
+			return this;
+		}
+
+		public ImmutableUserCredentialBuilder transports(AuthenticatorTransport... transports) {
+			return transports(Arrays.asList(transports));
 		}
 
 		public ImmutableUserCredentialBuilder credentialId(ArrayBuffer credentialId) {
@@ -177,7 +201,7 @@ public class ImmutableUserCredential implements UserCredential {
 		}
 
 		public ImmutableUserCredential build() {
-			return new ImmutableUserCredential(this.credentialId, this.userEntityUserId, this.publicKeyCose, this.signatureCount, this.backupEligible, this.backupState, this.created, this.lastUsed, this.label);
+			return new ImmutableUserCredential(this.credentialId, this.userEntityUserId, this.publicKeyCose, this.signatureCount, this.backupEligible, this.backupState, this.created, this.lastUsed, this.label, this.transports);
 		}
 	}
 
