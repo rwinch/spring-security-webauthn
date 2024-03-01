@@ -57,6 +57,11 @@ public class BufferSource {
 		return false;
 	}
 
+	@Override
+	public String toString() {
+		return "BufferSource[" + getBytesAsBase64() +"]";
+	}
+
 	public static BufferSource fromBase64(String base64String) {
 		byte[] bytes = DECODER.decode(base64String);
 		return new BufferSource(bytes);

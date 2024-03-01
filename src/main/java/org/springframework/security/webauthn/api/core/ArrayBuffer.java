@@ -39,9 +39,14 @@ public class ArrayBuffer {
 	public String getBytesAsBase64() {
 		return ENCODER.encodeToString(getBytes());
 	}
+
 	@Override
 	public int hashCode() {
 		return getBytesAsBase64().hashCode();
+	}
+
+	public String toString() {
+		return "ArrayBuffer[" + getBytesAsBase64() + "]";
 	}
 
 	@Override
