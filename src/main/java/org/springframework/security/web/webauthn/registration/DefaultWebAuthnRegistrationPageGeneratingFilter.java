@@ -185,30 +185,32 @@ public class DefaultWebAuthnRegistrationPageGeneratingFilter extends OncePerRequ
 								},
 							});
 							const options = await optionsResponse.json();
-							options.user.id = new TextEncoder().encode(options.user.id);
+							options.user.id = base64url.decode(options.user.id);
 							options.challenge = base64url.decode(options.challenge);
 							if (options.excludeCredentials) {
 								for (let cred of options.excludeCredentials) {
 									cred.id = base64url.decode(cred.id);
 								}
 							}
-							const credential = await navigator.credentials.create({
+							const credentialsContainer = await navigator.credentials.create({
 								publicKey: options,
 							});
-
-							credential.rawId = credential.id; // Pass a Base64URL encoded ID string.
-
-							// The authenticatorAttachment string in the PublicKeyCredential object is a new addition in WebAuthn L3.
-							if (credential.authenticatorAttachment) {
-								credential.authenticatorAttachment = credential.authenticatorAttachment;
-							}
-
-							// Base64URL encode some values.
-							credential.response.clientDataJSON = base64url.encode(credential.response.clientDataJSON);
-							credential.response.attestationObject = base64url.encode(credential.response.attestationObject);
-		
-							// Obtain transports.
-							credential.response.transports = credential.response.getTransports ? credential.response.getTransports() : [];
+							const { response } = credentialsContainer;
+							const credential = {
+								id: credentialsContainer.id,
+								rawId: base64url.encode(credentialsContainer.rawId),
+								response: {
+									attestationObject: base64url.encode(response.attestationObject),
+									clientDataJSON: base64url.encode(response.clientDataJSON),
+									transports: response.getTransports ? response.getTransports() : [],
+									publicKeyAlgorithm: response.getPublicKeyAlgorithm(),
+									publicKey: base64url.encode(response.getPublicKey()),
+									authenticatorData: base64url.encode(response.getAuthenticatorData()),
+								},
+								type: credentialsContainer.type,
+								clientExtensionResults: credentialsContainer.getClientExtensionResults(),
+								authenticatorAttachment: credentialsContainer.authenticatorAttachment,
+							};
 
 							const registrationRequest = {
 								"publicKey": {

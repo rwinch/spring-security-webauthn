@@ -387,6 +387,24 @@ public class DefaultLoginPageGeneratingFilter extends GenericFilterBean {
 						// Request a conditional UI
 						mediation: 'conditional'
 					});
+					const { response, credType } = cred;
+					let userHandle = undefined;
+					if (response.userHandle) {
+						userHandle = base64url.encode(response.userHandle);
+					}
+					const body = {
+						id: cred.id,
+						rawId: base64url.encode(cred.rawId),
+						response: {
+							authenticatorData: base64url.encode(response.authenticatorData),
+							clientDataJSON: base64url.encode(response.clientDataJSON),
+							signature: base64url.encode(response.signature),
+							userHandle,
+						},
+						credType,
+						clientExtensionResults: cred.getClientExtensionResults(),
+						authenticatorAttachment: cred.authenticatorAttachment,
+					};
 
 					// POST the response to the endpoint that calls
 					const authenticationResponse = await fetch('/login/webauthn',
@@ -396,7 +414,7 @@ public class DefaultLoginPageGeneratingFilter extends GenericFilterBean {
 								'Content-Type': 'application/json',
 								${headers}
 							},
-							body: JSON.stringify(asseResp),
+							body: JSON.stringify(body),
 						}
 					)
 					.then(response => {
