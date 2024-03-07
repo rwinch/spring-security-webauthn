@@ -28,7 +28,7 @@ public class TestPublicKeyCredentialCreationOptions {
 				.userVerification(UserVerificationRequirement.PREFERRED)
 				.residentKey(ResidentKeyRequirement.DISCOURAGED)
 				.build();
-		BufferSource challenge = BufferSource.fromBase64("IBQnuY1Z0K1HqBoFWCp2xlJl8-oq_aFIXzyT_F0-0GU");
+		BufferSource challenge = BufferSource.fromBase64("q7lCdd3SVQxdC-v8pnRAGEn1B2M-t7ZECWPwCAmhWvc");
 		PublicKeyCredentialRpEntity rp = PublicKeyCredentialRpEntity.builder()
 				.id("example.localhost")
 				.name("SimpleWebAuthn Example")

@@ -21,24 +21,28 @@ import org.springframework.security.webauthn.api.registration.AuthenticationExte
 import org.springframework.security.webauthn.api.registration.DefaultAuthenticationExtensionsClientInputs;
 import org.springframework.security.webauthn.api.registration.PublicKeyCredentialDescriptor;
 import org.springframework.security.webauthn.api.registration.UserVerificationRequirement;
+import org.springframework.util.Assert;
 
 import java.time.Duration;
+import java.util.Collections;
 import java.util.List;
 
 public class PublicKeyCredentialRequestOptions {
 	private final BufferSource challenge;
 
+	// FIXME: a null timeout is being rendered. Should we forbid null or should we not render null.
 	private final Duration timeout;
 
 	private final String rpId;
 
 	private final List<PublicKeyCredentialDescriptor> allowCredentials;
 
+	// FIXME: a null userVerification is being rendered, should we forbid null or should we not render null. I think that preferred is the default
 	private final UserVerificationRequirement userVerification;
 
 	private final AuthenticationExtensionsClientInputs extensions;
 
-	public PublicKeyCredentialRequestOptions(BufferSource challenge, Duration timeout, String rpId, List<PublicKeyCredentialDescriptor> allowCredentials, UserVerificationRequirement userVerification, AuthenticationExtensionsClientInputs extensions) {
+	private PublicKeyCredentialRequestOptions(BufferSource challenge, Duration timeout, String rpId, List<PublicKeyCredentialDescriptor> allowCredentials, UserVerificationRequirement userVerification, AuthenticationExtensionsClientInputs extensions) {
 		this.challenge = challenge;
 		this.timeout = timeout;
 		this.rpId = rpId;
@@ -79,15 +83,11 @@ public class PublicKeyCredentialRequestOptions {
 		private BufferSource challenge;
 		private Duration timeout;
 		private String rpId;
-		private List<PublicKeyCredentialDescriptor> allowCredentials;
+		private List<PublicKeyCredentialDescriptor> allowCredentials = Collections.emptyList();
 		private UserVerificationRequirement userVerification;
 		private AuthenticationExtensionsClientInputs extensions = new DefaultAuthenticationExtensionsClientInputs();
 
 		private PublicKeyCredentialRequestOptionsBuilder() {
-		}
-
-		public static PublicKeyCredentialRequestOptionsBuilder aPublicKeyCredentialRequestOptions() {
-			return new PublicKeyCredentialRequestOptionsBuilder();
 		}
 
 		public PublicKeyCredentialRequestOptionsBuilder challenge(BufferSource challenge) {
@@ -106,6 +106,7 @@ public class PublicKeyCredentialRequestOptions {
 		}
 
 		public PublicKeyCredentialRequestOptionsBuilder allowCredentials(List<PublicKeyCredentialDescriptor> allowCredentials) {
+			Assert.notNull(allowCredentials, "allowCredentials cannot be null");
 			this.allowCredentials = allowCredentials;
 			return this;
 		}

@@ -157,7 +157,7 @@ class DefaultWebAuthnRegistrationPageGeneratingFilterTests {
 		when(this.userCredentials.findByUserId(userEntity.getId())).thenReturn(Arrays.asList(credential));
 		String body = bodyAsString(matchingRequest());
 		assertThat(body).contains("await fetch('/webauthn/register', {");
-		assertThat(body).contains("await fetch('/webauthn/register/options')");
+		assertThat(body).contains("await fetch('/webauthn/register/options', {");
 		assertThat(body).contains("window.location.href = '/webauthn/register?success'");
 		assertThat(body).contains(String.format("action=\"/webauthn/register/%s\"", credential.getCredentialId().getBytesAsBase64()));
 	}
@@ -170,7 +170,7 @@ class DefaultWebAuthnRegistrationPageGeneratingFilterTests {
 		when(this.userCredentials.findByUserId(userEntity.getId())).thenReturn(Arrays.asList(credential));
 		String body = bodyAsString(matchingRequest("/foo"));
 		assertThat(body).contains("await fetch('/foo/webauthn/register', {");
-		assertThat(body).contains("await fetch('/foo/webauthn/register/options')");
+		assertThat(body).contains("await fetch('/foo/webauthn/register/options', {");
 		assertThat(body).contains("window.location.href = '/foo/webauthn/register?success'");
 		assertThat(body).contains(String.format("action=\"/foo/webauthn/register/%s\"", credential.getCredentialId().getBytesAsBase64()));
 	}

@@ -118,7 +118,7 @@ class PublicKeyCredentialCreationOptionsFilterTests {
 				"id": "oWJtkJ6vJ_m5b84LB4_K7QKTCTEwLIjCh4tFMCGHO4w",
 				"displayName": "user@example.localhost"
 			},
-			"challenge": "IBQnuY1Z0K1HqBoFWCp2xlJl8-oq_aFIXzyT_F0-0GU",
+			"challenge": "q7lCdd3SVQxdC-v8pnRAGEn1B2M-t7ZECWPwCAmhWvc",
 			"pubKeyCredParams": [
 				{
 					"type": "public-key",

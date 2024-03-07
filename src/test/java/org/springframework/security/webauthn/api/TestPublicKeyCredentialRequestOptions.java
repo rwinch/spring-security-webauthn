@@ -18,12 +18,17 @@ package org.springframework.security.webauthn.api;
 
 import org.springframework.security.webauthn.api.authentication.PublicKeyCredentialRequestOptions;
 import org.springframework.security.webauthn.api.core.BufferSource;
+import org.springframework.security.webauthn.api.registration.UserVerificationRequirement;
+
+import java.time.Duration;
 
 public class TestPublicKeyCredentialRequestOptions {
 
 	public static PublicKeyCredentialRequestOptions.PublicKeyCredentialRequestOptionsBuilder create() {
 		return PublicKeyCredentialRequestOptions.builder()
+				.timeout(Duration.ofMinutes(5))
 				.rpId("example.localhost")
+				.userVerification(UserVerificationRequirement.PREFERRED)
 				.challenge(BufferSource.fromBase64("cQfdGrj9zDg3zNBkOH3WPL954FTOShVy0-CoNgSewNM"));
 	}
 }

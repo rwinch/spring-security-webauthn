@@ -32,7 +32,10 @@ import org.springframework.mock.web.MockServletContext;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.webauthn.api.TestPublicKeyCredentialRequestOptions;
+import org.springframework.security.webauthn.api.authentication.AuthenticatorAssertionResponse;
 import org.springframework.security.webauthn.api.authentication.PublicKeyCredentialRequestOptions;
+import org.springframework.security.webauthn.api.registration.PublicKeyCredential;
+import org.springframework.security.webauthn.api.registration.PublicKeyCredentialType;
 import org.springframework.security.webauthn.authentication.WebAuthnAuthenticationRequestToken;
 import org.springframework.security.webauthn.management.AuthenticationRequest;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
@@ -156,8 +159,17 @@ class WebAuthnAuthenticationFilterTests {
 		WebAuthnAuthenticationRequestToken token = authenticationCaptor.getValue();
 		assertThat(token).isNotNull();
 		AuthenticationRequest authnRequest = token.getWebAuthnRequest();
-		authnRequest.get
-
+		PublicKeyCredential<AuthenticatorAssertionResponse> publicKey = authnRequest.getPublicKey();
+		AuthenticatorAssertionResponse assertionResponse = publicKey.getResponse();
+		assertThat(publicKey.getId()).isEqualTo("dYF7EGnRFFIXkpXi9XU2wg");
+		assertThat(publicKey.getRawId().getBytesAsBase64()).isEqualTo("dYF7EGnRFFIXkpXi9XU2wg");
+		assertThat(assertionResponse.getAuthenticatorData().getBytesAsBase64()).isEqualTo("y9GqwTRaMpzVDbXq1dyEAXVOxrou08k22ggRC45MKNgdAAAAAA");
+		assertThat(assertionResponse.getClientDataJSON().getBytesAsBase64()).isEqualTo("eyJ0eXBlIjoid2ViYXV0aG4uZ2V0IiwiY2hhbGxlbmdlIjoiRFVsRzRDbU9naWhKMG1vdXZFcE9HdUk0ZVJ6MGRRWmxUQmFtbjdHQ1FTNCIsIm9yaWdpbiI6Imh0dHBzOi8vZXhhbXBsZS5sb2NhbGhvc3Q6ODQ0MyIsImNyb3NzT3JpZ2luIjpmYWxzZX0");
+		assertThat(assertionResponse.getSignature().getBytesAsBase64()).isEqualTo("MEYCIQCW2BcUkRCAXDmGxwMi78jknenZ7_amWrUJEYoTkweldAIhAMD0EMp1rw2GfwhdrsFIeDsL7tfOXVPwOtfqJntjAo4z");
+		assertThat(assertionResponse.getUserHandle().getBytesAsBase64()).isEqualTo("Q3_0Xd64_HW0BlKRAJnVagJTpLKLgARCj8zjugpRnVo");
+		assertThat(publicKey.getClientExtensionResults().getOutputs()).isEmpty();
+		assertThat(authnRequest.getRequestOptions()).isEqualTo(options);
+		// FIXME: assert authenticatorAttachment: platform but does not exist on publicKey
 	}
 
 	private static MockHttpServletRequest matchingRequest(String body) {

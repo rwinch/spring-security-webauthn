@@ -158,7 +158,7 @@ class JacksonTests {
 				    "authenticatorSelection": {
 				        "residentKey": "discouraged"
 				    },
-				    "challenge": "IBQnuY1Z0K1HqBoFWCp2xlJl8-oq_aFIXzyT_F0-0GU",
+				    "challenge": "q7lCdd3SVQxdC-v8pnRAGEn1B2M-t7ZECWPwCAmhWvc",
 				    "excludeCredentials": [],
 				    "extensions": {
 				        "credProps": true

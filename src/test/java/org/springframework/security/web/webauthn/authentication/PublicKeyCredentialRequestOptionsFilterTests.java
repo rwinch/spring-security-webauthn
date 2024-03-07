@@ -21,6 +21,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.skyscreamer.jsonassert.JSONAssert;
 import org.springframework.security.webauthn.api.TestPublicKeyCredentialCreationOptions;
 import org.springframework.security.webauthn.api.TestPublicKeyCredentialRequestOptions;
 import org.springframework.security.webauthn.api.authentication.PublicKeyCredentialRequestOptions;
@@ -98,7 +99,16 @@ class PublicKeyCredentialRequestOptionsFilterTests {
 		this.mockMvc.perform(get("/webauthn/authenticate/options"))
 				.andExpect(status().isOk())
 				.andDo((result) ->
-						assertThat(result.getResponse().getContentAsString()).isEqualTo("foo")
+						JSONAssert.assertEquals(result.getResponse().getContentAsString(), """
+							{
+								"challenge": "cQfdGrj9zDg3zNBkOH3WPL954FTOShVy0-CoNgSewNM",
+								"timeout": 300000,
+								"rpId": "example.localhost",
+								"allowCredentials": [],
+								"userVerification": "preferred",
+								"extensions": {}
+							}
+							""", false)
 				);
 	}
 
