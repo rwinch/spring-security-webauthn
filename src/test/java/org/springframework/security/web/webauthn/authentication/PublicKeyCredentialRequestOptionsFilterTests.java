@@ -38,6 +38,11 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+/**
+ * Tests for {@link PublicKeyCredentialRequestOptionsFilter}.
+ * @since 6.3
+ * @author Rob Winch
+ */
 @ExtendWith(MockitoExtension.class)
 class PublicKeyCredentialRequestOptionsFilterTests {
 	@Mock

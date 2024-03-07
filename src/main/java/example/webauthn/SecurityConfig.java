@@ -37,7 +37,12 @@ public class SecurityConfig {
 				.requestMatchers("/login/**", "/message").permitAll()
 				.anyRequest().authenticated()
 			)
-			.with(new PasskeysConfigurer<>(), Customizer.withDefaults());
+			.with(new PasskeysConfigurer<>(), (passkeys) -> passkeys
+					.rpName("Spring Security Relying Party")
+					.rpId("example.localhost")
+//					.rpId("test-host")
+					.allowedOrigins("https://example.localhost:8443", "https://test-host:8443")
+			);
 		return http.build();
 	}
 }

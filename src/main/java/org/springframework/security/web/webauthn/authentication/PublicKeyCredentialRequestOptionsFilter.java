@@ -1,5 +1,5 @@
 /*
- * Copyright 2002-2023 the original author or authors.
+ * Copyright 2002-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,6 @@
 
 package org.springframework.security.web.webauthn.authentication;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -33,7 +32,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.context.SecurityContextHolderStrategy;
 import org.springframework.security.web.util.matcher.RequestMatcher;
 import org.springframework.security.webauthn.api.authentication.PublicKeyCredentialRequestOptions;
-import org.springframework.security.webauthn.api.registration.PublicKeyCredentialCreationOptions;
 import org.springframework.security.webauthn.jackson.WebauthnJackson2Module;
 import org.springframework.security.webauthn.management.WebAuthnRelyingPartyOperations;
 import org.springframework.util.Assert;
@@ -43,6 +41,13 @@ import java.io.IOException;
 
 import static org.springframework.security.web.util.matcher.AntPathRequestMatcher.antMatcher;
 
+/**
+ *  A {@link jakarta.servlet.Filter} that renders the {@link PublicKeyCredentialRequestOptions} in order to
+ *  <a href="https://w3c.github.io/webappsec-credential-management/#dom-credentialscontainer-get">get</a> a
+ *  credential.
+ * @since 6.3
+ * @author Rob Winch
+ */
 public class PublicKeyCredentialRequestOptionsFilter extends OncePerRequestFilter {
 
 	private RequestMatcher matcher = antMatcher(HttpMethod.GET,"/webauthn/authenticate/options");
@@ -54,8 +59,12 @@ public class PublicKeyCredentialRequestOptionsFilter extends OncePerRequestFilte
 
 	private PublicKeyCredentialRequestOptionsRepository requestOptionsRepository = new HttpSessionPublicKeyCredentialRequestOptionsRepository();
 
-	private final HttpMessageConverter<Object> converter = new MappingJackson2HttpMessageConverter(Jackson2ObjectMapperBuilder.json().modules(new WebauthnJackson2Module()).build());
+	private HttpMessageConverter<Object> converter = new MappingJackson2HttpMessageConverter(Jackson2ObjectMapperBuilder.json().modules(new WebauthnJackson2Module()).build());
 
+	/**
+	 * Creates a new instance with the provided {@link WebAuthnRelyingPartyOperations}.
+	 * @param rpOptions the {@link WebAuthnRelyingPartyOperations} to use. Cannot be null.
+	 */
 	public PublicKeyCredentialRequestOptionsFilter(WebAuthnRelyingPartyOperations rpOptions) {
 		Assert.notNull(rpOptions, "rpOperations cannot be null");
 		this.rpOptions = rpOptions;
@@ -76,9 +85,30 @@ public class PublicKeyCredentialRequestOptionsFilter extends OncePerRequestFilte
 
 	}
 
+	/**
+	 * Sets the {@link PublicKeyCredentialRequestOptionsRepository} to use.
+	 * @param requestOptionsRepository the {@link PublicKeyCredentialRequestOptionsRepository} to use. Cannot be null.
+	 */
 	public void setRequestOptionsRepository(PublicKeyCredentialRequestOptionsRepository requestOptionsRepository) {
 		Assert.notNull(requestOptionsRepository, "requestOptionsRepository cannot be null");
 		this.requestOptionsRepository = requestOptionsRepository;
 	}
 
+	/**
+	 * Sets the {@link HttpMessageConverter} to use.
+	 * @param converter the {@link HttpMessageConverter} to use. Cannot be null.
+	 */
+	public void setConverter(HttpMessageConverter<Object> converter) {
+		Assert.notNull(converter, "converter cannot be null");
+		this.converter = converter;
+	}
+
+	/**
+	 * Sets the {@link SecurityContextHolderStrategy} to use.
+	 * @param securityContextHolderStrategy the {@link SecurityContextHolderStrategy} to use. Cannot be null.
+	 */
+	public void setSecurityContextHolderStrategy(SecurityContextHolderStrategy securityContextHolderStrategy) {
+		Assert.notNull(securityContextHolderStrategy, "securityContextHolderStrategy cannot be null");
+		this.securityContextHolderStrategy = securityContextHolderStrategy;
+	}
 }

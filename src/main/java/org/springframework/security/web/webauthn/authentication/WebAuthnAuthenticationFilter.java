@@ -1,5 +1,5 @@
 /*
- * Copyright 2002-2023 the original author or authors.
+ * Copyright 2002-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,20 +19,20 @@ package org.springframework.security.web.webauthn.authentication;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.core.ResolvableType;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.converter.GenericHttpMessageConverter;
-import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.http.server.ServletServerHttpRequest;
-import org.springframework.lang.Nullable;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter;
 import org.springframework.security.web.authentication.AuthenticationEntryPointFailureHandler;
+import org.springframework.security.web.authentication.HttpMessageConverterAuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.HttpStatusEntryPoint;
-import org.springframework.security.web.authentication.JsonSavedRequestAwareAuthenticationSuccessHandler;
 import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
 import org.springframework.security.webauthn.api.authentication.AuthenticatorAssertionResponse;
 import org.springframework.security.webauthn.api.authentication.PublicKeyCredentialRequestOptions;
@@ -40,18 +40,28 @@ import org.springframework.security.webauthn.api.registration.PublicKeyCredentia
 import org.springframework.security.webauthn.authentication.WebAuthnAuthenticationRequestToken;
 import org.springframework.security.webauthn.jackson.WebauthnJackson2Module;
 import org.springframework.security.webauthn.management.AuthenticationRequest;
+import org.springframework.util.Assert;
 
 import java.io.IOException;
-import java.io.Serializable;
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
-import java.util.Arrays;
-import java.util.StringJoiner;
 
 import static org.springframework.security.web.util.matcher.AntPathRequestMatcher.antMatcher;
 
+/**
+ * Authenticates {@code PublicKeyCredential<AuthenticatorAssertionResponse>} that is parsed from the body of the
+ * {@link HttpServletRequest} using the provided . An example request is provided below:
+ *
+ * FIXME: Add example below
+ *
+ * <code>
+ *
+ * </code>
+ * @since 6.3
+ * @author Rob Winch
+ */
 public class WebAuthnAuthenticationFilter extends AbstractAuthenticationProcessingFilter  {
-	private final GenericHttpMessageConverter<Object> converter = new MappingJackson2HttpMessageConverter(Jackson2ObjectMapperBuilder.json().modules(new WebauthnJackson2Module()).build());
+
+	// FIXME: Using WebauthnJackson2Module here might be a dependency cycle
+	private GenericHttpMessageConverter<Object> converter = new MappingJackson2HttpMessageConverter(Jackson2ObjectMapperBuilder.json().modules(new WebauthnJackson2Module()).build());
 
 	private PublicKeyCredentialRequestOptionsRepository requestOptionsRepository = new HttpSessionPublicKeyCredentialRequestOptionsRepository();
 
@@ -59,74 +69,47 @@ public class WebAuthnAuthenticationFilter extends AbstractAuthenticationProcessi
 		super(antMatcher(HttpMethod.POST, "/login/webauthn"));
 		setSecurityContextRepository(new HttpSessionSecurityContextRepository());
 		setAuthenticationFailureHandler(new AuthenticationEntryPointFailureHandler(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED)));
-		setAuthenticationSuccessHandler(new JsonSavedRequestAwareAuthenticationSuccessHandler());
+		setAuthenticationSuccessHandler(new HttpMessageConverterAuthenticationSuccessHandler());
+		// FIXME: should the failure handler be a status of 400 instead of 401 so JS can handle it?
 	}
+
 	@Override
 	public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException, IOException, ServletException {
 		ServletServerHttpRequest httpRequest = new ServletServerHttpRequest(request);
-		SyntheticParameterizedType type = new SyntheticParameterizedType(PublicKeyCredential.class, new Type[]{AuthenticatorAssertionResponse.class});
-		PublicKeyCredential<AuthenticatorAssertionResponse> publicKeyCredential = (PublicKeyCredential<AuthenticatorAssertionResponse>) this.converter.read(type, getClass(), httpRequest);
+		ResolvableType resolvableType = ResolvableType.forClassWithGenerics(PublicKeyCredential.class, AuthenticatorAssertionResponse.class);
+		PublicKeyCredential<AuthenticatorAssertionResponse> publicKeyCredential = null;
+		try {
+			publicKeyCredential = (PublicKeyCredential<AuthenticatorAssertionResponse>) this.converter.read(resolvableType.getType(), getClass(), httpRequest);
+		}
+		catch (Exception e) {
+			throw new BadCredentialsException("Unable to authenticate the PublicKeyCredential", e);
+		}
 		PublicKeyCredentialRequestOptions requestOptions = this.requestOptionsRepository.load(request);
+		if (requestOptions == null) {
+			throw new BadCredentialsException("Unable to authenticate the PublicKeyCredential. No PublicKeyCredentialRequestOptions found.");
+		}
 		AuthenticationRequest authenticationRequest = new AuthenticationRequest(requestOptions, publicKeyCredential);
 		WebAuthnAuthenticationRequestToken token = new WebAuthnAuthenticationRequestToken(authenticationRequest);
 		return getAuthenticationManager().authenticate(token);
 	}
 
-	private static final class SyntheticParameterizedType implements ParameterizedType, Serializable {
-
-		private final Type rawType;
-
-		private final Type[] typeArguments;
-
-		public SyntheticParameterizedType(Type rawType, Type[] typeArguments) {
-			this.rawType = rawType;
-			this.typeArguments = typeArguments;
-		}
-
-		@Override
-		public String getTypeName() {
-			String typeName = this.rawType.getTypeName();
-			if (this.typeArguments.length > 0) {
-				StringJoiner stringJoiner = new StringJoiner(", ", "<", ">");
-				for (Type argument : this.typeArguments) {
-					stringJoiner.add(argument.getTypeName());
-				}
-				return typeName + stringJoiner;
-			}
-			return typeName;
-		}
-
-		@Override
-		@Nullable
-		public Type getOwnerType() {
-			return null;
-		}
-
-		@Override
-		public Type getRawType() {
-			return this.rawType;
-		}
-
-		@Override
-		public Type[] getActualTypeArguments() {
-			return this.typeArguments;
-		}
-
-		@Override
-		public boolean equals(@Nullable Object other) {
-			return (this == other || (other instanceof ParameterizedType that &&
-					that.getOwnerType() == null && this.rawType.equals(that.getRawType()) &&
-					Arrays.equals(this.typeArguments, that.getActualTypeArguments())));
-		}
-
-		@Override
-		public int hashCode() {
-			return (this.rawType.hashCode() * 31 + Arrays.hashCode(this.typeArguments));
-		}
-
-		@Override
-		public String toString() {
-			return getTypeName();
-		}
+	/**
+	 * Sets the {@link GenericHttpMessageConverter} to use for writing
+	 * {@code PublicKeyCredential<AuthenticatorAssertionResponse>} to the response. The default is @{code MappingJackson2HttpMessageConverter}
+	 * @param converter the {@link GenericHttpMessageConverter} to use. Cannot be null.
+	 */
+	public void setConverter(GenericHttpMessageConverter<Object> converter) {
+		Assert.notNull(converter, "converter cannot be null");
+		this.converter = converter;
 	}
+
+	/**
+	 * Sets the {@link PublicKeyCredentialRequestOptionsRepository} to use. The default is {@link HttpSessionPublicKeyCredentialRequestOptionsRepository}.
+	 * @param requestOptionsRepository the {@link PublicKeyCredentialRequestOptionsRepository} to use. Cannot be null.
+	 */
+	public void setRequestOptionsRepository(PublicKeyCredentialRequestOptionsRepository requestOptionsRepository) {
+		Assert.notNull(requestOptionsRepository, "requestOptionsRepository cannot be null");
+		this.requestOptionsRepository = requestOptionsRepository;
+	}
+
 }

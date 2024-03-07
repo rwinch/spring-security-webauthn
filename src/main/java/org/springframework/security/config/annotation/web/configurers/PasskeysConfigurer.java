@@ -1,5 +1,5 @@
 /*
- * Copyright 2002-2023 the original author or authors.
+ * Copyright 2002-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,22 +34,47 @@ import org.springframework.security.webauthn.api.registration.PublicKeyCredentia
 import org.springframework.security.webauthn.authentication.WebAuthnAuthenticationProvider;
 import org.springframework.security.webauthn.management.*;
 
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 
 public class PasskeysConfigurer<B extends HttpSecurityBuilder<B>>
 		extends AbstractHttpConfigurer<PasskeysConfigurer<B>, B> {
+
+	private String rpId;
+
+	private String rpName;
+
+	private Set<String> allowedOrigins = new HashSet<>();
 
 	@Override
 	public void init(B builder) throws Exception {
 		super.init(builder);
 	}
 
+	public PasskeysConfigurer<B> rpId(String rpId) {
+		this.rpId = rpId;
+		return this;
+	}
+
+	public PasskeysConfigurer<B> rpName(String rpName) {
+		this.rpName = rpName;
+		return this;
+	}
+
+	public PasskeysConfigurer<B> allowedOrigins(String... allowedOrigins) {
+		this.allowedOrigins = Set.of(allowedOrigins);
+		return this;
+	}
+
 	@Override
 	public void configure(B http) throws Exception {
-		UserDetailsService userDetailsService = getSharedOrBean(http, UserDetailsService.class);
-		PublicKeyCredentialUserEntityRepository userEntities = userEntityRepository();
-		MapUserCredentialRepository userCredentials = userCredentialRepository();
+		UserDetailsService userDetailsService = getSharedOrBean(http, UserDetailsService.class).get();
+		PublicKeyCredentialUserEntityRepository userEntities = getSharedOrBean(http, PublicKeyCredentialUserEntityRepository.class)
+				.orElse(userEntityRepository());
+		UserCredentialRepository userCredentials = getSharedOrBean(http, UserCredentialRepository.class)
+				.orElse(userCredentialRepository());
 		YubicoWebAuthnRelyingPartyOperations rpOperations = webAuthnRelyingPartyOperations(userEntities, userCredentials);
 		WebAuthnAuthenticationFilter webAuthnAuthnFilter = new WebAuthnAuthenticationFilter();
 		webAuthnAuthnFilter.setAuthenticationManager(new ProviderManager(new WebAuthnAuthenticationProvider(rpOperations, userDetailsService)));
@@ -70,24 +95,23 @@ public class PasskeysConfigurer<B extends HttpSecurityBuilder<B>>
 		}
 	}
 
-	private <C> C getSharedOrBean(B http, Class<C> type) {
+	private <C> Optional<C> getSharedOrBean(B http, Class<C> type) {
 		C shared = http.getSharedObject(type);
-		if (shared != null) {
-			return shared;
-		}
-		return getBeanOrNull(type);
+		return Optional
+			.ofNullable(shared)
+			.or(() -> getBeanOrNull(type));
 	}
 
-	private <T> T getBeanOrNull(Class<T> type) {
+	private <T> Optional<T> getBeanOrNull(Class<T> type) {
 		ApplicationContext context = getBuilder().getSharedObject(ApplicationContext.class);
 		if (context == null) {
-			return null;
+			return Optional.empty();
 		}
 		try {
-			return context.getBean(type);
+			return Optional.of(context.getBean(type));
 		}
 		catch (NoSuchBeanDefinitionException ex) {
-			return null;
+			return Optional.empty();
 		}
 	}
 
@@ -101,11 +125,12 @@ public class PasskeysConfigurer<B extends HttpSecurityBuilder<B>>
 	}
 
 	private YubicoWebAuthnRelyingPartyOperations webAuthnRelyingPartyOperations(PublicKeyCredentialUserEntityRepository userEntities, UserCredentialRepository userCredentials) {
-		YubicoWebAuthnRelyingPartyOperations result =  new YubicoWebAuthnRelyingPartyOperations(userEntities, userCredentials, PublicKeyCredentialRpEntity.builder()
-				.id("example.localhost")
-				.name("Spring Security Relying Party")
+		YubicoWebAuthnRelyingPartyOperations result =  new YubicoWebAuthnRelyingPartyOperations(userEntities, userCredentials,
+				PublicKeyCredentialRpEntity.builder()
+				.id(this.rpId)
+				.name(this.rpName)
 				.build(),
-				Set.of("https://example.localhost:8443"));
+				this.allowedOrigins);
 		return result;
 	}
 }

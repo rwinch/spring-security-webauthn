@@ -1,5 +1,5 @@
 /*
- * Copyright 2002-2023 the original author or authors.
+ * Copyright 2002-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,6 +21,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.GenericHttpMessageConverter;
+import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.http.server.ServletServerHttpResponse;
 import org.springframework.security.core.Authentication;
@@ -31,11 +32,39 @@ import org.springframework.util.Assert;
 
 import java.io.IOException;
 
-public class JsonSavedRequestAwareAuthenticationSuccessHandler implements AuthenticationSuccessHandler {
-	private GenericHttpMessageConverter<Object> converter = new MappingJackson2HttpMessageConverter();
+/**
+ * An {@link AuthenticationSuccessHandler} that writes a JSON response with the redirect URL and an authenticated
+ * status similar to:
+ *
+ * <code>
+ *     {
+ *         "redirectUrl": "/user/profile",
+ *         "authenticated": true
+ *     }
+ * </code>
+ * @since 6.3
+ * @author Rob Winch
+ */
+public class HttpMessageConverterAuthenticationSuccessHandler implements AuthenticationSuccessHandler {
+
+	private HttpMessageConverter<Object> converter = new MappingJackson2HttpMessageConverter();
 
 	private RequestCache requestCache = new HttpSessionRequestCache();
 
+	/**
+	 * Sets the {@link GenericHttpMessageConverter} to write to the response. The default is {@link MappingJackson2HttpMessageConverter}.
+	 *
+	 * @param converter the {@link GenericHttpMessageConverter} to use. Cannot be null.
+	 */
+	public void setConverter(HttpMessageConverter<Object> converter) {
+		Assert.notNull(converter, "converter cannot be null");
+		this.converter = converter;
+	}
+
+	/**
+	 * Sets the {@link RequestCache} to use. The default is {@link HttpSessionRequestCache}.
+	 * @param requestCache the {@link RequestCache} to use. Cannot be null
+	 */
 	public void setRequestCache(RequestCache requestCache) {
 		Assert.notNull(requestCache, "requestCache cannot be null");
 		this.requestCache = requestCache;
@@ -49,6 +78,12 @@ public class JsonSavedRequestAwareAuthenticationSuccessHandler implements Authen
 		this.converter.write(new AuthenticationSuccess(redirectUrl), MediaType.APPLICATION_JSON, new ServletServerHttpResponse(response));
 	}
 
+	/**
+	 * A response object used to write the JSON response for successful authentication.
+	 *
+	 * NOTE: We should be careful about writing {@link Authentication} or {@link Authentication#getPrincipal()} to the
+	 * response since it contains credentials.
+	 */
 	private static class AuthenticationSuccess {
 		private final String redirectUrl;
 

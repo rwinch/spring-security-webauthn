@@ -1,5 +1,5 @@
 /*
- * Copyright 2002-2023 the original author or authors.
+ * Copyright 2002-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,8 +20,32 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.security.webauthn.api.authentication.PublicKeyCredentialRequestOptions;
 
+/**
+ * Saves {@link PublicKeyCredentialRequestOptions} between a request to generate an assertion and the validation of the
+ * assertion.
+ *
+ * @since 6.3
+ * @author Rob Winch
+ */
 public interface PublicKeyCredentialRequestOptionsRepository {
+
+	/**
+	 * Saves the provided {@link com.yubico.webauthn.data.PublicKeyCredentialRequestOptions} or clears an existing
+	 * {@link PublicKeyCredentialRequestOptions} if {@code options} is null.
+	 *
+	 * @param request the {@link HttpServletRequest}
+	 * @param response the {@link HttpServletResponse}
+	 * @param options the {@link PublicKeyCredentialRequestOptions} to save or null if an existing
+	 * {@link PublicKeyCredentialRequestOptions} should be removed.
+	 */
 	void save(HttpServletRequest request, HttpServletResponse response, PublicKeyCredentialRequestOptions options);
 
+	/**
+	 * Gets a saved {@link PublicKeyCredentialRequestOptions} if it exists, otherwise null.
+	 *
+	 * @param request the {@link HttpServletRequest}
+	 * @return the {@link PublicKeyCredentialRequestOptions} that was saved, otherwise null.
+	 */
 	PublicKeyCredentialRequestOptions load(HttpServletRequest request);
+
 }

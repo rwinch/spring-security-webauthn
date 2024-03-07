@@ -1,5 +1,5 @@
 /*
- * Copyright 2002-2023 the original author or authors.
+ * Copyright 2002-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,18 +18,44 @@ package org.springframework.security.web.webauthn.authentication;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 import org.springframework.security.webauthn.api.authentication.PublicKeyCredentialRequestOptions;
+import org.springframework.util.Assert;
 
-public class HttpSessionPublicKeyCredentialRequestOptionsRepository implements  PublicKeyCredentialRequestOptionsRepository{
-	private String attrName = PublicKeyCredentialRequestOptionsRepository.class.getName();
+/**
+ * A {@link PublicKeyCredentialRequestOptionsRepository} that stores the {@link PublicKeyCredentialRequestOptions} in
+ * the {@link jakarta.servlet.http.HttpSession}.
+ * @since 6.3
+ * @author Rob Winch
+ */
+public class HttpSessionPublicKeyCredentialRequestOptionsRepository implements PublicKeyCredentialRequestOptionsRepository {
+
+	static final String DEFAULT_ATTR_NAME = PublicKeyCredentialRequestOptionsRepository.class.getName().concat(".ATTR_NAME");
+
+	private String attrName = DEFAULT_ATTR_NAME;
 
 	@Override
 	public void save(HttpServletRequest request, HttpServletResponse response, PublicKeyCredentialRequestOptions options) {
-		request.getSession().setAttribute(this.attrName, options);
+		HttpSession session = request.getSession();
+		if (options == null) {
+			session.removeAttribute(this.attrName);
+		}
+		else {
+			session.setAttribute(this.attrName, options);
+		}
 	}
 
 	@Override
 	public PublicKeyCredentialRequestOptions load(HttpServletRequest request) {
-		return (PublicKeyCredentialRequestOptions) request.getSession().getAttribute(this.attrName);
+		HttpSession session = request.getSession(false);
+		if (session == null) {
+			return null;
+		}
+		return (PublicKeyCredentialRequestOptions) session.getAttribute(this.attrName);
+	}
+
+	public void setAttrName(String attrName) {
+		Assert.notNull(attrName, "attrName cannot be null");
+		this.attrName = attrName;
 	}
 }
