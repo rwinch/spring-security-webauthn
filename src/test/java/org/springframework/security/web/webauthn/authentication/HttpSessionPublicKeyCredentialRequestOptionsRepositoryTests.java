@@ -58,4 +58,34 @@ class HttpSessionPublicKeyCredentialRequestOptionsRepositoryTests {
 		assertThat(loadOptionsAfterRemoval).isNull();
 	}
 
+	@Test
+	void loadWhenNullSessionThenDoesNotCreate() {
+		PublicKeyCredentialRequestOptions options = this.repository.load(this.request);
+		assertThat(options).isNull();
+		assertThat(this.request.getSession(false)).isNull();
+	}
+
+	@Test
+	void saveWhenSetAttrThenCustomAttr() {
+		PublicKeyCredentialRequestOptions expected = TestPublicKeyCredentialRequestOptions
+				.create()
+				.build();
+		String customAttr = "custom-attr";
+		this.repository.setAttrName(customAttr);
+		this.repository.save(this.request, this.response, expected);
+		assertThat(this.request.getSession().getAttribute(customAttr)).isEqualTo(expected);
+	}
+
+	@Test
+	void loadWhenSetAttrThenCustomAttr() {
+		PublicKeyCredentialRequestOptions expected = TestPublicKeyCredentialRequestOptions
+				.create()
+				.build();
+		String customAttr = "custom-attr";
+		this.repository.setAttrName(customAttr);
+		this.request.getSession().setAttribute(customAttr, expected);
+		PublicKeyCredentialRequestOptions actual = this.repository.load(this.request);
+		assertThat(actual).isEqualTo(expected);
+	}
+
 }
