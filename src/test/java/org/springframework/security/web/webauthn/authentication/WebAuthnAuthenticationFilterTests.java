@@ -153,6 +153,7 @@ class WebAuthnAuthenticationFilterTests {
 		this.filter.setRequestOptionsRepository(this.requestOptionsRepository);
 		MockHttpServletRequest request = matchingRequest(VALID_BODY);
 		this.filter.doFilter(request, this.response, this.chain);
+		verify(this.requestOptionsRepository).save(any(), any(), isNull());
 		ArgumentCaptor<WebAuthnAuthenticationRequestToken> authenticationCaptor = ArgumentCaptor.forClass(WebAuthnAuthenticationRequestToken.class);
 		verify(this.authenticationManager).authenticate(authenticationCaptor.capture());
 		assertThat(this.response.getStatus()).isEqualTo(HttpStatus.OK.value());

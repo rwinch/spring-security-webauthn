@@ -30,7 +30,7 @@ import org.springframework.security.webauthn.api.authentication.PublicKeyCredent
 public interface PublicKeyCredentialRequestOptionsRepository {
 
 	/**
-	 * Saves the provided {@link com.yubico.webauthn.data.PublicKeyCredentialRequestOptions} or clears an existing
+	 * Saves the provided {@link PublicKeyCredentialRequestOptions} or clears an existing
 	 * {@link PublicKeyCredentialRequestOptions} if {@code options} is null.
 	 *
 	 * @param request the {@link HttpServletRequest}

@@ -14,25 +14,25 @@
  * limitations under the License.
  */
 
-package org.springframework.security.web.webauthn.authentication;
+package org.springframework.security.web.webauthn.registration;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
-import org.springframework.security.webauthn.api.TestPublicKeyCredentialRequestOptions;
-import org.springframework.security.webauthn.api.authentication.PublicKeyCredentialRequestOptions;
+import org.springframework.security.webauthn.api.TestPublicKeyCredentialCreationOptions;
+import org.springframework.security.webauthn.api.registration.PublicKeyCredentialCreationOptions;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for {@link HttpSessionPublicKeyCredentialRequestOptionsRepository}.
+ * Tests for {@link org.springframework.security.web.webauthn.authentication.HttpSessionPublicKeyCredentialRequestOptionsRepository}.
  *
- * @author Rob Winch
  * @since 6.3
+ * @author Rob Winch
  */
-class HttpSessionPublicKeyCredentialRequestOptionsRepositoryTests {
+class HttpSessionPublicKeyCredentialCreationOptionsRepositoryTests {
 
-	private HttpSessionPublicKeyCredentialRequestOptionsRepository repository = new HttpSessionPublicKeyCredentialRequestOptionsRepository();
+	private HttpSessionPublicKeyCredentialCreationOptionsRepository repository = new HttpSessionPublicKeyCredentialCreationOptionsRepository();
 
 	private MockHttpServletRequest request = new MockHttpServletRequest();
 
@@ -41,35 +41,35 @@ class HttpSessionPublicKeyCredentialRequestOptionsRepositoryTests {
 
 	@Test
 	void integrationTests() {
-		PublicKeyCredentialRequestOptions expected = TestPublicKeyCredentialRequestOptions
-			.create()
-			.build();
+		PublicKeyCredentialCreationOptions expected = TestPublicKeyCredentialCreationOptions
+				.createPublicKeyCredentialCreationOptions()
+				.build();
 		this.repository.save(this.request, this.response, expected);
-		Object attrValue = this.request.getSession().getAttribute(HttpSessionPublicKeyCredentialRequestOptionsRepository.DEFAULT_ATTR_NAME);
+		Object attrValue = this.request.getSession().getAttribute(HttpSessionPublicKeyCredentialCreationOptionsRepository.DEFAULT_ATTR_NAME);
 		assertThat(attrValue).isEqualTo(expected);
-		PublicKeyCredentialRequestOptions loadOptions = this.repository.load(this.request);
+		PublicKeyCredentialCreationOptions loadOptions = this.repository.load(this.request);
 		assertThat(loadOptions).isEqualTo(expected);
 
 		this.repository.save(this.request, this.response, null);
 
-		Object attrValueAfterRemoval = this.request.getSession().getAttribute(HttpSessionPublicKeyCredentialRequestOptionsRepository.DEFAULT_ATTR_NAME);
+		Object attrValueAfterRemoval = this.request.getSession().getAttribute(HttpSessionPublicKeyCredentialCreationOptionsRepository.DEFAULT_ATTR_NAME);
 		assertThat(attrValueAfterRemoval).isNull();
-		assertThat(this.request.getSession().getAttributeNames()).doesNotHaveToString(HttpSessionPublicKeyCredentialRequestOptionsRepository.DEFAULT_ATTR_NAME);
-		PublicKeyCredentialRequestOptions loadOptionsAfterRemoval = this.repository.load(this.request);
+		assertThat(this.request.getSession().getAttributeNames()).doesNotHaveToString(HttpSessionPublicKeyCredentialCreationOptionsRepository.DEFAULT_ATTR_NAME);
+		PublicKeyCredentialCreationOptions loadOptionsAfterRemoval = this.repository.load(this.request);
 		assertThat(loadOptionsAfterRemoval).isNull();
 	}
 
 	@Test
 	void loadWhenNullSessionThenDoesNotCreate() {
-		PublicKeyCredentialRequestOptions options = this.repository.load(this.request);
+		PublicKeyCredentialCreationOptions options = this.repository.load(this.request);
 		assertThat(options).isNull();
 		assertThat(this.request.getSession(false)).isNull();
 	}
 
 	@Test
 	void saveWhenSetAttrThenCustomAttr() {
-		PublicKeyCredentialRequestOptions expected = TestPublicKeyCredentialRequestOptions
-				.create()
+		PublicKeyCredentialCreationOptions expected = TestPublicKeyCredentialCreationOptions
+				.createPublicKeyCredentialCreationOptions()
 				.build();
 		String customAttr = "custom-attr";
 		this.repository.setAttrName(customAttr);
@@ -79,14 +79,13 @@ class HttpSessionPublicKeyCredentialRequestOptionsRepositoryTests {
 
 	@Test
 	void loadWhenSetAttrThenCustomAttr() {
-		PublicKeyCredentialRequestOptions expected = TestPublicKeyCredentialRequestOptions
-				.create()
+		PublicKeyCredentialCreationOptions expected = TestPublicKeyCredentialCreationOptions
+				.createPublicKeyCredentialCreationOptions()
 				.build();
 		String customAttr = "custom-attr";
 		this.repository.setAttrName(customAttr);
 		this.request.getSession().setAttribute(customAttr, expected);
-		PublicKeyCredentialRequestOptions actual = this.repository.load(this.request);
+		PublicKeyCredentialCreationOptions actual = this.repository.load(this.request);
 		assertThat(actual).isEqualTo(expected);
 	}
-
 }

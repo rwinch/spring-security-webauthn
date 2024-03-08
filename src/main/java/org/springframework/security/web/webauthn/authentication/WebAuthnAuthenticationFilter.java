@@ -88,6 +88,7 @@ public class WebAuthnAuthenticationFilter extends AbstractAuthenticationProcessi
 		if (requestOptions == null) {
 			throw new BadCredentialsException("Unable to authenticate the PublicKeyCredential. No PublicKeyCredentialRequestOptions found.");
 		}
+		this.requestOptionsRepository.save(request, response, null);
 		AuthenticationRequest authenticationRequest = new AuthenticationRequest(requestOptions, publicKeyCredential);
 		WebAuthnAuthenticationRequestToken token = new WebAuthnAuthenticationRequestToken(authenticationRequest);
 		return getAuthenticationManager().authenticate(token);

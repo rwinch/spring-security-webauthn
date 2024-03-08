@@ -16,12 +16,21 @@
 
 package org.springframework.security.web.webauthn.authentication;
 
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
+import org.mockito.invocation.InvocationOnMock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.stubbing.Answer;
 import org.skyscreamer.jsonassert.JSONAssert;
+import org.springframework.http.converter.HttpMessageConverter;
+import org.springframework.http.server.ServletServerHttpResponse;
+import org.springframework.security.authentication.TestingAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.context.SecurityContextHolderStrategy;
+import org.springframework.security.core.context.SecurityContextImpl;
 import org.springframework.security.webauthn.api.TestPublicKeyCredentialCreationOptions;
 import org.springframework.security.webauthn.api.TestPublicKeyCredentialRequestOptions;
 import org.springframework.security.webauthn.api.authentication.PublicKeyCredentialRequestOptions;
@@ -30,11 +39,13 @@ import org.springframework.security.webauthn.management.WebAuthnRelyingPartyOper
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import java.nio.charset.StandardCharsets;
+
+import static org.assertj.core.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.verifyNoInteractions;
-import static org.mockito.Mockito.when;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.willAnswer;
+import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -52,15 +63,28 @@ class PublicKeyCredentialRequestOptionsFilterTests {
 	@Mock
 	private PublicKeyCredentialRequestOptionsRepository requestOptionsRepository;
 
+	@Mock
+	private HttpMessageConverter<Object> converter;
+
+	@Mock
+	private SecurityContextHolderStrategy contextHolderStrategy;
+
+	private PublicKeyCredentialRequestOptionsFilter filter;
+
 	private MockMvc mockMvc;
 
 	@BeforeEach
 	void setup() {
-		PublicKeyCredentialRequestOptionsFilter filter = new PublicKeyCredentialRequestOptionsFilter(this.relyingPartyOperations);
-		filter.setRequestOptionsRepository(this.requestOptionsRepository);
+		this.filter = new PublicKeyCredentialRequestOptionsFilter(this.relyingPartyOperations);
+		this.filter.setRequestOptionsRepository(this.requestOptionsRepository);
 		this.mockMvc = MockMvcBuilders.standaloneSetup()
-			.addFilter(filter)
+			.addFilter(this.filter)
 			.build();
+	}
+
+	@AfterEach
+	void cleanup() {
+		SecurityContextHolder.clearContext();
 	}
 
 	@Test
@@ -111,5 +135,42 @@ class PublicKeyCredentialRequestOptionsFilterTests {
 							""", false)
 				);
 	}
+
+	@Test
+	void doFilterWhenCustom() throws Exception {
+		String body = "custom body";
+		willAnswer(new Answer<Void>() {
+			@Override
+			public Void answer(InvocationOnMock invocation) throws Throwable {
+				ServletServerHttpResponse response = invocation.getArgument(2);
+				response.getBody().write(body.getBytes(StandardCharsets.UTF_8));
+				return null;
+			}
+		}).given(this.converter).write(any(), any(), any());
+		given(this.contextHolderStrategy.getContext()).willReturn(new SecurityContextImpl(new TestingAuthenticationToken("user", "password", "ROLE_USER")));
+		this.filter.setConverter(this.converter);
+		this.filter.setSecurityContextHolderStrategy(this.contextHolderStrategy);
+		PublicKeyCredentialRequestOptions options = TestPublicKeyCredentialRequestOptions.create()
+				.build();
+		when(this.relyingPartyOperations.createCredentialRequestOptions(any())).thenReturn(options);
+
+		PublicKeyCredentialCreationOptions mockResult = this.relyingPartyOperations.createPublicKeyCredentialCreationOptions(null);
+		this.mockMvc.perform(get("/webauthn/authenticate/options"))
+				.andExpect(status().isOk())
+				.andDo((result) ->
+						assertThat(result.getResponse().getContentAsString()).isEqualTo(body)
+				);
+	}
+
+	@Test
+	void setConverterWhenNull() {
+		assertThatIllegalArgumentException().isThrownBy(() -> this.filter.setConverter(null));
+	}
+
+	@Test
+	void setSecurityContextHolderStrategyWhenNull() {
+		assertThatIllegalArgumentException().isThrownBy(() -> this.filter.setSecurityContextHolderStrategy(null));
+	}
+
 
 }

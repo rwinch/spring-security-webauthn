@@ -37,12 +37,7 @@ public class HttpSessionPublicKeyCredentialRequestOptionsRepository implements P
 	@Override
 	public void save(HttpServletRequest request, HttpServletResponse response, PublicKeyCredentialRequestOptions options) {
 		HttpSession session = request.getSession();
-		if (options == null) {
-			session.removeAttribute(this.attrName);
-		}
-		else {
-			session.setAttribute(this.attrName, options);
-		}
+		session.setAttribute(this.attrName, options);
 	}
 
 	@Override
