@@ -23,8 +23,8 @@ import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 import com.fasterxml.jackson.databind.ser.std.StdSerializer;
-import org.springframework.security.webauthn.api.registration.AuthenticatorTransport;
-import org.springframework.security.webauthn.api.registration.PublicKeyCredentialType;
+import org.springframework.security.webauthn.api.AuthenticatorTransport;
+import org.springframework.security.webauthn.api.PublicKeyCredentialType;
 
 import java.io.IOException;
 

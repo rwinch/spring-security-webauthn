@@ -1,3 +1,4 @@
+
 /*
  * Copyright 2002-2023 the original author or authors.
  *
@@ -14,22 +15,22 @@
  * limitations under the License.
  */
 
-package org.springframework.security.webauthn.api.registration;
+package org.springframework.security.webauthn.api;
 
-import java.util.ArrayList;
-import java.util.List;
+public enum AuthenticatorTransport {
+	USB("usb"),
+	NFC("nfc"),
+	BLE("ble"),
+	HYBRID("hybrid"),
+	INTERNAL("internal");
 
-public class DefaultAuthenticationExtensionsClientOutputs implements AuthenticationExtensionsClientOutputs {
-	private final List<AuthenticationExtensionsClientOutput<?>> outputs = new ArrayList<>();
+	private final String value;
 
-	public void add(AuthenticationExtensionsClientOutput<?>... outputs) {
-		for (AuthenticationExtensionsClientOutput<?> output : outputs) {
-			this.outputs.add(output);
-		}
+	AuthenticatorTransport(String value) {
+		this.value = value;
 	}
 
-	@Override
-	public List<AuthenticationExtensionsClientOutput<?>> getOutputs() {
-		return this.outputs;
+	public String getValue() {
+		return this.value;
 	}
 }

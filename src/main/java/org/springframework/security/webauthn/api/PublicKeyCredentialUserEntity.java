@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-package org.springframework.security.webauthn.api.registration;
+package org.springframework.security.webauthn.api;
 
-import org.springframework.security.webauthn.api.core.BufferSource;
+import org.springframework.security.webauthn.api.BufferSource;
 
 // https://www.w3.org/TR/webauthn-3/#dictdef-publickeycredentialuserentity
 public class PublicKeyCredentialUserEntity {

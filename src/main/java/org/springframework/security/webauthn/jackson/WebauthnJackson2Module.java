@@ -18,11 +18,11 @@ package org.springframework.security.webauthn.jackson;
 
 import com.fasterxml.jackson.core.Version;
 import com.fasterxml.jackson.databind.module.SimpleModule;
-import org.springframework.security.webauthn.api.authentication.AuthenticatorAssertionResponse;
-import org.springframework.security.webauthn.api.authentication.PublicKeyCredentialRequestOptions;
-import org.springframework.security.webauthn.api.core.ArrayBuffer;
-import org.springframework.security.webauthn.api.core.BufferSource;
-import org.springframework.security.webauthn.api.registration.*;
+import org.springframework.security.webauthn.api.AuthenticatorAssertionResponse;
+import org.springframework.security.webauthn.api.PublicKeyCredentialRequestOptions;
+import org.springframework.security.webauthn.api.ArrayBuffer;
+import org.springframework.security.webauthn.api.BufferSource;
+import org.springframework.security.webauthn.api.*;
 import org.springframework.security.webauthn.management.RelyingPartyPublicKey;
 
 public class WebauthnJackson2Module extends SimpleModule {

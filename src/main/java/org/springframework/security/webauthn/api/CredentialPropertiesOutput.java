@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.springframework.security.webauthn.api.registration;
+package org.springframework.security.webauthn.api;
 
 public class CredentialPropertiesOutput implements AuthenticationExtensionsClientOutput<CredentialPropertiesOutput.ExtensionOutput> {
 	public static final String EXTENSION_ID = "credProps";

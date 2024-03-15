@@ -16,6 +16,7 @@
 
 package org.springframework.security.web.webauthn.registration;
 
+import com.fasterxml.jackson.databind.Module;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.http.HttpServletResponse;
 import org.junit.jupiter.api.BeforeEach;
@@ -31,11 +32,13 @@ import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.mock.web.MockServletContext;
 import org.springframework.security.webauthn.api.TestPublicKeyCredentialCreationOptions;
 import org.springframework.security.webauthn.api.TestUserCredential;
-import org.springframework.security.webauthn.api.registration.PublicKeyCredentialCreationOptions;
+import org.springframework.security.webauthn.api.PublicKeyCredentialCreationOptions;
 import org.springframework.security.webauthn.management.ImmutableUserCredential;
 import org.springframework.security.webauthn.management.UserCredentialRepository;
 import org.springframework.security.webauthn.management.WebAuthnRelyingPartyOperations;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+
+import java.util.ServiceLoader;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;

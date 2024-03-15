@@ -19,8 +19,8 @@ package org.springframework.security.webauthn.jackson;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.ser.std.StdSerializer;
-import org.springframework.security.webauthn.api.registration.AuthenticationExtensionsClientInput;
-import org.springframework.security.webauthn.api.registration.AuthenticationExtensionsClientInputs;
+import org.springframework.security.webauthn.api.AuthenticationExtensionsClientInput;
+import org.springframework.security.webauthn.api.AuthenticationExtensionsClientInputs;
 
 import java.io.IOException;
 

@@ -16,8 +16,8 @@
 
 package org.springframework.security.webauthn.management;
 
-import org.springframework.security.webauthn.api.core.BufferSource;
-import org.springframework.security.webauthn.api.registration.PublicKeyCredentialUserEntity;
+import org.springframework.security.webauthn.api.BufferSource;
+import org.springframework.security.webauthn.api.PublicKeyCredentialUserEntity;
 
 import java.util.HashMap;
 import java.util.Map;

@@ -22,10 +22,10 @@ import com.yubico.webauthn.data.exception.Base64UrlException;
 import com.yubico.webauthn.exception.AssertionFailedException;
 import com.yubico.webauthn.exception.RegistrationFailedException;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.webauthn.api.authentication.PublicKeyCredentialRequestOptions;
-import org.springframework.security.webauthn.api.core.ArrayBuffer;
-import org.springframework.security.webauthn.api.core.BufferSource;
-import org.springframework.security.webauthn.api.registration.*;
+import org.springframework.security.webauthn.api.PublicKeyCredentialRequestOptions;
+import org.springframework.security.webauthn.api.ArrayBuffer;
+import org.springframework.security.webauthn.api.BufferSource;
+import org.springframework.security.webauthn.api.*;
 
 import java.io.IOException;
 import java.time.Duration;

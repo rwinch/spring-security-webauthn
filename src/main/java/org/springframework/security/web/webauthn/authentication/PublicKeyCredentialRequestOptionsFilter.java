@@ -31,7 +31,7 @@ import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.context.SecurityContextHolderStrategy;
 import org.springframework.security.web.util.matcher.RequestMatcher;
-import org.springframework.security.webauthn.api.authentication.PublicKeyCredentialRequestOptions;
+import org.springframework.security.webauthn.api.PublicKeyCredentialRequestOptions;
 import org.springframework.security.webauthn.jackson.WebauthnJackson2Module;
 import org.springframework.security.webauthn.management.WebAuthnRelyingPartyOperations;
 import org.springframework.util.Assert;

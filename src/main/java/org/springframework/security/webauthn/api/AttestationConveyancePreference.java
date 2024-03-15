@@ -1,4 +1,3 @@
-
 /*
  * Copyright 2002-2023 the original author or authors.
  *
@@ -15,14 +14,22 @@
  * limitations under the License.
  */
 
-package org.springframework.security.webauthn.api.registration;
+package org.springframework.security.webauthn.api;
 
-public enum PublicKeyCredentialType {
-	PUBLIC_KEY("public-key");
+
+// FIXME: Verify packages of registration and authentication are correct
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import org.springframework.security.webauthn.jackson.AttestationConveyancePreferenceSerializer;
+
+public enum AttestationConveyancePreference {
+	NONE("none"),
+	INDIRECT("indirect"),
+	DIRECT("direct"),
+	ENTERPRISE("enterprise");
 
 	private final String value;
 
-	PublicKeyCredentialType(String value) {
+	AttestationConveyancePreference(String value) {
 		this.value = value;
 	}
 

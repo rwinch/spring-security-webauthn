@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-package org.springframework.security.webauthn.api.authentication;
+package org.springframework.security.webauthn.api;
 
-import org.springframework.security.webauthn.api.core.ArrayBuffer;
-import org.springframework.security.webauthn.api.registration.AuthenticatorResponse;
+import org.springframework.security.webauthn.api.ArrayBuffer;
+import org.springframework.security.webauthn.api.AuthenticatorResponse;
 
 public class AuthenticatorAssertionResponse extends AuthenticatorResponse  {
 

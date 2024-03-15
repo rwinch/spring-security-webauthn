@@ -16,8 +16,8 @@
 
 package org.springframework.security.webauthn.api;
 
-import org.springframework.security.webauthn.api.core.BufferSource;
-import org.springframework.security.webauthn.api.registration.*;
+import org.springframework.security.webauthn.api.BufferSource;
+import org.springframework.security.webauthn.api.*;
 
 import java.time.Duration;
 

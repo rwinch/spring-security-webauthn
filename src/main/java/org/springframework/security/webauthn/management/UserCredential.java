@@ -19,9 +19,9 @@ package org.springframework.security.webauthn.management;
 import java.time.Instant;
 import java.util.List;
 
-import org.springframework.security.webauthn.api.core.ArrayBuffer;
-import org.springframework.security.webauthn.api.core.BufferSource;
-import org.springframework.security.webauthn.api.registration.AuthenticatorTransport;
+import org.springframework.security.webauthn.api.ArrayBuffer;
+import org.springframework.security.webauthn.api.BufferSource;
+import org.springframework.security.webauthn.api.AuthenticatorTransport;
 
 public interface UserCredential {
 

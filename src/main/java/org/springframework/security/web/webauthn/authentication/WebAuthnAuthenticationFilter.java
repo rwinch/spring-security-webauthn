@@ -35,9 +35,9 @@ import org.springframework.security.web.authentication.AuthenticationEntryPointF
 import org.springframework.security.web.authentication.HttpMessageConverterAuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.HttpStatusEntryPoint;
 import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
-import org.springframework.security.webauthn.api.authentication.AuthenticatorAssertionResponse;
-import org.springframework.security.webauthn.api.authentication.PublicKeyCredentialRequestOptions;
-import org.springframework.security.webauthn.api.registration.PublicKeyCredential;
+import org.springframework.security.webauthn.api.AuthenticatorAssertionResponse;
+import org.springframework.security.webauthn.api.PublicKeyCredentialRequestOptions;
+import org.springframework.security.webauthn.api.PublicKeyCredential;
 import org.springframework.security.webauthn.authentication.WebAuthnAuthenticationRequestToken;
 import org.springframework.security.webauthn.jackson.WebauthnJackson2Module;
 import org.springframework.security.webauthn.management.AuthenticationRequest;

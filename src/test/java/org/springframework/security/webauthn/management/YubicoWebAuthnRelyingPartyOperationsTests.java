@@ -25,9 +25,9 @@ import org.springframework.security.crypto.codec.Utf8;
 import org.springframework.security.webauthn.api.TestAuthenticatorAttestationResponse;
 import org.springframework.security.webauthn.api.TestPublicKeyCredential;
 import org.springframework.security.webauthn.api.TestPublicKeyCredentialCreationOptions;
-import org.springframework.security.webauthn.api.core.ArrayBuffer;
-import org.springframework.security.webauthn.api.core.BufferSource;
-import org.springframework.security.webauthn.api.registration.*;
+import org.springframework.security.webauthn.api.ArrayBuffer;
+import org.springframework.security.webauthn.api.BufferSource;
+import org.springframework.security.webauthn.api.*;
 
 import java.util.Map;
 import java.util.Set;

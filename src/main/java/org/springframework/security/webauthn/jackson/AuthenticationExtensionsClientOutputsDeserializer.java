@@ -22,9 +22,9 @@ import com.fasterxml.jackson.core.JsonToken;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
-import org.springframework.security.webauthn.api.registration.AuthenticationExtensionsClientOutputs;
-import org.springframework.security.webauthn.api.registration.CredentialPropertiesOutput;
-import org.springframework.security.webauthn.api.registration.DefaultAuthenticationExtensionsClientOutputs;
+import org.springframework.security.webauthn.api.AuthenticationExtensionsClientOutputs;
+import org.springframework.security.webauthn.api.CredentialPropertiesOutput;
+import org.springframework.security.webauthn.api.DefaultAuthenticationExtensionsClientOutputs;
 
 import java.io.IOException;
 import java.util.Map;

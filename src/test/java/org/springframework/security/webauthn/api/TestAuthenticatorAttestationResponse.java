@@ -16,10 +16,10 @@
 
 package org.springframework.security.webauthn.api;
 
-import org.springframework.security.webauthn.api.core.ArrayBuffer;
-import org.springframework.security.webauthn.api.registration.AuthenticatorAttestationResponse;
-import org.springframework.security.webauthn.api.registration.AuthenticatorTransport;
-import org.springframework.security.webauthn.api.registration.COSEAlgorithmIdentifier;
+import org.springframework.security.webauthn.api.ArrayBuffer;
+import org.springframework.security.webauthn.api.AuthenticatorAttestationResponse;
+import org.springframework.security.webauthn.api.AuthenticatorTransport;
+import org.springframework.security.webauthn.api.COSEAlgorithmIdentifier;
 
 public class TestAuthenticatorAttestationResponse {
 	public static AuthenticatorAttestationResponse.AuthenticatorAttestationResponseBuilder createAuthenticatorAttestationResponse() {

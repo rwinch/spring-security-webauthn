@@ -16,8 +16,8 @@
 
 package org.springframework.security.webauthn.management;
 
-import org.springframework.security.webauthn.api.registration.AuthenticatorAttestationResponse;
-import org.springframework.security.webauthn.api.registration.PublicKeyCredential;
+import org.springframework.security.webauthn.api.AuthenticatorAttestationResponse;
+import org.springframework.security.webauthn.api.PublicKeyCredential;
 
 public class RelyingPartyPublicKey {
 

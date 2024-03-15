@@ -19,8 +19,8 @@ package org.springframework.security.webauthn.jackson;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.ser.std.StdSerializer;
-import org.springframework.security.webauthn.api.registration.ResidentKeyRequirement;
-import org.springframework.security.webauthn.api.registration.UserVerificationRequirement;
+import org.springframework.security.webauthn.api.ResidentKeyRequirement;
+import org.springframework.security.webauthn.api.UserVerificationRequirement;
 
 import java.io.IOException;
 

@@ -17,7 +17,7 @@
 package org.springframework.security.webauthn.jackson;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
-import org.springframework.security.webauthn.api.core.ArrayBuffer;
+import org.springframework.security.webauthn.api.ArrayBuffer;
 
 class ArrayBufferMixin {
 	@JsonCreator

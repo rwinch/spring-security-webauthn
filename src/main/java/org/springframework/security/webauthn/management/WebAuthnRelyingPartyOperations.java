@@ -17,8 +17,8 @@
 package org.springframework.security.webauthn.management;
 
 import org.springframework.security.core.Authentication;
-import org.springframework.security.webauthn.api.authentication.PublicKeyCredentialRequestOptions;
-import org.springframework.security.webauthn.api.registration.PublicKeyCredentialCreationOptions;
+import org.springframework.security.webauthn.api.PublicKeyCredentialRequestOptions;
+import org.springframework.security.webauthn.api.PublicKeyCredentialCreationOptions;
 
 // FIXME: Maybe use Supplier<Authentication> so that it isn't looked up unnecessarily
 public interface WebAuthnRelyingPartyOperations {

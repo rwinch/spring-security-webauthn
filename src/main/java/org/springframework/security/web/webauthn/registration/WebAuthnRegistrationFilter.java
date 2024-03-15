@@ -30,8 +30,8 @@ import org.springframework.http.converter.json.MappingJackson2HttpMessageConvert
 import org.springframework.http.server.ServletServerHttpRequest;
 import org.springframework.http.server.ServletServerHttpResponse;
 import org.springframework.security.web.util.matcher.RequestMatcher;
-import org.springframework.security.webauthn.api.core.ArrayBuffer;
-import org.springframework.security.webauthn.api.registration.PublicKeyCredentialCreationOptions;
+import org.springframework.security.webauthn.api.ArrayBuffer;
+import org.springframework.security.webauthn.api.PublicKeyCredentialCreationOptions;
 import org.springframework.security.webauthn.management.RelyingPartyPublicKey;
 import org.springframework.security.webauthn.management.RelyingPartyRegistrationRequest;
 import org.springframework.security.webauthn.management.UserCredential;

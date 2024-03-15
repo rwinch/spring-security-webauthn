@@ -15,22 +15,13 @@
  * limitations under the License.
  */
 
-package org.springframework.security.webauthn.api.registration;
+package org.springframework.security.webauthn.api;
 
-public enum AuthenticatorTransport {
-	USB("usb"),
-	NFC("nfc"),
-	BLE("ble"),
-	HYBRID("hybrid"),
-	INTERNAL("internal");
+import java.util.List;
 
-	private final String value;
-
-	AuthenticatorTransport(String value) {
-		this.value = value;
-	}
-
-	public String getValue() {
-		return this.value;
-	}
+/**
+ * https://www.w3.org/TR/webauthn-3/#iface-authentication-extensions-client-inputs
+ */
+public interface AuthenticationExtensionsClientInputs {
+	List<AuthenticationExtensionsClientInput> getInputs();
 }

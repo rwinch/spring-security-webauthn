@@ -18,7 +18,7 @@ package org.springframework.security.web.webauthn.authentication;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import org.springframework.security.webauthn.api.authentication.PublicKeyCredentialRequestOptions;
+import org.springframework.security.webauthn.api.PublicKeyCredentialRequestOptions;
 
 /**
  * Saves {@link PublicKeyCredentialRequestOptions} between a request to generate an assertion and the validation of the

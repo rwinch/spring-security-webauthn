@@ -16,9 +16,9 @@
 
 package org.springframework.security.webauthn.management;
 
-import org.springframework.security.webauthn.api.authentication.AuthenticatorAssertionResponse;
-import org.springframework.security.webauthn.api.authentication.PublicKeyCredentialRequestOptions;
-import org.springframework.security.webauthn.api.registration.PublicKeyCredential;
+import org.springframework.security.webauthn.api.AuthenticatorAssertionResponse;
+import org.springframework.security.webauthn.api.PublicKeyCredentialRequestOptions;
+import org.springframework.security.webauthn.api.PublicKeyCredential;
 
 public class AuthenticationRequest {
 	private final PublicKeyCredentialRequestOptions requestOptions;

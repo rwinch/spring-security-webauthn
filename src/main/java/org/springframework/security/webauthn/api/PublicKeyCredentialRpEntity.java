@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.security.webauthn.api.registration;
+package org.springframework.security.webauthn.api;
 
 /**
  * https://www.w3.org/TR/webauthn-3/#dictdef-publickeycredentialrpentity

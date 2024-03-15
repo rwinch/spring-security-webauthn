@@ -1,4 +1,3 @@
-
 /*
  * Copyright 2002-2023 the original author or authors.
  *
@@ -15,13 +14,10 @@
  * limitations under the License.
  */
 
-package org.springframework.security.webauthn.api.registration;
+package org.springframework.security.webauthn.api;
 
-import java.util.List;
+public interface AuthenticationExtensionsClientOutput<T> {
+	String getExtensionId();
 
-/**
- * https://www.w3.org/TR/webauthn-3/#dictdef-authenticationextensionsclientoutputs
- */
-public interface AuthenticationExtensionsClientOutputs {
-	List<AuthenticationExtensionsClientOutput<?>> getOutputs();
+	T getOutput();
 }

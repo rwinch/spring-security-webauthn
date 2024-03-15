@@ -19,7 +19,7 @@ package org.springframework.security.web.webauthn.authentication;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
-import org.springframework.security.webauthn.api.authentication.PublicKeyCredentialRequestOptions;
+import org.springframework.security.webauthn.api.PublicKeyCredentialRequestOptions;
 import org.springframework.util.Assert;
 
 /**

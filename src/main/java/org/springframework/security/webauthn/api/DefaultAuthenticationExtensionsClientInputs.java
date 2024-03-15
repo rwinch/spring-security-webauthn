@@ -1,4 +1,3 @@
-
 /*
  * Copyright 2002-2023 the original author or authors.
  *
@@ -15,13 +14,21 @@
  * limitations under the License.
  */
 
-package org.springframework.security.webauthn.api.registration;
+package org.springframework.security.webauthn.api;
 
+import java.util.ArrayList;
 import java.util.List;
 
-/**
- * https://www.w3.org/TR/webauthn-3/#iface-authentication-extensions-client-inputs
- */
-public interface AuthenticationExtensionsClientInputs {
-	List<AuthenticationExtensionsClientInput> getInputs();
+public class DefaultAuthenticationExtensionsClientInputs implements AuthenticationExtensionsClientInputs {
+	private final List<AuthenticationExtensionsClientInput> inputs = new ArrayList<>();
+
+	public void add(AuthenticationExtensionsClientInput... inputs) {
+		for (AuthenticationExtensionsClientInput input : inputs) {
+			this.inputs.add(input);
+		}
+	}
+	@Override
+	public List<AuthenticationExtensionsClientInput> getInputs() {
+		return this.inputs;
+	}
 }

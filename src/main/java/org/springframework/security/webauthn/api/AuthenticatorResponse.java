@@ -14,14 +14,18 @@
  * limitations under the License.
  */
 
-package org.springframework.security.webauthn.api.registration;
+package org.springframework.security.webauthn.api;
 
-/**
- *
- * @param <T>
- */
-public interface AuthenticationExtensionsClientInput<T> {
-	String getExtensionId();
+import org.springframework.security.webauthn.api.ArrayBuffer;
 
-	T getInput();
+public class AuthenticatorResponse {
+	private final ArrayBuffer clientDataJSON;
+
+	public AuthenticatorResponse(ArrayBuffer clientDataJSON) {
+		this.clientDataJSON = clientDataJSON;
+	}
+
+	public ArrayBuffer getClientDataJSON() {
+		return this.clientDataJSON;
+	}
 }

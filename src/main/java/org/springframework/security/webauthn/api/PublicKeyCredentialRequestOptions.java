@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-package org.springframework.security.webauthn.api.authentication;
+package org.springframework.security.webauthn.api;
 
-import org.springframework.security.webauthn.api.core.BufferSource;
-import org.springframework.security.webauthn.api.registration.AuthenticationExtensionsClientInputs;
-import org.springframework.security.webauthn.api.registration.DefaultAuthenticationExtensionsClientInputs;
-import org.springframework.security.webauthn.api.registration.PublicKeyCredentialDescriptor;
-import org.springframework.security.webauthn.api.registration.UserVerificationRequirement;
+import org.springframework.security.webauthn.api.BufferSource;
+import org.springframework.security.webauthn.api.AuthenticationExtensionsClientInputs;
+import org.springframework.security.webauthn.api.DefaultAuthenticationExtensionsClientInputs;
+import org.springframework.security.webauthn.api.PublicKeyCredentialDescriptor;
+import org.springframework.security.webauthn.api.UserVerificationRequirement;
 import org.springframework.util.Assert;
 
 import java.time.Duration;

@@ -20,7 +20,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.security.webauthn.api.TestPublicKeyCredentialRequestOptions;
-import org.springframework.security.webauthn.api.authentication.PublicKeyCredentialRequestOptions;
+import org.springframework.security.webauthn.api.PublicKeyCredentialRequestOptions;
 
 import static org.assertj.core.api.Assertions.assertThat;
 

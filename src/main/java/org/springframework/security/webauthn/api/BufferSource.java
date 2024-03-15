@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.springframework.security.webauthn.api.core;
+package org.springframework.security.webauthn.api;
 
 import java.security.SecureRandom;
 import java.util.Base64;

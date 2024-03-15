@@ -30,7 +30,7 @@ import org.springframework.security.web.webauthn.authentication.WebAuthnAuthenti
 import org.springframework.security.web.webauthn.registration.DefaultWebAuthnRegistrationPageGeneratingFilter;
 import org.springframework.security.web.webauthn.registration.PublicKeyCredentialCreationOptionsFilter;
 import org.springframework.security.web.webauthn.registration.WebAuthnRegistrationFilter;
-import org.springframework.security.webauthn.api.registration.PublicKeyCredentialRpEntity;
+import org.springframework.security.webauthn.api.PublicKeyCredentialRpEntity;
 import org.springframework.security.webauthn.authentication.WebAuthnAuthenticationProvider;
 import org.springframework.security.webauthn.management.*;
 

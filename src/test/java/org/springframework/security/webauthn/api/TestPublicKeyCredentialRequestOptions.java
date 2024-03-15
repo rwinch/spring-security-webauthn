@@ -16,9 +16,9 @@
 
 package org.springframework.security.webauthn.api;
 
-import org.springframework.security.webauthn.api.authentication.PublicKeyCredentialRequestOptions;
-import org.springframework.security.webauthn.api.core.BufferSource;
-import org.springframework.security.webauthn.api.registration.UserVerificationRequirement;
+import org.springframework.security.webauthn.api.PublicKeyCredentialRequestOptions;
+import org.springframework.security.webauthn.api.BufferSource;
+import org.springframework.security.webauthn.api.UserVerificationRequirement;
 
 import java.time.Duration;
 

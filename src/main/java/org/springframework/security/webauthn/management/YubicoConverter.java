@@ -21,21 +21,22 @@ import com.yubico.webauthn.AssertionRequest;
 import com.yubico.webauthn.FinishAssertionOptions;
 import com.yubico.webauthn.data.*;
 import com.yubico.webauthn.data.AttestationConveyancePreference;
+import com.yubico.webauthn.data.AuthenticatorAssertionResponse;
 import com.yubico.webauthn.data.exception.Base64UrlException;
-import org.springframework.security.webauthn.api.authentication.PublicKeyCredentialRequestOptions;
-import org.springframework.security.webauthn.api.core.ArrayBuffer;
-import org.springframework.security.webauthn.api.core.BufferSource;
-import org.springframework.security.webauthn.api.registration.*;
-import org.springframework.security.webauthn.api.registration.AuthenticatorAttachment;
-import org.springframework.security.webauthn.api.registration.AuthenticatorAttestationResponse;
-import org.springframework.security.webauthn.api.registration.AuthenticatorSelectionCriteria;
-import org.springframework.security.webauthn.api.registration.AuthenticatorTransport;
-import org.springframework.security.webauthn.api.registration.PublicKeyCredential;
-import org.springframework.security.webauthn.api.registration.PublicKeyCredentialCreationOptions;
-import org.springframework.security.webauthn.api.registration.PublicKeyCredentialDescriptor;
-import org.springframework.security.webauthn.api.registration.PublicKeyCredentialParameters;
-import org.springframework.security.webauthn.api.registration.ResidentKeyRequirement;
-import org.springframework.security.webauthn.api.registration.UserVerificationRequirement;
+import org.springframework.security.webauthn.api.PublicKeyCredentialRequestOptions;
+import org.springframework.security.webauthn.api.ArrayBuffer;
+import org.springframework.security.webauthn.api.BufferSource;
+import org.springframework.security.webauthn.api.*;
+import org.springframework.security.webauthn.api.AuthenticatorAttachment;
+import org.springframework.security.webauthn.api.AuthenticatorAttestationResponse;
+import org.springframework.security.webauthn.api.AuthenticatorSelectionCriteria;
+import org.springframework.security.webauthn.api.AuthenticatorTransport;
+import org.springframework.security.webauthn.api.PublicKeyCredential;
+import org.springframework.security.webauthn.api.PublicKeyCredentialCreationOptions;
+import org.springframework.security.webauthn.api.PublicKeyCredentialDescriptor;
+import org.springframework.security.webauthn.api.PublicKeyCredentialParameters;
+import org.springframework.security.webauthn.api.ResidentKeyRequirement;
+import org.springframework.security.webauthn.api.UserVerificationRequirement;
 
 import java.io.IOException;
 import java.util.*;
@@ -56,17 +57,17 @@ final class YubicoConverter {
 				.build();
 	}
 
-	private static AttestationConveyancePreference convertAttestation(org.springframework.security.webauthn.api.registration.AttestationConveyancePreference attestation) {
-		if (attestation == org.springframework.security.webauthn.api.registration.AttestationConveyancePreference.DIRECT) {
+	private static AttestationConveyancePreference convertAttestation(org.springframework.security.webauthn.api.AttestationConveyancePreference attestation) {
+		if (attestation == org.springframework.security.webauthn.api.AttestationConveyancePreference.DIRECT) {
 			return AttestationConveyancePreference.DIRECT;
 		}
-		if (attestation == org.springframework.security.webauthn.api.registration.AttestationConveyancePreference.ENTERPRISE) {
+		if (attestation == org.springframework.security.webauthn.api.AttestationConveyancePreference.ENTERPRISE) {
 			return AttestationConveyancePreference.ENTERPRISE;
 		}
-		if (attestation == org.springframework.security.webauthn.api.registration.AttestationConveyancePreference.INDIRECT) {
+		if (attestation == org.springframework.security.webauthn.api.AttestationConveyancePreference.INDIRECT) {
 			return AttestationConveyancePreference.INDIRECT;
 		}
-		if (attestation == org.springframework.security.webauthn.api.registration.AttestationConveyancePreference.NONE) {
+		if (attestation == org.springframework.security.webauthn.api.AttestationConveyancePreference.NONE) {
 			return AttestationConveyancePreference.NONE;
 		}
 		return null;
@@ -212,7 +213,7 @@ final class YubicoConverter {
 		}
 	}
 
-	private static com.yubico.webauthn.data.PublicKeyCredential<AuthenticatorAssertionResponse, ClientAssertionExtensionOutputs> convertResponse(PublicKeyCredential<org.springframework.security.webauthn.api.authentication.AuthenticatorAssertionResponse> publicKey) throws Base64UrlException, IOException {
+	private static com.yubico.webauthn.data.PublicKeyCredential<AuthenticatorAssertionResponse, ClientAssertionExtensionOutputs> convertResponse(PublicKeyCredential<org.springframework.security.webauthn.api.AuthenticatorAssertionResponse> publicKey) throws Base64UrlException, IOException {
 		return com.yubico.webauthn.data.PublicKeyCredential.<com.yubico.webauthn.data.AuthenticatorAssertionResponse, ClientAssertionExtensionOutputs>builder()
 				.id(convertByteArray(publicKey.getRawId()))
 				.response(convertResponse(publicKey.getResponse()))
@@ -226,7 +227,7 @@ final class YubicoConverter {
 				.build();
 	}
 
-	private static AuthenticatorAssertionResponse convertResponse(org.springframework.security.webauthn.api.authentication.AuthenticatorAssertionResponse response) throws Base64UrlException, IOException {
+	private static AuthenticatorAssertionResponse convertResponse(org.springframework.security.webauthn.api.AuthenticatorAssertionResponse response) throws Base64UrlException, IOException {
 		return AuthenticatorAssertionResponse.builder()
 				.authenticatorData(convertByteArray(response.getAuthenticatorData()))
 				.clientDataJSON(convertByteArray(response.getClientDataJSON()))
@@ -235,7 +236,7 @@ final class YubicoConverter {
 				.build();
 	}
 
-	private static com.yubico.webauthn.data.AuthenticatorAssertionResponse convertAssertionResponse(org.springframework.security.webauthn.api.authentication.AuthenticatorAssertionResponse response) throws Base64UrlException, IOException {
+	private static com.yubico.webauthn.data.AuthenticatorAssertionResponse convertAssertionResponse(org.springframework.security.webauthn.api.AuthenticatorAssertionResponse response) throws Base64UrlException, IOException {
 		return com.yubico.webauthn.data.AuthenticatorAssertionResponse.builder()
 				.authenticatorData(convertByteArray(response.getAuthenticatorData()))
 				.clientDataJSON(convertByteArray(response.getClientDataJSON()))

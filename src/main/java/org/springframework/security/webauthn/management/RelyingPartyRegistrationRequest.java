@@ -16,7 +16,7 @@
 
 package org.springframework.security.webauthn.management;
 
-import org.springframework.security.webauthn.api.registration.PublicKeyCredentialCreationOptions;
+import org.springframework.security.webauthn.api.PublicKeyCredentialCreationOptions;
 import org.springframework.util.Assert;
 
 public class RelyingPartyRegistrationRequest {

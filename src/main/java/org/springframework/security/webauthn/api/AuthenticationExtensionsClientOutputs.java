@@ -1,3 +1,4 @@
+
 /*
  * Copyright 2002-2023 the original author or authors.
  *
@@ -14,18 +15,13 @@
  * limitations under the License.
  */
 
-package org.springframework.security.webauthn.api.registration;
+package org.springframework.security.webauthn.api;
 
-import org.springframework.security.webauthn.api.core.ArrayBuffer;
+import java.util.List;
 
-public class AuthenticatorResponse {
-	private final ArrayBuffer clientDataJSON;
-
-	public AuthenticatorResponse(ArrayBuffer clientDataJSON) {
-		this.clientDataJSON = clientDataJSON;
-	}
-
-	public ArrayBuffer getClientDataJSON() {
-		return this.clientDataJSON;
-	}
+/**
+ * https://www.w3.org/TR/webauthn-3/#dictdef-authenticationextensionsclientoutputs
+ */
+public interface AuthenticationExtensionsClientOutputs {
+	List<AuthenticationExtensionsClientOutput<?>> getOutputs();
 }

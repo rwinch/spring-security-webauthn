@@ -26,7 +26,7 @@ import org.springframework.http.MediaType;
 import org.springframework.security.web.csrf.CsrfToken;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.security.web.util.matcher.RequestMatcher;
-import org.springframework.security.webauthn.api.registration.PublicKeyCredentialUserEntity;
+import org.springframework.security.webauthn.api.PublicKeyCredentialUserEntity;
 import org.springframework.security.webauthn.management.PublicKeyCredentialUserEntityRepository;
 import org.springframework.security.webauthn.management.UserCredential;
 import org.springframework.security.webauthn.management.UserCredentialRepository;
