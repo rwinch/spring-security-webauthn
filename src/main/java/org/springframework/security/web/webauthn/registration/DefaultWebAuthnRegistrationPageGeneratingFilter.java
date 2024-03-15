@@ -185,6 +185,7 @@ public class DefaultWebAuthnRegistrationPageGeneratingFilter extends OncePerRequ
 								},
 							});
 							const options = await optionsResponse.json();
+							// FIXME: Use https://www.w3.org/TR/webauthn-3/#sctn-parseCreationOptionsFromJSON
 							options.user.id = base64url.decode(options.user.id);
 							options.challenge = base64url.decode(options.challenge);
 							if (options.excludeCredentials) {
@@ -234,8 +235,8 @@ public class DefaultWebAuthnRegistrationPageGeneratingFilter extends OncePerRequ
 							// Wait for the results of verification
 							const verificationJSON = await verificationResp.json();
 
-							// Show UI appropriate for the `verified` status
-							if (verificationJSON && verificationJSON.verified) {
+							// Show UI appropriate for the `success` status & reload to display the new registration
+							if (verificationJSON && verificationJSON.success) {
 								window.location.href = '${contextPath}/webauthn/register?success'
 							} else {
 								setVisibility(error, true)

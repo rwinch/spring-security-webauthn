@@ -379,6 +379,7 @@ public class DefaultLoginPageGeneratingFilter extends GenericFilterBean {
 
 					const optionsResponse = await fetch('/webauthn/authenticate/options');
 					const options = await optionsResponse.json();
+					// FIXME: Use https://www.w3.org/TR/webauthn-3/#sctn-parseRequestOptionsFromJSON
 					options.challenge = base64url.decode(options.challenge);
 
 					// Invoke the WebAuthn get() method.

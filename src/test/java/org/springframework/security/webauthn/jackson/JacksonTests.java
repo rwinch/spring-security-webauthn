@@ -32,7 +32,6 @@ import org.springframework.security.webauthn.management.*;
 
 import java.time.Duration;
 import java.util.Arrays;
-import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -296,7 +295,7 @@ class JacksonTests {
 				}
 			}
 			""".formatted(PUBLIC_KEY_JSON);
-		WebAuthnRegistrationFilter.RelyingPartyRequest registrationRequest = this.mapper.readValue(json, WebAuthnRegistrationFilter.RelyingPartyRequest.class);
+		WebAuthnRegistrationFilter.WebAuthnRegistrationRequest registrationRequest = this.mapper.readValue(json, WebAuthnRegistrationFilter.WebAuthnRegistrationRequest.class);
 
 
 		DefaultAuthenticationExtensionsClientOutputs clientExtensionResults = new DefaultAuthenticationExtensionsClientOutputs();
@@ -318,7 +317,7 @@ class JacksonTests {
 				.authenticatorAttachment(AuthenticatorAttachment.CROSS_PLATFORM)
 				.build();
 
-		WebAuthnRegistrationFilter.RelyingPartyRequest expected = new WebAuthnRegistrationFilter.RelyingPartyRequest();
+		WebAuthnRegistrationFilter.WebAuthnRegistrationRequest expected = new WebAuthnRegistrationFilter.WebAuthnRegistrationRequest();
 		expected.setPublicKey(new RelyingPartyPublicKey(credential, "Cell Phone"));
 		assertThat(registrationRequest).usingRecursiveComparison().isEqualTo(expected);
 	}

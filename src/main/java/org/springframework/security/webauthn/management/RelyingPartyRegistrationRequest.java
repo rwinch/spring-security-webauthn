@@ -17,6 +17,7 @@
 package org.springframework.security.webauthn.management;
 
 import org.springframework.security.webauthn.api.registration.PublicKeyCredentialCreationOptions;
+import org.springframework.util.Assert;
 
 public class RelyingPartyRegistrationRequest {
 
@@ -26,6 +27,8 @@ public class RelyingPartyRegistrationRequest {
 
 
 	public RelyingPartyRegistrationRequest(PublicKeyCredentialCreationOptions options, RelyingPartyPublicKey publicKey) {
+		Assert.notNull(options, "options cannot be null");
+		Assert.notNull(publicKey, "publicKey cannot be null");
 		this.options = options;
 		this.publicKey = publicKey;
 	}

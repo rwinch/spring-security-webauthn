@@ -23,6 +23,7 @@ import org.springframework.core.ResolvableType;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.converter.GenericHttpMessageConverter;
+import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.http.server.ServletServerHttpRequest;
@@ -48,13 +49,23 @@ import static org.springframework.security.web.util.matcher.AntPathRequestMatche
 
 /**
  * Authenticates {@code PublicKeyCredential<AuthenticatorAssertionResponse>} that is parsed from the body of the
- * {@link HttpServletRequest} using the provided . An example request is provided below:
+ * {@link HttpServletRequest} using the {@link #setConverter(GenericHttpMessageConverter)}. An example request is
+ * provided below:
  *
- * FIXME: Add example below
- *
- * <code>
- *
- * </code>
+ * <pre>
+ * {
+ * 	"id": "dYF7EGnRFFIXkpXi9XU2wg",
+ * 	"rawId": "dYF7EGnRFFIXkpXi9XU2wg",
+ * 	"response": {
+ * 		"authenticatorData": "y9GqwTRaMpzVDbXq1dyEAXVOxrou08k22ggRC45MKNgdAAAAAA",
+ * 		"clientDataJSON": "eyJ0eXBlIjoid2ViYXV0aG4uZ2V0IiwiY2hhbGxlbmdlIjoiRFVsRzRDbU9naWhKMG1vdXZFcE9HdUk0ZVJ6MGRRWmxUQmFtbjdHQ1FTNCIsIm9yaWdpbiI6Imh0dHBzOi8vZXhhbXBsZS5sb2NhbGhvc3Q6ODQ0MyIsImNyb3NzT3JpZ2luIjpmYWxzZX0",
+ * 		"signature": "MEYCIQCW2BcUkRCAXDmGxwMi78jknenZ7_amWrUJEYoTkweldAIhAMD0EMp1rw2GfwhdrsFIeDsL7tfOXVPwOtfqJntjAo4z",
+ * 		"userHandle": "Q3_0Xd64_HW0BlKRAJnVagJTpLKLgARCj8zjugpRnVo"
+ * 	    },
+ * 	"clientExtensionResults": {},
+ * 	"authenticatorAttachment": "platform"
+ * }
+ * </pre>
  * @since 6.3
  * @author Rob Winch
  */
