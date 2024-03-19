@@ -16,8 +16,6 @@
 
 package org.springframework.security.webauthn.api;
 
-import org.springframework.security.webauthn.api.BufferSource;
-
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -56,7 +54,7 @@ public class PublicKeyCredentialCreationOptions {
 	 * This member contains a challenge intended to be used for generating the newly created credential’s attestation
 	 * object. See the §13.4.3 Cryptographic Challenges security consideration.
 	 */
-	private final BufferSource challenge;
+	private final Base64Url challenge;
 
 	/**
 	 * This member contains information about the desired properties of the credential to be created. The sequence is
@@ -81,9 +79,9 @@ public class PublicKeyCredentialCreationOptions {
 	private final AuthenticationExtensionsClientInputs extensions;
 
 	private PublicKeyCredentialCreationOptions(PublicKeyCredentialRpEntity rp, PublicKeyCredentialUserEntity user,
-		   BufferSource challenge, List<PublicKeyCredentialParameters> pubKeyCredParams,
-		   List<PublicKeyCredentialDescriptor> excludeCredentials, AuthenticatorSelectionCriteria authenticatorSelection,
-		   AuthenticationExtensionsClientInputs extensions) {
+											   Base64Url challenge, List<PublicKeyCredentialParameters> pubKeyCredParams,
+											   List<PublicKeyCredentialDescriptor> excludeCredentials, AuthenticatorSelectionCriteria authenticatorSelection,
+											   AuthenticationExtensionsClientInputs extensions) {
 		this.rp = rp;
 		this.user = user;
 		this.challenge = challenge;
@@ -101,7 +99,7 @@ public class PublicKeyCredentialCreationOptions {
 		return this.user;
 	}
 
-	public BufferSource getChallenge() {
+	public Base64Url getChallenge() {
 		return this.challenge;
 	}
 
@@ -136,7 +134,7 @@ public class PublicKeyCredentialCreationOptions {
 	public static final class PublicKeyCredentialCreationOptionsBuilder {
 		private PublicKeyCredentialRpEntity rp;
 		private PublicKeyCredentialUserEntity user;
-		private BufferSource challenge;
+		private Base64Url challenge;
 		private List<PublicKeyCredentialParameters> pubKeyCredParams = new ArrayList<>();
 		private Duration timeout;
 		private List<PublicKeyCredentialDescriptor> excludeCredentials = new ArrayList<>();
@@ -161,7 +159,7 @@ public class PublicKeyCredentialCreationOptions {
 			return this;
 		}
 
-		public PublicKeyCredentialCreationOptionsBuilder challenge(BufferSource challenge) {
+		public PublicKeyCredentialCreationOptionsBuilder challenge(Base64Url challenge) {
 			this.challenge = challenge;
 			return this;
 		}

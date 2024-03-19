@@ -17,8 +17,10 @@
 package org.springframework.security.webauthn.jackson;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import org.springframework.security.webauthn.api.Base64Url;
 
+@JsonSerialize(using = Base64Serializer.class)
 class Base64UrlMixin {
 	@JsonCreator
 	public static Base64Url fromBase64(String value) {

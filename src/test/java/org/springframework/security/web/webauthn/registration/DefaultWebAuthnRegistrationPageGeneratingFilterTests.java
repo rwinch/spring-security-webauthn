@@ -26,7 +26,7 @@ import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.security.web.csrf.CsrfToken;
 import org.springframework.security.web.csrf.DefaultCsrfToken;
 import org.springframework.security.webauthn.api.TestUserCredential;
-import org.springframework.security.webauthn.api.BufferSource;
+import org.springframework.security.webauthn.api.Base64Url;
 import org.springframework.security.webauthn.api.PublicKeyCredentialUserEntity;
 import org.springframework.security.webauthn.management.ImmutableUserCredential;
 import org.springframework.security.webauthn.management.PublicKeyCredentialUserEntityRepository;
@@ -82,7 +82,7 @@ class DefaultWebAuthnRegistrationPageGeneratingFilterTests {
 
 	@Test
 	void doFilterThenCsrfDataAttrsPresent() throws Exception {
-		PublicKeyCredentialUserEntity userEntity = new PublicKeyCredentialUserEntity("user", BufferSource.random(), "User");
+		PublicKeyCredentialUserEntity userEntity = new PublicKeyCredentialUserEntity("user", Base64Url.random(), "User");
 		when(this.userEntities.findByUsername(any())).thenReturn(userEntity);
 		when(this.userCredentials.findByUserId(userEntity.getId())).thenReturn(Arrays.asList(TestUserCredential.userCredential().build()));
 		String body = bodyAsString(matchingRequest());
@@ -100,7 +100,7 @@ class DefaultWebAuthnRegistrationPageGeneratingFilterTests {
 
 	@Test
 	void doFilterWhenNoCredentialsThenNoResults() throws Exception {
-		PublicKeyCredentialUserEntity userEntity = new PublicKeyCredentialUserEntity("user", BufferSource.random(), "User");
+		PublicKeyCredentialUserEntity userEntity = new PublicKeyCredentialUserEntity("user", Base64Url.random(), "User");
 		when(this.userEntities.findByUsername(any())).thenReturn(userEntity);
 		when(this.userCredentials.findByUserId(userEntity.getId())).thenReturn(Collections.emptyList());
 		String body = bodyAsString(matchingRequest());
@@ -110,7 +110,7 @@ class DefaultWebAuthnRegistrationPageGeneratingFilterTests {
 
 	@Test
 	void doFilterWhenResultsThenDisplayed() throws Exception {
-		PublicKeyCredentialUserEntity userEntity = new PublicKeyCredentialUserEntity("user", BufferSource.random(), "User");
+		PublicKeyCredentialUserEntity userEntity = new PublicKeyCredentialUserEntity("user", Base64Url.random(), "User");
 		ImmutableUserCredential credential = TestUserCredential.userCredential().build();
 		when(this.userEntities.findByUsername(any())).thenReturn(userEntity);
 		when(this.userCredentials.findByUserId(userEntity.getId())).thenReturn(Arrays.asList(credential));
@@ -126,7 +126,7 @@ class DefaultWebAuthnRegistrationPageGeneratingFilterTests {
 		String label = "<script>alert('Hello');</script>";
 		String htmlEncodedLabel = HtmlUtils.htmlEscape(label);
 		assertThat(label).isNotEqualTo(htmlEncodedLabel);
-		PublicKeyCredentialUserEntity userEntity = new PublicKeyCredentialUserEntity("user", BufferSource.random(), "User");
+		PublicKeyCredentialUserEntity userEntity = new PublicKeyCredentialUserEntity("user", Base64Url.random(), "User");
 		ImmutableUserCredential credential = TestUserCredential.userCredential()
 			.label(label)
 			.build();
@@ -151,7 +151,7 @@ class DefaultWebAuthnRegistrationPageGeneratingFilterTests {
 
 	@Test
 	void doFilterWhenContextEmptyThenUrlsEmptyPrefix() throws Exception {
-		PublicKeyCredentialUserEntity userEntity = new PublicKeyCredentialUserEntity("user", BufferSource.random(), "User");
+		PublicKeyCredentialUserEntity userEntity = new PublicKeyCredentialUserEntity("user", Base64Url.random(), "User");
 		ImmutableUserCredential credential = TestUserCredential.userCredential().build();
 		when(this.userEntities.findByUsername(any())).thenReturn(userEntity);
 		when(this.userCredentials.findByUserId(userEntity.getId())).thenReturn(Arrays.asList(credential));
@@ -164,7 +164,7 @@ class DefaultWebAuthnRegistrationPageGeneratingFilterTests {
 
 	@Test
 	void doFilterWhenContextNotEmptyThenUrlsPrefixed() throws Exception {
-		PublicKeyCredentialUserEntity userEntity = new PublicKeyCredentialUserEntity("user", BufferSource.random(), "User");
+		PublicKeyCredentialUserEntity userEntity = new PublicKeyCredentialUserEntity("user", Base64Url.random(), "User");
 		ImmutableUserCredential credential = TestUserCredential.userCredential().build();
 		when(this.userEntities.findByUsername(any())).thenReturn(userEntity);
 		when(this.userCredentials.findByUserId(userEntity.getId())).thenReturn(Arrays.asList(credential));

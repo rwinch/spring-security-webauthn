@@ -16,7 +16,7 @@
 
 package org.springframework.security.webauthn.management;
 
-import org.springframework.security.webauthn.api.BufferSource;
+import org.springframework.security.webauthn.api.Base64Url;
 import org.springframework.security.webauthn.api.PublicKeyCredentialUserEntity;
 
 import java.util.HashMap;
@@ -26,10 +26,10 @@ public class MapPublicKeyCredentialUserEntityRepository implements PublicKeyCred
 
 	private final Map<String,PublicKeyCredentialUserEntity> usernameToUserEntity = new HashMap<>();
 
-	private final Map<BufferSource,String> idToUsername = new HashMap<>();
+	private final Map<Base64Url,String> idToUsername = new HashMap<>();
 
 	@Override
-	public String findUsernameByUserEntityId(BufferSource id) {
+	public String findUsernameByUserEntityId(Base64Url id) {
 		return this.idToUsername.get(id);
 	}
 

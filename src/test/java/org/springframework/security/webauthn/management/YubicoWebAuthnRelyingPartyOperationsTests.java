@@ -26,7 +26,7 @@ import org.springframework.security.webauthn.api.TestAuthenticatorAttestationRes
 import org.springframework.security.webauthn.api.TestPublicKeyCredential;
 import org.springframework.security.webauthn.api.TestPublicKeyCredentialCreationOptions;
 import org.springframework.security.webauthn.api.Base64Url;
-import org.springframework.security.webauthn.api.BufferSource;
+import org.springframework.security.webauthn.api.Base64Url;
 import org.springframework.security.webauthn.api.*;
 
 import java.util.Map;
@@ -76,7 +76,7 @@ class YubicoWebAuthnRelyingPartyOperationsTests {
 	@Test
 	void registerCredentialWhenCChallengeNotEqualBase64UrlEncodingOptionsChallenge() {
 		PublicKeyCredentialCreationOptions options = TestPublicKeyCredentialCreationOptions.createPublicKeyCredentialCreationOptions()
-				.challenge(BufferSource.fromBase64("h0vgwGQjoCzAzDUsmzPpk-JVIJRRgn0L4KVSYNRcEZc"))
+				.challenge(Base64Url.fromBase64("h0vgwGQjoCzAzDUsmzPpk-JVIJRRgn0L4KVSYNRcEZc"))
 				.build();
 		AuthenticatorAttestationResponse.AuthenticatorAttestationResponseBuilder responseBldr = TestAuthenticatorAttestationResponse.createAuthenticatorAttestationResponse();
 		responseBldr.clientDataJSON(new Base64Url(Utf8.encode("{\"type\":\"webauthn.create\",\"challenge\":\"IBQnuY1Z0K1HqBoFWCp2xlJl8-oq_aFIXzyT_F0-0GU\",\"origin\":\"https://example.localhost:8080\",\"crossOrigin\":false}")));

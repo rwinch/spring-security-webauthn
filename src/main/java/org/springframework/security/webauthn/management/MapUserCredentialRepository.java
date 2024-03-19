@@ -17,7 +17,7 @@
 package org.springframework.security.webauthn.management;
 
 import org.springframework.security.webauthn.api.Base64Url;
-import org.springframework.security.webauthn.api.BufferSource;
+import org.springframework.security.webauthn.api.Base64Url;
 
 import java.util.*;
 
@@ -25,7 +25,7 @@ public class MapUserCredentialRepository implements UserCredentialRepository {
 
 	private final Map<Base64Url,UserCredential> credentialIdToUserCredential = new HashMap<>();
 
-	private final Map<BufferSource,List<UserCredential>> userEntityIdToUserCredentials = new HashMap<>();
+	private final Map<Base64Url,List<UserCredential>> userEntityIdToUserCredentials = new HashMap<>();
 
 	@Override
 	public void delete(Base64Url credentialId) {
@@ -50,7 +50,7 @@ public class MapUserCredentialRepository implements UserCredentialRepository {
 	}
 
 	@Override
-	public List<UserCredential> findByUserId(BufferSource userId) {
+	public List<UserCredential> findByUserId(Base64Url userId) {
 		return Collections.unmodifiableList(this.userEntityIdToUserCredentials.getOrDefault(userId, Collections.emptyList()));
 	}
 }

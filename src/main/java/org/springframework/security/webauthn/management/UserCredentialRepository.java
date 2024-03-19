@@ -17,7 +17,7 @@
 package org.springframework.security.webauthn.management;
 
 import org.springframework.security.webauthn.api.Base64Url;
-import org.springframework.security.webauthn.api.BufferSource;
+import org.springframework.security.webauthn.api.Base64Url;
 
 import java.util.List;
 
@@ -29,5 +29,5 @@ public interface UserCredentialRepository {
 
 	UserCredential findByCredentialId(Base64Url credentialId);
 
-	List<UserCredential> findByUserId(BufferSource userId);
+	List<UserCredential> findByUserId(Base64Url userId);
 }

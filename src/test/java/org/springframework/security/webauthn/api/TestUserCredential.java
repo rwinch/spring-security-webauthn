@@ -25,7 +25,7 @@ public class TestUserCredential {
 		return ImmutableUserCredential.builder()
 				.label("label")
 				.credentialId(Base64Url.fromBase64("NauGCN7bZ5jEBwThcde51g"))
-				.userEntityUserId(BufferSource.fromBase64("vKBFhsWT3gQnn-gHdT4VXIvjDkVXVYg5w8CLGHPunMM"))
+				.userEntityUserId(Base64Url.fromBase64("vKBFhsWT3gQnn-gHdT4VXIvjDkVXVYg5w8CLGHPunMM"))
 				.publicKeyCose(ImmutablePublicKeyCose.fromBase64("pQECAyYgASFYIC7DAiV_trHFPjieOxXbec7q2taBcgLnIi19zrUwVhCdIlggvN6riHORK_velHcTLFK_uJhyKK0oBkJqzNqR2E-2xf8="))
 				.backupEligible(OptionalBoolean.fromBoolean(true))
 				.backupState(OptionalBoolean.fromBoolean(true));

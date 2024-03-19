@@ -16,10 +16,6 @@
 
 package org.springframework.security.webauthn.api;
 
-import org.springframework.security.webauthn.api.PublicKeyCredentialRequestOptions;
-import org.springframework.security.webauthn.api.BufferSource;
-import org.springframework.security.webauthn.api.UserVerificationRequirement;
-
 import java.time.Duration;
 
 public class TestPublicKeyCredentialRequestOptions {
@@ -29,6 +25,6 @@ public class TestPublicKeyCredentialRequestOptions {
 				.timeout(Duration.ofMinutes(5))
 				.rpId("example.localhost")
 				.userVerification(UserVerificationRequirement.PREFERRED)
-				.challenge(BufferSource.fromBase64("cQfdGrj9zDg3zNBkOH3WPL954FTOShVy0-CoNgSewNM"));
+				.challenge(Base64Url.fromBase64("cQfdGrj9zDg3zNBkOH3WPL954FTOShVy0-CoNgSewNM"));
 	}
 }

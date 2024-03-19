@@ -24,7 +24,7 @@ import com.yubico.webauthn.exception.RegistrationFailedException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.webauthn.api.PublicKeyCredentialRequestOptions;
 import org.springframework.security.webauthn.api.Base64Url;
-import org.springframework.security.webauthn.api.BufferSource;
+import org.springframework.security.webauthn.api.Base64Url;
 import org.springframework.security.webauthn.api.*;
 
 import java.io.IOException;
@@ -70,7 +70,7 @@ public class YubicoWebAuthnRelyingPartyOperations implements WebAuthnRelyingPart
 				.user(userEntity)
 				.pubKeyCredParams(PublicKeyCredentialParameters.ES256, PublicKeyCredentialParameters.RS256)
 				.authenticatorSelection(authenticatorSelection)
-				.challenge(BufferSource.random())
+				.challenge(Base64Url.random())
 				.rp(this.rp)
 				.extensions(clientInputs)
 				.excludeCredentials(convertCredentials(userCredentials))
@@ -82,7 +82,7 @@ public class YubicoWebAuthnRelyingPartyOperations implements WebAuthnRelyingPart
 	private List<PublicKeyCredentialDescriptor> convertCredentials(List<UserCredential> userCredentials) {
 		List result = new ArrayList();
 		for (UserCredential userCredential : userCredentials) {
-			BufferSource id = BufferSource.fromBase64(userCredential.getCredentialId().getBytesAsBase64());
+			Base64Url id = Base64Url.fromBase64(userCredential.getCredentialId().getBytesAsBase64());
 			PublicKeyCredentialDescriptor credentialDescriptor = PublicKeyCredentialDescriptor.builder()
 				.id(id)
 				.transports(userCredential.getTransports())
@@ -100,7 +100,7 @@ public class YubicoWebAuthnRelyingPartyOperations implements WebAuthnRelyingPart
 
 		PublicKeyCredentialUserEntity userEntity = PublicKeyCredentialUserEntity.builder()
 					.displayName(username)
-					.id(BufferSource.random())
+					.id(Base64Url.random())
 					.name(username)
 					.build();
 		this.userEntities.save(username, userEntity);
@@ -143,7 +143,7 @@ public class YubicoWebAuthnRelyingPartyOperations implements WebAuthnRelyingPart
 	public PublicKeyCredentialRequestOptions createCredentialRequestOptions(Authentication authentication) {
 		return PublicKeyCredentialRequestOptions.builder()
 				.allowCredentials(Arrays.asList())
-				.challenge(BufferSource.random())
+				.challenge(Base64Url.random())
 				.rpId(this.rp.getId())
 				.timeout(Duration.ofMinutes(5))
 				.userVerification(UserVerificationRequirement.REQUIRED)
@@ -193,7 +193,7 @@ public class YubicoWebAuthnRelyingPartyOperations implements WebAuthnRelyingPart
 
 		@Override
 		public Optional<String> getUsernameForUserHandle(ByteArray userHandle) {
-			BufferSource userId = new BufferSource(userHandle.getBytes());
+			Base64Url userId = new Base64Url(userHandle.getBytes());
 			String username = YubicoWebAuthnRelyingPartyOperations.this.userEntities.findUsernameByUserEntityId(userId);
 			return Optional.ofNullable(username); // authenticate
 		}

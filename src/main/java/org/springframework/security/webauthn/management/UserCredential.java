@@ -20,7 +20,7 @@ import java.time.Instant;
 import java.util.List;
 
 import org.springframework.security.webauthn.api.Base64Url;
-import org.springframework.security.webauthn.api.BufferSource;
+import org.springframework.security.webauthn.api.Base64Url;
 import org.springframework.security.webauthn.api.AuthenticatorTransport;
 
 public interface UserCredential {
@@ -29,7 +29,7 @@ public interface UserCredential {
 
 	Base64Url getCredentialId();
 
-	BufferSource getUserEntityUserId();
+	Base64Url getUserEntityUserId();
 
 	PublicKeyCose getPublicKeyCose();
 

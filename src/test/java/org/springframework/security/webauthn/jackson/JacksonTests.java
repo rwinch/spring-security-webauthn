@@ -26,7 +26,7 @@ import org.springframework.security.webauthn.api.TestPublicKeyCredentialCreation
 import org.springframework.security.webauthn.api.AuthenticatorAssertionResponse;
 import org.springframework.security.webauthn.api.PublicKeyCredentialRequestOptions;
 import org.springframework.security.webauthn.api.Base64Url;
-import org.springframework.security.webauthn.api.BufferSource;
+import org.springframework.security.webauthn.api.Base64Url;
 import org.springframework.security.webauthn.api.*;
 import org.springframework.security.webauthn.management.*;
 
@@ -225,7 +225,7 @@ class JacksonTests {
 	void writeAuthenticationOptions() throws Exception {
 		PublicKeyCredentialRequestOptions credentialRequestOptions = PublicKeyCredentialRequestOptions.builder()
 				.allowCredentials(Arrays.asList())
-				.challenge(BufferSource.fromBase64("I69THX904Q8ONhCgUgOu2PCQCcEjTDiNmokdbgsAsYU"))
+				.challenge(Base64Url.fromBase64("I69THX904Q8ONhCgUgOu2PCQCcEjTDiNmokdbgsAsYU"))
 				.rpId("example.localhost")
 				.timeout(Duration.ofMinutes(5))
 				.userVerification(UserVerificationRequirement.REQUIRED)

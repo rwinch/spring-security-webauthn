@@ -16,7 +16,7 @@
 
 package org.springframework.security.webauthn.management;
 
-import org.springframework.security.webauthn.api.BufferSource;
+import org.springframework.security.webauthn.api.Base64Url;
 import org.springframework.security.webauthn.api.PublicKeyCredentialUserEntity;
 
 /**
@@ -24,7 +24,7 @@ import org.springframework.security.webauthn.api.PublicKeyCredentialUserEntity;
  */
 public interface PublicKeyCredentialUserEntityRepository {
 
-	String findUsernameByUserEntityId(BufferSource id);
+	String findUsernameByUserEntityId(Base64Url id);
 
 	PublicKeyCredentialUserEntity findByUsername(String username);
 

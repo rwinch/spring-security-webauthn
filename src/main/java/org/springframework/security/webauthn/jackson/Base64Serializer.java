@@ -19,20 +19,19 @@ package org.springframework.security.webauthn.jackson;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.ser.std.StdSerializer;
-import org.springframework.security.webauthn.api.BufferSource;
+import org.springframework.security.webauthn.api.Base64Url;
 
 import java.io.IOException;
-import java.util.Base64;
 
-public class BufferSourceSerializer extends StdSerializer<BufferSource> {
+public class Base64Serializer extends StdSerializer<Base64Url> {
 
 
-	public BufferSourceSerializer() {
-		super(BufferSource.class);
+	public Base64Serializer() {
+		super(Base64Url.class);
 	}
 
 	@Override
-	public void serialize(BufferSource bufferSource, JsonGenerator jgen, SerializerProvider provider) throws IOException {
-		jgen.writeString(bufferSource.getBytesAsBase64());
+	public void serialize(Base64Url base64Url, JsonGenerator jgen, SerializerProvider provider) throws IOException {
+		jgen.writeString(base64Url.getBytesAsBase64());
 	}
 }

@@ -21,7 +21,7 @@ import com.fasterxml.jackson.databind.module.SimpleModule;
 import org.springframework.security.webauthn.api.AuthenticatorAssertionResponse;
 import org.springframework.security.webauthn.api.PublicKeyCredentialRequestOptions;
 import org.springframework.security.webauthn.api.Base64Url;
-import org.springframework.security.webauthn.api.BufferSource;
+import org.springframework.security.webauthn.api.Base64Url;
 import org.springframework.security.webauthn.api.*;
 import org.springframework.security.webauthn.management.RelyingPartyPublicKey;
 
@@ -43,7 +43,6 @@ public class WebauthnJackson2Module extends SimpleModule {
 		context.setMixInAnnotations(AuthenticatorAttestationResponse.class, AuthenticatorAttestationResponseMixin.class);
 		context.setMixInAnnotations(AuthenticatorSelectionCriteria.class, AuthenticatorSelectionCriteriaMixin.class);
 		context.setMixInAnnotations(AuthenticatorTransport.class, AuthenticatorTransportMixin.class);
-		context.setMixInAnnotations(BufferSource.class, BufferSourceMixin.class);
 		context.setMixInAnnotations(COSEAlgorithmIdentifier.class, COSEAlgorithmIdentifierMixin.class);
 		context.setMixInAnnotations(CredentialPropertiesOutput.class, CredentialPropertiesOutputMixin.class);
 		context.setMixInAnnotations(PublicKeyCredential.PublicKeyCredentialBuilder.class, PublicKeyCredentialMixin.PublicKeyCredentialBuilderMixin.class);

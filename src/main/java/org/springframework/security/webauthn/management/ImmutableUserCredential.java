@@ -22,14 +22,14 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.springframework.security.webauthn.api.Base64Url;
-import org.springframework.security.webauthn.api.BufferSource;
+import org.springframework.security.webauthn.api.Base64Url;
 import org.springframework.security.webauthn.api.AuthenticatorTransport;
 
 public class ImmutableUserCredential implements UserCredential {
 
 	private final Base64Url credentialId;
 
-	private final BufferSource userEntityUserId;
+	private final Base64Url userEntityUserId;
 
 	private final PublicKeyCose publicKeyCose;
 
@@ -47,7 +47,7 @@ public class ImmutableUserCredential implements UserCredential {
 
 	private final List<AuthenticatorTransport> transports;
 
-	private ImmutableUserCredential(Base64Url credentialId, BufferSource userEntityUserId,
+	private ImmutableUserCredential(Base64Url credentialId, Base64Url userEntityUserId,
 									PublicKeyCose publicKeyCose, long signatureCount,
 									OptionalBoolean backupEligible, OptionalBoolean backupState,
 									Instant created,
@@ -72,7 +72,7 @@ public class ImmutableUserCredential implements UserCredential {
 	}
 
 	@Override
-	public BufferSource getUserEntityUserId() {
+	public Base64Url getUserEntityUserId() {
 		return this.userEntityUserId;
 	}
 
@@ -134,7 +134,7 @@ public class ImmutableUserCredential implements UserCredential {
 
 		private List<AuthenticatorTransport> transports = new ArrayList<>();
 		private Base64Url credentialId;
-		private BufferSource userEntityUserId;
+		private Base64Url userEntityUserId;
 		private PublicKeyCose publicKeyCose;
 		private long signatureCount;
 		private OptionalBoolean backupEligible;
@@ -160,7 +160,7 @@ public class ImmutableUserCredential implements UserCredential {
 			return this;
 		}
 
-		public ImmutableUserCredentialBuilder userEntityUserId(BufferSource userEntityUserId) {
+		public ImmutableUserCredentialBuilder userEntityUserId(Base64Url userEntityUserId) {
 			this.userEntityUserId = userEntityUserId;
 			return this;
 		}

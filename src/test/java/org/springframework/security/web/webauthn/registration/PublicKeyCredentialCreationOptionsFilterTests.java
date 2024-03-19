@@ -29,7 +29,7 @@ import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.context.SecurityContextImpl;
 import org.springframework.security.webauthn.api.TestPublicKeyCredentialCreationOptions;
-import org.springframework.security.webauthn.api.BufferSource;
+import org.springframework.security.webauthn.api.Base64Url;
 import org.springframework.security.webauthn.api.AuthenticatorTransport;
 import org.springframework.security.webauthn.api.PublicKeyCredentialCreationOptions;
 import org.springframework.security.webauthn.api.PublicKeyCredentialDescriptor;
@@ -153,7 +153,7 @@ class PublicKeyCredentialCreationOptionsFilterTests {
 	void doFilterWhenExcludeCredentialsThenIncludedInResponse() throws Exception {
 		PublicKeyCredentialDescriptor credentialDescriptor = PublicKeyCredentialDescriptor.builder()
 			.transports(AuthenticatorTransport.HYBRID)
-			.id(BufferSource.fromBase64("ChfoCM8CJA_wwUGDdzdtuw"))
+			.id(Base64Url.fromBase64("ChfoCM8CJA_wwUGDdzdtuw"))
 			.build();
 		PublicKeyCredentialCreationOptions options = TestPublicKeyCredentialCreationOptions
 			.createPublicKeyCredentialCreationOptions()

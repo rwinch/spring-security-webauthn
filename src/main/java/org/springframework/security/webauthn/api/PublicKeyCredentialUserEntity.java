@@ -16,8 +16,6 @@
 
 package org.springframework.security.webauthn.api;
 
-import org.springframework.security.webauthn.api.BufferSource;
-
 // https://www.w3.org/TR/webauthn-3/#dictdef-publickeycredentialuserentity
 public class PublicKeyCredentialUserEntity {
 	/**
@@ -53,7 +51,7 @@ public class PublicKeyCredentialUserEntity {
 	 * credentials, because some authenticators always create discoverable credentials. Thus a constant user handle
 	 * would prevent a user from using such an authenticator with more than one account at the Relying Party.
 	 */
-	private final BufferSource id;
+	private final Base64Url id;
 
 	/**
 	 * A human-palatable name for the user account, intended only for display. For example, "Alex Müller" or "田中倫".
@@ -79,7 +77,7 @@ public class PublicKeyCredentialUserEntity {
 	 */
 	private final String displayName;
 
-	public PublicKeyCredentialUserEntity(String name, BufferSource id, String displayName) {
+	public PublicKeyCredentialUserEntity(String name, Base64Url id, String displayName) {
 		this.name = name;
 		this.id = id;
 		this.displayName = displayName;
@@ -89,7 +87,7 @@ public class PublicKeyCredentialUserEntity {
 		return this.name;
 	}
 
-	public BufferSource getId() {
+	public Base64Url getId() {
 		return this.id;
 	}
 
@@ -103,7 +101,7 @@ public class PublicKeyCredentialUserEntity {
 
 	public static final class PublicKeyCredentialUserEntityBuilder {
 		private String name;
-		private BufferSource id;
+		private Base64Url id;
 		private String displayName;
 
 		private PublicKeyCredentialUserEntityBuilder() {
@@ -114,7 +112,7 @@ public class PublicKeyCredentialUserEntity {
 			return this;
 		}
 
-		public PublicKeyCredentialUserEntityBuilder id(BufferSource id) {
+		public PublicKeyCredentialUserEntityBuilder id(Base64Url id) {
 			this.id = id;
 			return this;
 		}

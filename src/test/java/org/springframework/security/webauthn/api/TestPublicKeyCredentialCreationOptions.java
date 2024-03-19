@@ -16,9 +16,6 @@
 
 package org.springframework.security.webauthn.api;
 
-import org.springframework.security.webauthn.api.BufferSource;
-import org.springframework.security.webauthn.api.*;
-
 import java.time.Duration;
 
 public class TestPublicKeyCredentialCreationOptions {
@@ -28,12 +25,12 @@ public class TestPublicKeyCredentialCreationOptions {
 				.userVerification(UserVerificationRequirement.PREFERRED)
 				.residentKey(ResidentKeyRequirement.DISCOURAGED)
 				.build();
-		BufferSource challenge = BufferSource.fromBase64("q7lCdd3SVQxdC-v8pnRAGEn1B2M-t7ZECWPwCAmhWvc");
+		Base64Url challenge = Base64Url.fromBase64("q7lCdd3SVQxdC-v8pnRAGEn1B2M-t7ZECWPwCAmhWvc");
 		PublicKeyCredentialRpEntity rp = PublicKeyCredentialRpEntity.builder()
 				.id("example.localhost")
 				.name("SimpleWebAuthn Example")
 				.build();
-		BufferSource userId = BufferSource.fromBase64("oWJtkJ6vJ_m5b84LB4_K7QKTCTEwLIjCh4tFMCGHO4w");
+		Base64Url userId = Base64Url.fromBase64("oWJtkJ6vJ_m5b84LB4_K7QKTCTEwLIjCh4tFMCGHO4w");
 		PublicKeyCredentialUserEntity userEntity = PublicKeyCredentialUserEntity.builder()
 				.displayName("user@example.localhost")
 				.id(userId)

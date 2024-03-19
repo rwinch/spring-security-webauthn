@@ -16,11 +16,6 @@
 
 package org.springframework.security.webauthn.api;
 
-import org.springframework.security.webauthn.api.BufferSource;
-import org.springframework.security.webauthn.api.AuthenticationExtensionsClientInputs;
-import org.springframework.security.webauthn.api.DefaultAuthenticationExtensionsClientInputs;
-import org.springframework.security.webauthn.api.PublicKeyCredentialDescriptor;
-import org.springframework.security.webauthn.api.UserVerificationRequirement;
 import org.springframework.util.Assert;
 
 import java.time.Duration;
@@ -28,7 +23,7 @@ import java.util.Collections;
 import java.util.List;
 
 public class PublicKeyCredentialRequestOptions {
-	private final BufferSource challenge;
+	private final Base64Url challenge;
 
 	// FIXME: a null timeout is being rendered. Should we forbid null or should we not render null.
 	private final Duration timeout;
@@ -42,7 +37,7 @@ public class PublicKeyCredentialRequestOptions {
 
 	private final AuthenticationExtensionsClientInputs extensions;
 
-	private PublicKeyCredentialRequestOptions(BufferSource challenge, Duration timeout, String rpId, List<PublicKeyCredentialDescriptor> allowCredentials, UserVerificationRequirement userVerification, AuthenticationExtensionsClientInputs extensions) {
+	private PublicKeyCredentialRequestOptions(Base64Url challenge, Duration timeout, String rpId, List<PublicKeyCredentialDescriptor> allowCredentials, UserVerificationRequirement userVerification, AuthenticationExtensionsClientInputs extensions) {
 		this.challenge = challenge;
 		this.timeout = timeout;
 		this.rpId = rpId;
@@ -51,7 +46,7 @@ public class PublicKeyCredentialRequestOptions {
 		this.extensions = extensions;
 	}
 
-	public BufferSource getChallenge() {
+	public Base64Url getChallenge() {
 		return this.challenge;
 	}
 
@@ -80,7 +75,7 @@ public class PublicKeyCredentialRequestOptions {
 	}
 
 	public static final class PublicKeyCredentialRequestOptionsBuilder {
-		private BufferSource challenge;
+		private Base64Url challenge;
 		private Duration timeout;
 		private String rpId;
 		private List<PublicKeyCredentialDescriptor> allowCredentials = Collections.emptyList();
@@ -90,7 +85,7 @@ public class PublicKeyCredentialRequestOptions {
 		private PublicKeyCredentialRequestOptionsBuilder() {
 		}
 
-		public PublicKeyCredentialRequestOptionsBuilder challenge(BufferSource challenge) {
+		public PublicKeyCredentialRequestOptionsBuilder challenge(Base64Url challenge) {
 			this.challenge = challenge;
 			return this;
 		}

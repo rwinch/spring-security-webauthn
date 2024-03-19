@@ -16,8 +16,6 @@
 
 package org.springframework.security.webauthn.api;
 
-import org.springframework.security.webauthn.api.BufferSource;
-
 import java.util.Arrays;
 import java.util.List;
 
@@ -25,11 +23,11 @@ public class PublicKeyCredentialDescriptor {
 
 	private final PublicKeyCredentialType type;
 
-	private final BufferSource id;
+	private final Base64Url id;
 
 	private final List<AuthenticatorTransport> transports;
 
-	private PublicKeyCredentialDescriptor(PublicKeyCredentialType type, BufferSource id, List<AuthenticatorTransport> transports) {
+	private PublicKeyCredentialDescriptor(PublicKeyCredentialType type, Base64Url id, List<AuthenticatorTransport> transports) {
 		this.type = type;
 		this.id = id;
 		this.transports = transports;
@@ -39,7 +37,7 @@ public class PublicKeyCredentialDescriptor {
 		return this.type;
 	}
 
-	public BufferSource getId() {
+	public Base64Url getId() {
 		return this.id;
 	}
 
@@ -53,7 +51,7 @@ public class PublicKeyCredentialDescriptor {
 
 	public static final class PublicKeyCredentialDescriptorBuilder {
 		private PublicKeyCredentialType type = PublicKeyCredentialType.PUBLIC_KEY;
-		private BufferSource id;
+		private Base64Url id;
 		private List<AuthenticatorTransport> transports;
 
 		private PublicKeyCredentialDescriptorBuilder() {
@@ -68,7 +66,7 @@ public class PublicKeyCredentialDescriptor {
 			return this;
 		}
 
-		public PublicKeyCredentialDescriptorBuilder id(BufferSource id) {
+		public PublicKeyCredentialDescriptorBuilder id(Base64Url id) {
 			this.id = id;
 			return this;
 		}
