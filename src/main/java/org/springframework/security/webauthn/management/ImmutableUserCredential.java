@@ -130,6 +130,20 @@ public class ImmutableUserCredential implements UserCredential {
 		return new ImmutableUserCredentialBuilder();
 	}
 
+	public static ImmutableUserCredentialBuilder fromUserCredential(UserCredential userCredential) {
+		return builder()
+				.credentialId(userCredential.getCredentialId())
+				.userEntityUserId(userCredential.getUserEntityUserId())
+				.publicKeyCose(userCredential.getPublicKeyCose())
+				.signatureCount(userCredential.getSignatureCount())
+				.backupEligible(userCredential.getBackupEligible())
+				.backupState(userCredential.getBackupState())
+				.created(userCredential.getCreated())
+				.lastUsed(userCredential.getLastUsed())
+				.label(userCredential.getLabel())
+				.transports(userCredential.getTransports());
+	}
+
 	public static final class ImmutableUserCredentialBuilder {
 
 		private List<AuthenticatorTransport> transports = new ArrayList<>();
