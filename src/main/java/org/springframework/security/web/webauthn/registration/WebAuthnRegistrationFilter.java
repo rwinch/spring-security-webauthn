@@ -30,7 +30,7 @@ import org.springframework.http.converter.json.MappingJackson2HttpMessageConvert
 import org.springframework.http.server.ServletServerHttpRequest;
 import org.springframework.http.server.ServletServerHttpResponse;
 import org.springframework.security.web.util.matcher.RequestMatcher;
-import org.springframework.security.webauthn.api.ArrayBuffer;
+import org.springframework.security.webauthn.api.Base64Url;
 import org.springframework.security.webauthn.api.PublicKeyCredentialCreationOptions;
 import org.springframework.security.webauthn.management.RelyingPartyPublicKey;
 import org.springframework.security.webauthn.management.RelyingPartyRegistrationRequest;
@@ -164,7 +164,7 @@ public class WebAuthnRegistrationFilter extends OncePerRequestFilter {
 	}
 
 	private void removeCredential(HttpServletRequest request, HttpServletResponse response, String id) throws IOException {
-		this.userCredentials.delete(ArrayBuffer.fromBase64(id));
+		this.userCredentials.delete(Base64Url.fromBase64(id));
 		response.sendRedirect("/webauthn/register?success");
 	}
 

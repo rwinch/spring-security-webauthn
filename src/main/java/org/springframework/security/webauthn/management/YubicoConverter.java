@@ -16,7 +16,6 @@
 
 package org.springframework.security.webauthn.management;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.yubico.webauthn.AssertionRequest;
 import com.yubico.webauthn.FinishAssertionOptions;
 import com.yubico.webauthn.data.*;
@@ -24,7 +23,7 @@ import com.yubico.webauthn.data.AttestationConveyancePreference;
 import com.yubico.webauthn.data.AuthenticatorAssertionResponse;
 import com.yubico.webauthn.data.exception.Base64UrlException;
 import org.springframework.security.webauthn.api.PublicKeyCredentialRequestOptions;
-import org.springframework.security.webauthn.api.ArrayBuffer;
+import org.springframework.security.webauthn.api.Base64Url;
 import org.springframework.security.webauthn.api.BufferSource;
 import org.springframework.security.webauthn.api.*;
 import org.springframework.security.webauthn.api.AuthenticatorAttachment;
@@ -259,11 +258,11 @@ final class YubicoConverter {
 	}
 
 	// FIXME: Should everything being converted be ByteArray? as in yubico
-	static ByteArray convertByteArray(ArrayBuffer arrayBuffer) {
-		if (arrayBuffer == null) {
+	static ByteArray convertByteArray(Base64Url base64Url) {
+		if (base64Url == null) {
 			return null;
 		}
-		return new ByteArray(arrayBuffer.getBytes());
+		return new ByteArray(base64Url.getBytes());
 	}
 
 	// FIXME: Should everything being converted be ByteArray? as in yubico

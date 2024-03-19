@@ -19,7 +19,7 @@ package org.springframework.security.webauthn.management;
 import java.time.Instant;
 import java.util.List;
 
-import org.springframework.security.webauthn.api.ArrayBuffer;
+import org.springframework.security.webauthn.api.Base64Url;
 import org.springframework.security.webauthn.api.BufferSource;
 import org.springframework.security.webauthn.api.AuthenticatorTransport;
 
@@ -27,7 +27,7 @@ public interface UserCredential {
 
 	List<AuthenticatorTransport> getTransports();
 
-	ArrayBuffer getCredentialId();
+	Base64Url getCredentialId();
 
 	BufferSource getUserEntityUserId();
 

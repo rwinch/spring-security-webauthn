@@ -16,19 +16,19 @@
 
 package org.springframework.security.webauthn.management;
 
-import org.springframework.security.webauthn.api.ArrayBuffer;
+import org.springframework.security.webauthn.api.Base64Url;
 import org.springframework.security.webauthn.api.BufferSource;
 
 import java.util.*;
 
 public class MapUserCredentialRepository implements UserCredentialRepository {
 
-	private final Map<ArrayBuffer,UserCredential> credentialIdToUserCredential = new HashMap<>();
+	private final Map<Base64Url,UserCredential> credentialIdToUserCredential = new HashMap<>();
 
 	private final Map<BufferSource,List<UserCredential>> userEntityIdToUserCredentials = new HashMap<>();
 
 	@Override
-	public void delete(ArrayBuffer credentialId) {
+	public void delete(Base64Url credentialId) {
 		UserCredential userCredential = this.credentialIdToUserCredential.remove(credentialId);
 		if (userCredential != null) {
 			List<UserCredential> userCredentials = this.userEntityIdToUserCredentials.get(userCredential.getUserEntityUserId());
@@ -45,7 +45,7 @@ public class MapUserCredentialRepository implements UserCredentialRepository {
 	}
 
 	@Override
-	public UserCredential findByCredentialId(ArrayBuffer credentialId) {
+	public UserCredential findByCredentialId(Base64Url credentialId) {
 		return this.credentialIdToUserCredential.get(credentialId);
 	}
 

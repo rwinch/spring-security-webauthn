@@ -21,13 +21,13 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import org.springframework.security.webauthn.api.ArrayBuffer;
+import org.springframework.security.webauthn.api.Base64Url;
 import org.springframework.security.webauthn.api.BufferSource;
 import org.springframework.security.webauthn.api.AuthenticatorTransport;
 
 public class ImmutableUserCredential implements UserCredential {
 
-	private final ArrayBuffer credentialId;
+	private final Base64Url credentialId;
 
 	private final BufferSource userEntityUserId;
 
@@ -47,7 +47,7 @@ public class ImmutableUserCredential implements UserCredential {
 
 	private final List<AuthenticatorTransport> transports;
 
-	private ImmutableUserCredential(ArrayBuffer credentialId, BufferSource userEntityUserId,
+	private ImmutableUserCredential(Base64Url credentialId, BufferSource userEntityUserId,
 									PublicKeyCose publicKeyCose, long signatureCount,
 									OptionalBoolean backupEligible, OptionalBoolean backupState,
 									Instant created,
@@ -67,7 +67,7 @@ public class ImmutableUserCredential implements UserCredential {
 	}
 
 	@Override
-	public ArrayBuffer getCredentialId() {
+	public Base64Url getCredentialId() {
 		return this.credentialId;
 	}
 
@@ -133,7 +133,7 @@ public class ImmutableUserCredential implements UserCredential {
 	public static final class ImmutableUserCredentialBuilder {
 
 		private List<AuthenticatorTransport> transports = new ArrayList<>();
-		private ArrayBuffer credentialId;
+		private Base64Url credentialId;
 		private BufferSource userEntityUserId;
 		private PublicKeyCose publicKeyCose;
 		private long signatureCount;
@@ -155,7 +155,7 @@ public class ImmutableUserCredential implements UserCredential {
 			return transports(Arrays.asList(transports));
 		}
 
-		public ImmutableUserCredentialBuilder credentialId(ArrayBuffer credentialId) {
+		public ImmutableUserCredentialBuilder credentialId(Base64Url credentialId) {
 			this.credentialId = credentialId;
 			return this;
 		}

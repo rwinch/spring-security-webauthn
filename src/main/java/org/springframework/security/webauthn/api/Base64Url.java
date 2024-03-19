@@ -17,10 +17,12 @@
 
 package org.springframework.security.webauthn.api;
 
+import java.security.SecureRandom;
 import java.util.Base64;
 
-// FIXME: Consider replacing with UrlBase64String
-public class ArrayBuffer {
+public class Base64Url {
+
+	private static final SecureRandom RANDOM = new SecureRandom();
 
 	private static final Base64.Encoder ENCODER = Base64.getUrlEncoder().withoutPadding();
 
@@ -28,7 +30,7 @@ public class ArrayBuffer {
 
 	private final byte[] bytes;
 
-	public ArrayBuffer(byte[] bytes) {
+	public Base64Url(byte[] bytes) {
 		this.bytes = bytes;
 	}
 
@@ -51,15 +53,20 @@ public class ArrayBuffer {
 
 	@Override
 	public boolean equals(Object obj) {
-		if (obj instanceof ArrayBuffer buffer) {
+		if (obj instanceof Base64Url buffer) {
 			return buffer.getBytesAsBase64().equals(getBytesAsBase64());
 		}
 		return false;
 	}
 
+	public static Base64Url random() {
+		byte[] bytes = new byte[32];
+		RANDOM.nextBytes(bytes);
+		return new Base64Url(bytes);
+	}
 
-	public static ArrayBuffer fromBase64(String value) {
-		byte[] bytes = Base64.getUrlDecoder().decode(value);
-		return new ArrayBuffer(bytes);
+	public static Base64Url fromBase64(String value) {
+		byte[] bytes = DECODER.decode(value);
+		return new Base64Url(bytes);
 	}
 }

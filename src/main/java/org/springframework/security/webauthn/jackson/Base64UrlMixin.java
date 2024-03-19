@@ -17,11 +17,11 @@
 package org.springframework.security.webauthn.jackson;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
-import org.springframework.security.webauthn.api.ArrayBuffer;
+import org.springframework.security.webauthn.api.Base64Url;
 
-class ArrayBufferMixin {
+class Base64UrlMixin {
 	@JsonCreator
-	public static ArrayBuffer fromBase64(String value) {
-		return ArrayBuffer.fromBase64(value);
+	public static Base64Url fromBase64(String value) {
+		return Base64Url.fromBase64(value);
 	}
 }

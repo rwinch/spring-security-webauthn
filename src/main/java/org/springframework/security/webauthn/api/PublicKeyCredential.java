@@ -16,8 +16,6 @@
 
 package org.springframework.security.webauthn.api;
 
-import org.springframework.security.webauthn.api.ArrayBuffer;
-
 /**
  * https://www.w3.org/TR/webauthn-3/#iface-pkcredential
  */
@@ -30,7 +28,7 @@ public class PublicKeyCredential<R extends AuthenticatorResponse> {
 
 	private final PublicKeyCredentialType type;
 
-	private final ArrayBuffer rawId;
+	private final Base64Url rawId;
 
 	private final R response;
 
@@ -39,7 +37,7 @@ public class PublicKeyCredential<R extends AuthenticatorResponse> {
 	private final AuthenticationExtensionsClientOutputs clientExtensionResults;
 
 
-	private PublicKeyCredential(String id, PublicKeyCredentialType type, ArrayBuffer rawId, R response, AuthenticatorAttachment authenticatorAttachment, AuthenticationExtensionsClientOutputs clientExtensionResults) {
+	private PublicKeyCredential(String id, PublicKeyCredentialType type, Base64Url rawId, R response, AuthenticatorAttachment authenticatorAttachment, AuthenticationExtensionsClientOutputs clientExtensionResults) {
 		this.id = id;
 		this.type = type;
 		this.rawId = rawId;
@@ -56,7 +54,7 @@ public class PublicKeyCredential<R extends AuthenticatorResponse> {
 		return this.type;
 	}
 
-	public ArrayBuffer getRawId() {
+	public Base64Url getRawId() {
 		return this.rawId;
 	}
 
@@ -75,7 +73,7 @@ public class PublicKeyCredential<R extends AuthenticatorResponse> {
 	public static final class PublicKeyCredentialBuilder<R extends AuthenticatorResponse> {
 		private String id;
 		private PublicKeyCredentialType type;
-		private ArrayBuffer rawId;
+		private Base64Url rawId;
 		private R response;
 		private AuthenticatorAttachment authenticatorAttachment;
 		private AuthenticationExtensionsClientOutputs clientExtensionResults;
@@ -93,7 +91,7 @@ public class PublicKeyCredential<R extends AuthenticatorResponse> {
 			return this;
 		}
 
-		public PublicKeyCredentialBuilder rawId(ArrayBuffer rawId) {
+		public PublicKeyCredentialBuilder rawId(Base64Url rawId) {
 			this.rawId = rawId;
 			return this;
 		}

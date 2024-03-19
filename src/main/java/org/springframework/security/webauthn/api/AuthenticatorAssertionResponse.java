@@ -16,19 +16,16 @@
 
 package org.springframework.security.webauthn.api;
 
-import org.springframework.security.webauthn.api.ArrayBuffer;
-import org.springframework.security.webauthn.api.AuthenticatorResponse;
-
 public class AuthenticatorAssertionResponse extends AuthenticatorResponse  {
 
-	private final ArrayBuffer authenticatorData;
+	private final Base64Url authenticatorData;
 
-	private final ArrayBuffer signature;
+	private final Base64Url signature;
 
-	private final ArrayBuffer userHandle;
+	private final Base64Url userHandle;
 
-	private final ArrayBuffer attestationObject;
-	public AuthenticatorAssertionResponse(ArrayBuffer clientDataJSON, ArrayBuffer authenticatorData, ArrayBuffer signature, ArrayBuffer userHandle, ArrayBuffer attestationObject) {
+	private final Base64Url attestationObject;
+	public AuthenticatorAssertionResponse(Base64Url clientDataJSON, Base64Url authenticatorData, Base64Url signature, Base64Url userHandle, Base64Url attestationObject) {
 		super(clientDataJSON);
 		this.authenticatorData = authenticatorData;
 		this.signature = signature;
@@ -36,19 +33,19 @@ public class AuthenticatorAssertionResponse extends AuthenticatorResponse  {
 		this.attestationObject = attestationObject;
 	}
 
-	public ArrayBuffer getAuthenticatorData() {
+	public Base64Url getAuthenticatorData() {
 		return this.authenticatorData;
 	}
 
-	public ArrayBuffer getSignature() {
+	public Base64Url getSignature() {
 		return this.signature;
 	}
 
-	public ArrayBuffer getUserHandle() {
+	public Base64Url getUserHandle() {
 		return this.userHandle;
 	}
 
-	public ArrayBuffer getAttestationObject() {
+	public Base64Url getAttestationObject() {
 		return this.attestationObject;
 	}
 
@@ -58,11 +55,11 @@ public class AuthenticatorAssertionResponse extends AuthenticatorResponse  {
 
 
 	public static final class AuthenticatorAssertionResponseBuilder {
-		private ArrayBuffer authenticatorData;
-		private ArrayBuffer signature;
-		private ArrayBuffer userHandle;
-		private ArrayBuffer attestationObject;
-		private ArrayBuffer clientDataJSON;
+		private Base64Url authenticatorData;
+		private Base64Url signature;
+		private Base64Url userHandle;
+		private Base64Url attestationObject;
+		private Base64Url clientDataJSON;
 
 		private AuthenticatorAssertionResponseBuilder() {
 		}
@@ -71,27 +68,27 @@ public class AuthenticatorAssertionResponse extends AuthenticatorResponse  {
 			return new AuthenticatorAssertionResponseBuilder();
 		}
 
-		public AuthenticatorAssertionResponseBuilder authenticatorData(ArrayBuffer authenticatorData) {
+		public AuthenticatorAssertionResponseBuilder authenticatorData(Base64Url authenticatorData) {
 			this.authenticatorData = authenticatorData;
 			return this;
 		}
 
-		public AuthenticatorAssertionResponseBuilder signature(ArrayBuffer signature) {
+		public AuthenticatorAssertionResponseBuilder signature(Base64Url signature) {
 			this.signature = signature;
 			return this;
 		}
 
-		public AuthenticatorAssertionResponseBuilder userHandle(ArrayBuffer userHandle) {
+		public AuthenticatorAssertionResponseBuilder userHandle(Base64Url userHandle) {
 			this.userHandle = userHandle;
 			return this;
 		}
 
-		public AuthenticatorAssertionResponseBuilder attestationObject(ArrayBuffer attestationObject) {
+		public AuthenticatorAssertionResponseBuilder attestationObject(Base64Url attestationObject) {
 			this.attestationObject = attestationObject;
 			return this;
 		}
 
-		public AuthenticatorAssertionResponseBuilder clientDataJSON(ArrayBuffer clientDataJSON) {
+		public AuthenticatorAssertionResponseBuilder clientDataJSON(Base64Url clientDataJSON) {
 			this.clientDataJSON = clientDataJSON;
 			return this;
 		}

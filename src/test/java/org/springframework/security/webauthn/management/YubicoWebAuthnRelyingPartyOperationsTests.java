@@ -25,7 +25,7 @@ import org.springframework.security.crypto.codec.Utf8;
 import org.springframework.security.webauthn.api.TestAuthenticatorAttestationResponse;
 import org.springframework.security.webauthn.api.TestPublicKeyCredential;
 import org.springframework.security.webauthn.api.TestPublicKeyCredentialCreationOptions;
-import org.springframework.security.webauthn.api.ArrayBuffer;
+import org.springframework.security.webauthn.api.Base64Url;
 import org.springframework.security.webauthn.api.BufferSource;
 import org.springframework.security.webauthn.api.*;
 
@@ -60,7 +60,7 @@ class YubicoWebAuthnRelyingPartyOperationsTests {
 		PublicKeyCredentialCreationOptions options = TestPublicKeyCredentialCreationOptions.createPublicKeyCredentialCreationOptions()
 				.build();
 		AuthenticatorAttestationResponse.AuthenticatorAttestationResponseBuilder responseBldr = TestAuthenticatorAttestationResponse.createAuthenticatorAttestationResponse();
-		responseBldr.clientDataJSON(new ArrayBuffer(Utf8.encode("{\"type\":\"webauthn.INVALID\",\"challenge\":\"IBQnuY1Z0K1HqBoFWCp2xlJl8-oq_aFIXzyT_F0-0GU\",\"origin\":\"https://example.localhost:8080\",\"crossOrigin\":false}")));
+		responseBldr.clientDataJSON(new Base64Url(Utf8.encode("{\"type\":\"webauthn.INVALID\",\"challenge\":\"IBQnuY1Z0K1HqBoFWCp2xlJl8-oq_aFIXzyT_F0-0GU\",\"origin\":\"https://example.localhost:8080\",\"crossOrigin\":false}")));
 		PublicKeyCredential publicKey = TestPublicKeyCredential.createPublicKeyCredential(responseBldr.build())
 				.build();
 		RelyingPartyRegistrationRequest registrationRequest = new RelyingPartyRegistrationRequest(options, new RelyingPartyPublicKey(publicKey, this.label));
@@ -79,7 +79,7 @@ class YubicoWebAuthnRelyingPartyOperationsTests {
 				.challenge(BufferSource.fromBase64("h0vgwGQjoCzAzDUsmzPpk-JVIJRRgn0L4KVSYNRcEZc"))
 				.build();
 		AuthenticatorAttestationResponse.AuthenticatorAttestationResponseBuilder responseBldr = TestAuthenticatorAttestationResponse.createAuthenticatorAttestationResponse();
-		responseBldr.clientDataJSON(new ArrayBuffer(Utf8.encode("{\"type\":\"webauthn.create\",\"challenge\":\"IBQnuY1Z0K1HqBoFWCp2xlJl8-oq_aFIXzyT_F0-0GU\",\"origin\":\"https://example.localhost:8080\",\"crossOrigin\":false}")));
+		responseBldr.clientDataJSON(new Base64Url(Utf8.encode("{\"type\":\"webauthn.create\",\"challenge\":\"IBQnuY1Z0K1HqBoFWCp2xlJl8-oq_aFIXzyT_F0-0GU\",\"origin\":\"https://example.localhost:8080\",\"crossOrigin\":false}")));
 		PublicKeyCredential publicKey = TestPublicKeyCredential.createPublicKeyCredential(responseBldr.build())
 				.build();
 		RelyingPartyRegistrationRequest registrationRequest = new RelyingPartyRegistrationRequest(options, new RelyingPartyPublicKey(publicKey, this.label));
@@ -97,7 +97,7 @@ class YubicoWebAuthnRelyingPartyOperationsTests {
 		PublicKeyCredentialCreationOptions options = TestPublicKeyCredentialCreationOptions.createPublicKeyCredentialCreationOptions()
 				.build();
 		AuthenticatorAttestationResponse.AuthenticatorAttestationResponseBuilder responseBldr = TestAuthenticatorAttestationResponse.createAuthenticatorAttestationResponse();
-		responseBldr.clientDataJSON(new ArrayBuffer(Utf8.encode("{\"type\":\"webauthn.create\",\"challenge\":\"q7lCdd3SVQxdC-v8pnRAGEn1B2M-t7ZECWPwCAmhWvc\",\"origin\":\"https://example.com\",\"crossOrigin\":false}")));
+		responseBldr.clientDataJSON(new Base64Url(Utf8.encode("{\"type\":\"webauthn.create\",\"challenge\":\"q7lCdd3SVQxdC-v8pnRAGEn1B2M-t7ZECWPwCAmhWvc\",\"origin\":\"https://example.com\",\"crossOrigin\":false}")));
 		PublicKeyCredential publicKey = TestPublicKeyCredential.createPublicKeyCredential(responseBldr.build())
 				.build();
 		RelyingPartyRegistrationRequest registrationRequest = new RelyingPartyRegistrationRequest(options, new RelyingPartyPublicKey(publicKey, this.label));
@@ -259,7 +259,7 @@ class YubicoWebAuthnRelyingPartyOperationsTests {
 		rawAuthData[32] ^=  flag;
 		JsonNodeFactory f = JsonNodeFactory.instance;
 		byte[] updatedAttObjBytes = cbor.writeValueAsBytes(attObj.setAll(Map.of("authData", f.binaryNode(rawAuthData))));
-		authAttResponseBldr.attestationObject(new ArrayBuffer(updatedAttObjBytes)).authenticatorData(new ArrayBuffer(rawAuthData));
+		authAttResponseBldr.attestationObject(new Base64Url(updatedAttObjBytes)).authenticatorData(new Base64Url(rawAuthData));
 		return authAttResponseBldr.build();
 	}
 
@@ -270,7 +270,7 @@ class YubicoWebAuthnRelyingPartyOperationsTests {
 		ObjectNode attObj = (ObjectNode) cbor.readTree(originalAttestationObjBytes);
 		JsonNodeFactory f = JsonNodeFactory.instance;
 		byte[] updatedAttObjBytes = cbor.writeValueAsBytes(attObj.setAll(Map.of("fmt", f.textNode(fmt))));
-		authAttResponseBldr.attestationObject(new ArrayBuffer(updatedAttObjBytes));
+		authAttResponseBldr.attestationObject(new Base64Url(updatedAttObjBytes));
 		return authAttResponseBldr.build();
 	}
 

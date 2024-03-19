@@ -16,16 +16,14 @@
 
 package org.springframework.security.webauthn.api;
 
-import org.springframework.security.webauthn.api.ArrayBuffer;
-
 public class AuthenticatorResponse {
-	private final ArrayBuffer clientDataJSON;
+	private final Base64Url clientDataJSON;
 
-	public AuthenticatorResponse(ArrayBuffer clientDataJSON) {
+	public AuthenticatorResponse(Base64Url clientDataJSON) {
 		this.clientDataJSON = clientDataJSON;
 	}
 
-	public ArrayBuffer getClientDataJSON() {
+	public Base64Url getClientDataJSON() {
 		return this.clientDataJSON;
 	}
 }

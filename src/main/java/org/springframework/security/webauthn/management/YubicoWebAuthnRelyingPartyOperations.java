@@ -23,7 +23,7 @@ import com.yubico.webauthn.exception.AssertionFailedException;
 import com.yubico.webauthn.exception.RegistrationFailedException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.webauthn.api.PublicKeyCredentialRequestOptions;
-import org.springframework.security.webauthn.api.ArrayBuffer;
+import org.springframework.security.webauthn.api.Base64Url;
 import org.springframework.security.webauthn.api.BufferSource;
 import org.springframework.security.webauthn.api.*;
 
@@ -212,7 +212,7 @@ public class YubicoWebAuthnRelyingPartyOperations implements WebAuthnRelyingPart
 		}
 
 		private RegisteredCredential findById(ByteArray credentialId) {
-			UserCredential credential = YubicoWebAuthnRelyingPartyOperations.this.userCredentials.findByCredentialId(new ArrayBuffer(credentialId.getBytes()));
+			UserCredential credential = YubicoWebAuthnRelyingPartyOperations.this.userCredentials.findByCredentialId(new Base64Url(credentialId.getBytes()));
 			if (credential == null) {
 				return null;
 			}
