@@ -16,9 +16,6 @@
 
 package org.springframework.security.webauthn.api;
 
-
-import com.yubico.webauthn.data.AuthenticatorDataFlags;
-
 public enum UserVerificationRequirement {
 
 	/**
@@ -29,16 +26,13 @@ public enum UserVerificationRequirement {
 
 	/**
 	 * This value indicates that the Relying Party prefers user verification for the operation if
-	 * possible, but will not fail the operation if the response does not have the {@link
-	 * AuthenticatorDataFlags#UV} flag set.
-	 *
-	 * FIXME: AuthenticatorDataFlags is a type from yubico
+	 * possible, but will not fail the operation if the response does not have the user verification flag set.
 	 */
 	PREFERRED("preferred"),
 
 	/**
 	 * Indicates that the Relying Party requires user verification for the operation and will fail the
-	 * operation if the response does not have the {@link AuthenticatorDataFlags#UV} flag set.
+	 * operation if the response does not have the user verification flag set.
 	 */
 	REQUIRED("required");
 
