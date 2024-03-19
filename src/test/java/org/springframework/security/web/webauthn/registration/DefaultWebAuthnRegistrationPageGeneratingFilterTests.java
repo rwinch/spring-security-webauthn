@@ -118,6 +118,7 @@ class DefaultWebAuthnRegistrationPageGeneratingFilterTests {
 		assertThat(body).contains(credential.getLabel());
 		assertThat(body).contains(credential.getCreated().toString());
 		assertThat(body).contains(credential.getLastUsed().toString());
+		assertThat(body).contains(String.valueOf(credential.getSignatureCount()));
 		assertThat(body).contains(credential.getCredentialId().getBytesAsBase64());
 	}
 

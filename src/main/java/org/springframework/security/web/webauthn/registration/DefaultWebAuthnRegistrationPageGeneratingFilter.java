@@ -104,6 +104,7 @@ public class DefaultWebAuthnRegistrationPageGeneratingFilter extends OncePerRequ
 			context.put("label", HtmlUtils.htmlEscape(credential.getLabel()));
 			context.put("created", credential.getCreated());
 			context.put("lastUsed", credential.getLastUsed());
+			context.put("signatureCount", credential.getSignatureCount());
 			context.put("credentialId", credential.getCredentialId().getBytesAsBase64());
 			html += processTemplate(PASSKEY_ROW_TEMPLATE, context);
 		}
@@ -261,7 +262,7 @@ public class DefaultWebAuthnRegistrationPageGeneratingFilter extends OncePerRequ
 					</form>
 					<table class="table table-striped">
 						<thead>
-							<tr><th>Label</th><th>Created</th><th>Last used</th><th>Delete</th></tr>
+							<tr><th>Label</th><th>Created</th><th>Last Used</th><th>Signature Count</th><th>Delete</th></tr>
 						</thead>
 						<tbody>
 							${passkeys}
@@ -277,6 +278,7 @@ public class DefaultWebAuthnRegistrationPageGeneratingFilter extends OncePerRequ
 			<td>${label}</td>
 			<td>${created}</td>
 			<td>${lastUsed}</td>
+			<td>${signatureCount}</td>
 			<td>
 				<form method="post" action="${contextPath}/webauthn/register/${credentialId}">
 					<input type="hidden" name="method" value="delete">
