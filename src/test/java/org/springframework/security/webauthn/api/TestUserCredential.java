@@ -18,7 +18,8 @@ package org.springframework.security.webauthn.api;
 
 import org.springframework.security.webauthn.management.ImmutablePublicKeyCose;
 import org.springframework.security.webauthn.management.ImmutableUserCredential;
-import org.springframework.security.webauthn.management.OptionalBoolean;
+
+import java.util.Optional;
 
 public class TestUserCredential {
 	public static ImmutableUserCredential.ImmutableUserCredentialBuilder userCredential() {
@@ -27,7 +28,7 @@ public class TestUserCredential {
 				.credentialId(Base64Url.fromBase64("NauGCN7bZ5jEBwThcde51g"))
 				.userEntityUserId(Base64Url.fromBase64("vKBFhsWT3gQnn-gHdT4VXIvjDkVXVYg5w8CLGHPunMM"))
 				.publicKeyCose(ImmutablePublicKeyCose.fromBase64("pQECAyYgASFYIC7DAiV_trHFPjieOxXbec7q2taBcgLnIi19zrUwVhCdIlggvN6riHORK_velHcTLFK_uJhyKK0oBkJqzNqR2E-2xf8="))
-				.backupEligible(OptionalBoolean.fromBoolean(true))
-				.backupState(OptionalBoolean.fromBoolean(true));
+				.backupEligible(true)
+				.backupState(true);
 	}
 }

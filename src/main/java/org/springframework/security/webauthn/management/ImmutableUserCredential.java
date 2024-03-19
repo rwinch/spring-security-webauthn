@@ -20,8 +20,8 @@ import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
-import org.springframework.security.webauthn.api.Base64Url;
 import org.springframework.security.webauthn.api.Base64Url;
 import org.springframework.security.webauthn.api.AuthenticatorTransport;
 
@@ -35,9 +35,9 @@ public class ImmutableUserCredential implements UserCredential {
 
 	private final long signatureCount;
 
-	private final OptionalBoolean backupEligible;
+	private final Optional<Boolean> backupEligible;
 
-	private final OptionalBoolean backupState;
+	private final Optional<Boolean> backupState;
 
 	private final Instant created;
 
@@ -49,7 +49,7 @@ public class ImmutableUserCredential implements UserCredential {
 
 	private ImmutableUserCredential(Base64Url credentialId, Base64Url userEntityUserId,
 									PublicKeyCose publicKeyCose, long signatureCount,
-									OptionalBoolean backupEligible, OptionalBoolean backupState,
+									Optional<Boolean> backupEligible, Optional<Boolean> backupState,
 									Instant created,
 									Instant lastUsed,
 									String label,
@@ -87,12 +87,12 @@ public class ImmutableUserCredential implements UserCredential {
 	}
 
 	@Override
-	public OptionalBoolean getBackupEligible() {
+	public Optional<Boolean> getBackupEligible() {
 		return this.backupEligible;
 	}
 
 	@Override
-	public OptionalBoolean getBackupState() {
+	public Optional<Boolean> getBackupState() {
 		return this.backupState;
 	}
 
@@ -151,8 +151,8 @@ public class ImmutableUserCredential implements UserCredential {
 		private Base64Url userEntityUserId;
 		private PublicKeyCose publicKeyCose;
 		private long signatureCount;
-		private OptionalBoolean backupEligible;
-		private OptionalBoolean backupState;
+		private Optional<Boolean> backupEligible = Optional.empty();
+		private Optional<Boolean> backupState = Optional.empty();
 		private Instant created = Instant.now();
 		private Instant lastUsed = Instant.now();
 		private String label;
@@ -189,14 +189,22 @@ public class ImmutableUserCredential implements UserCredential {
 			return this;
 		}
 
-		public ImmutableUserCredentialBuilder backupEligible(OptionalBoolean backupEligible) {
+		public ImmutableUserCredentialBuilder backupEligible(Optional<Boolean> backupEligible) {
 			this.backupEligible = backupEligible;
 			return this;
 		}
 
-		public ImmutableUserCredentialBuilder backupState(OptionalBoolean backupState) {
+		public ImmutableUserCredentialBuilder backupEligible(boolean backupEligible) {
+			return backupEligible(Optional.of(backupEligible));
+		}
+
+		public ImmutableUserCredentialBuilder backupState(Optional<Boolean> backupState) {
 			this.backupState = backupState;
 			return this;
+		}
+
+		public ImmutableUserCredentialBuilder backupState(boolean backupState) {
+			return backupState(Optional.of(backupState));
 		}
 
 		public ImmutableUserCredentialBuilder created(Instant created) {

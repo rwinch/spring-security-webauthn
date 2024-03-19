@@ -18,8 +18,8 @@ package org.springframework.security.webauthn.management;
 
 import java.time.Instant;
 import java.util.List;
+import java.util.Optional;
 
-import org.springframework.security.webauthn.api.Base64Url;
 import org.springframework.security.webauthn.api.Base64Url;
 import org.springframework.security.webauthn.api.AuthenticatorTransport;
 
@@ -35,9 +35,9 @@ public interface UserCredential {
 
 	long getSignatureCount();
 
-	OptionalBoolean getBackupEligible();
+	Optional<Boolean> getBackupEligible();
 
-	OptionalBoolean getBackupState();
+	Optional<Boolean> getBackupState();
 
 	String getLabel();
 

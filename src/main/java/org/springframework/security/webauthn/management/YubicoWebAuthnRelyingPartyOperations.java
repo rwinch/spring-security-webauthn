@@ -124,8 +124,8 @@ public class YubicoWebAuthnRelyingPartyOperations implements WebAuthnRelyingPart
 					.credentialId(credential.getRawId())
 					.userEntityUserId(relyingPartyRegistrationRequest.getCreationOptions().getUser().getId())
 					.publicKeyCose(new ImmutablePublicKeyCose(registrationResult.getPublicKeyCose().getBytes()))
-					.backupEligible(OptionalBoolean.fromBoolean(registrationResult.isBackupEligible()))
-					.backupState(OptionalBoolean.fromBoolean(registrationResult.isBackedUp()))
+					.backupEligible(registrationResult.isBackupEligible())
+					.backupState(registrationResult.isBackedUp())
 					.transports(YubicoConverter.transports(registrationResult.getKeyId().getTransports()))
 					.build();
 			this.userCredentials.save(userCredential);
@@ -216,14 +216,14 @@ public class YubicoWebAuthnRelyingPartyOperations implements WebAuthnRelyingPart
 			if (credential == null) {
 				return null;
 			}
-			return RegisteredCredential.builder()
+			RegisteredCredential.RegisteredCredentialBuilder builder = RegisteredCredential.builder()
 					.credentialId(YubicoConverter.convertByteArray(credential.getCredentialId()))
 					.userHandle(YubicoConverter.convertByteArray(credential.getUserEntityUserId()))
 					.publicKeyCose(new ByteArray(credential.getPublicKeyCose().getBytes()))
-					.signatureCount(credential.getSignatureCount())
-					.backupEligible(credential.getBackupEligible().getValue())
-					.backupState(credential.getBackupState().getValue())
-					.build();
+					.signatureCount(credential.getSignatureCount());
+			credential.getBackupEligible().map(builder::backupEligible);
+			credential.getBackupState().map(builder::backupState);
+			return builder.build();
 		}
 	}
 }
