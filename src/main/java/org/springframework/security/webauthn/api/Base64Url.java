@@ -17,6 +17,8 @@
 
 package org.springframework.security.webauthn.api;
 
+import org.springframework.util.Assert;
+
 import java.security.SecureRandom;
 import java.util.Base64;
 
@@ -31,6 +33,7 @@ public class Base64Url {
 	private final byte[] bytes;
 
 	public Base64Url(byte[] bytes) {
+		Assert.notNull(bytes, "bytes cannot be null");
 		this.bytes = bytes;
 	}
 

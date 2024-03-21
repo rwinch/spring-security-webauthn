@@ -22,20 +22,16 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.yubico.internal.util.JacksonCodecs;
 import org.junit.jupiter.api.Test;
 import org.springframework.security.crypto.codec.Utf8;
-import org.springframework.security.webauthn.api.TestAuthenticatorAttestationResponse;
-import org.springframework.security.webauthn.api.TestPublicKeyCredential;
-import org.springframework.security.webauthn.api.TestPublicKeyCredentialCreationOptions;
-import org.springframework.security.webauthn.api.Base64Url;
-import org.springframework.security.webauthn.api.Base64Url;
 import org.springframework.security.webauthn.api.*;
 
 import java.util.Base64;
 import java.util.Map;
 import java.util.Set;
 
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-class YubicoWebAuthnRelyingPartyOperationsTests {
+class Webauthn4jRelyingPartyOperationsTests {
 	private UserCredentialRepository credentials = new MapUserCredentialRepository();
 	// AuthenticatorDataFlags.Bitmasks
 	private static byte UP = 0x01;
@@ -43,7 +39,7 @@ class YubicoWebAuthnRelyingPartyOperationsTests {
 	private static byte BE = 0x08;
 	private static byte BS = 0x10;
 
-	YubicoWebAuthnRelyingPartyOperations rpOperations = new YubicoWebAuthnRelyingPartyOperations(new MapPublicKeyCredentialUserEntityRepository(), this.credentials, PublicKeyCredentialRpEntity.builder()
+	WebAuthnRelyingPartyOperations rpOperations = new Webauthn4JRelyingPartyOperations(new MapPublicKeyCredentialUserEntityRepository(), this.credentials, PublicKeyCredentialRpEntity.builder()
 		.id("example.localhost")
 		.name("Spring Security Relying Party")
 		.build(),
@@ -61,12 +57,13 @@ class YubicoWebAuthnRelyingPartyOperationsTests {
 		PublicKeyCredentialCreationOptions options = TestPublicKeyCredentialCreationOptions.createPublicKeyCredentialCreationOptions()
 				.build();
 		AuthenticatorAttestationResponse.AuthenticatorAttestationResponseBuilder responseBldr = TestAuthenticatorAttestationResponse.createAuthenticatorAttestationResponse();
-		responseBldr.clientDataJSON(new Base64Url(Utf8.encode("{\"type\":\"webauthn.INVALID\",\"challenge\":\"IBQnuY1Z0K1HqBoFWCp2xlJl8-oq_aFIXzyT_F0-0GU\",\"origin\":\"https://example.localhost:8080\",\"crossOrigin\":false}")));
 		PublicKeyCredential publicKey = TestPublicKeyCredential.createPublicKeyCredential(responseBldr.build())
 				.build();
 		RelyingPartyRegistrationRequest registrationRequest = new RelyingPartyRegistrationRequest(options, new RelyingPartyPublicKey(publicKey, this.label));
 
-		assertThatThrownBy(() -> this.rpOperations.registerCredential(registrationRequest)).hasMessageContaining("webauthn.create");
+		UserCredential userCredential = this.rpOperations.registerCredential(registrationRequest);
+		String base64String = Base64.getUrlEncoder().encodeToString(userCredential.getPublicKeyCose().getBytes());
+		assertThat(base64String).isEqualTo("pQECAyYgASFYIOB5K59pGxpqWU3aA2VDa6aaPdzqoEFezjc1b6ORiwhXIlggq3-siEIIKtgX2Z7WsMUbAQW1hvxVpGAKFPMj4qUvuYY=");
 	}
 
 	/**
@@ -244,12 +241,8 @@ class YubicoWebAuthnRelyingPartyOperationsTests {
 				.build();
 		PublicKeyCredential publicKey = TestPublicKeyCredential.createPublicKeyCredential() //setFmt("packed")
 				.build();
+		RelyingPartyRegistrationRequest registrationRequest = new RelyingPartyRegistrationRequest(options, new RelyingPartyPublicKey(publicKey, this.label));
 
-		RelyingPartyPublicKey rpPublicKey = new RelyingPartyPublicKey(publicKey, this.label);
-		RelyingPartyRegistrationRequest registrationRequest = new RelyingPartyRegistrationRequest(options, rpPublicKey);
-
-		UserCredential userCredential = this.rpOperations.registerCredential(registrationRequest);
-		System.out.println(Base64.getUrlEncoder().encodeToString(userCredential.getPublicKeyCose().getBytes()));
 		// FIXME: Implement this test
 //		assertThatThrownBy(() -> this.rpOperations.registerCredential(registrationRequest)).hasMessageContaining("Flag combination is invalid");
 	}

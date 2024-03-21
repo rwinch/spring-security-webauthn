@@ -75,7 +75,7 @@ public class PasskeysConfigurer<B extends HttpSecurityBuilder<B>>
 				.orElse(userEntityRepository());
 		UserCredentialRepository userCredentials = getSharedOrBean(http, UserCredentialRepository.class)
 				.orElse(userCredentialRepository());
-		YubicoWebAuthnRelyingPartyOperations rpOperations = webAuthnRelyingPartyOperations(userEntities, userCredentials);
+		WebAuthnRelyingPartyOperations rpOperations = webAuthnRelyingPartyOperations(userEntities, userCredentials);
 		WebAuthnAuthenticationFilter webAuthnAuthnFilter = new WebAuthnAuthenticationFilter();
 		webAuthnAuthnFilter.setAuthenticationManager(new ProviderManager(new WebAuthnAuthenticationProvider(rpOperations, userDetailsService)));
 		http.addFilterBefore(webAuthnAuthnFilter, BasicAuthenticationFilter.class);
@@ -124,8 +124,8 @@ public class PasskeysConfigurer<B extends HttpSecurityBuilder<B>>
 		return new MapPublicKeyCredentialUserEntityRepository();
 	}
 
-	private YubicoWebAuthnRelyingPartyOperations webAuthnRelyingPartyOperations(PublicKeyCredentialUserEntityRepository userEntities, UserCredentialRepository userCredentials) {
-		YubicoWebAuthnRelyingPartyOperations result =  new YubicoWebAuthnRelyingPartyOperations(userEntities, userCredentials,
+	private WebAuthnRelyingPartyOperations webAuthnRelyingPartyOperations(PublicKeyCredentialUserEntityRepository userEntities, UserCredentialRepository userCredentials) {
+		Webauthn4JRelyingPartyOperations result =  new Webauthn4JRelyingPartyOperations(userEntities, userCredentials,
 				PublicKeyCredentialRpEntity.builder()
 				.id(this.rpId)
 				.name(this.rpName)
