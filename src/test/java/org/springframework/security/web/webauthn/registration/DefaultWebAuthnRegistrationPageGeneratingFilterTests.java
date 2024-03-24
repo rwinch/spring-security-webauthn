@@ -28,7 +28,7 @@ import org.springframework.security.web.csrf.DefaultCsrfToken;
 import org.springframework.security.webauthn.api.TestUserCredential;
 import org.springframework.security.webauthn.api.Base64Url;
 import org.springframework.security.webauthn.api.PublicKeyCredentialUserEntity;
-import org.springframework.security.webauthn.management.ImmutableUserCredential;
+import org.springframework.security.webauthn.management.ImmutableCredentialRecord;
 import org.springframework.security.webauthn.management.PublicKeyCredentialUserEntityRepository;
 import org.springframework.security.webauthn.management.UserCredentialRepository;
 import org.springframework.test.web.servlet.MockMvc;
@@ -111,7 +111,7 @@ class DefaultWebAuthnRegistrationPageGeneratingFilterTests {
 	@Test
 	void doFilterWhenResultsThenDisplayed() throws Exception {
 		PublicKeyCredentialUserEntity userEntity = new PublicKeyCredentialUserEntity("user", Base64Url.random(), "User");
-		ImmutableUserCredential credential = TestUserCredential.userCredential().build();
+		ImmutableCredentialRecord credential = TestUserCredential.userCredential().build();
 		when(this.userEntities.findByUsername(any())).thenReturn(userEntity);
 		when(this.userCredentials.findByUserId(userEntity.getId())).thenReturn(Arrays.asList(credential));
 		String body = bodyAsString(matchingRequest());
@@ -128,7 +128,7 @@ class DefaultWebAuthnRegistrationPageGeneratingFilterTests {
 		String htmlEncodedLabel = HtmlUtils.htmlEscape(label);
 		assertThat(label).isNotEqualTo(htmlEncodedLabel);
 		PublicKeyCredentialUserEntity userEntity = new PublicKeyCredentialUserEntity("user", Base64Url.random(), "User");
-		ImmutableUserCredential credential = TestUserCredential.userCredential()
+		ImmutableCredentialRecord credential = TestUserCredential.userCredential()
 			.label(label)
 			.build();
 		when(this.userEntities.findByUsername(any())).thenReturn(userEntity);
@@ -153,7 +153,7 @@ class DefaultWebAuthnRegistrationPageGeneratingFilterTests {
 	@Test
 	void doFilterWhenContextEmptyThenUrlsEmptyPrefix() throws Exception {
 		PublicKeyCredentialUserEntity userEntity = new PublicKeyCredentialUserEntity("user", Base64Url.random(), "User");
-		ImmutableUserCredential credential = TestUserCredential.userCredential().build();
+		ImmutableCredentialRecord credential = TestUserCredential.userCredential().build();
 		when(this.userEntities.findByUsername(any())).thenReturn(userEntity);
 		when(this.userCredentials.findByUserId(userEntity.getId())).thenReturn(Arrays.asList(credential));
 		String body = bodyAsString(matchingRequest());
@@ -166,7 +166,7 @@ class DefaultWebAuthnRegistrationPageGeneratingFilterTests {
 	@Test
 	void doFilterWhenContextNotEmptyThenUrlsPrefixed() throws Exception {
 		PublicKeyCredentialUserEntity userEntity = new PublicKeyCredentialUserEntity("user", Base64Url.random(), "User");
-		ImmutableUserCredential credential = TestUserCredential.userCredential().build();
+		ImmutableCredentialRecord credential = TestUserCredential.userCredential().build();
 		when(this.userEntities.findByUsername(any())).thenReturn(userEntity);
 		when(this.userCredentials.findByUserId(userEntity.getId())).thenReturn(Arrays.asList(credential));
 		String body = bodyAsString(matchingRequest("/foo"));

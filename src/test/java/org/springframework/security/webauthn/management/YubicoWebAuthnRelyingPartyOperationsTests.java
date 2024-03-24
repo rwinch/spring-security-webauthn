@@ -26,7 +26,6 @@ import org.springframework.security.webauthn.api.TestAuthenticatorAttestationRes
 import org.springframework.security.webauthn.api.TestPublicKeyCredential;
 import org.springframework.security.webauthn.api.TestPublicKeyCredentialCreationOptions;
 import org.springframework.security.webauthn.api.Base64Url;
-import org.springframework.security.webauthn.api.Base64Url;
 import org.springframework.security.webauthn.api.*;
 
 import java.util.Base64;
@@ -248,8 +247,8 @@ class YubicoWebAuthnRelyingPartyOperationsTests {
 		RelyingPartyPublicKey rpPublicKey = new RelyingPartyPublicKey(publicKey, this.label);
 		RelyingPartyRegistrationRequest registrationRequest = new RelyingPartyRegistrationRequest(options, rpPublicKey);
 
-		UserCredential userCredential = this.rpOperations.registerCredential(registrationRequest);
-		System.out.println(Base64.getUrlEncoder().encodeToString(userCredential.getPublicKeyCose().getBytes()));
+		CredentialRecord credentialRecord = this.rpOperations.registerCredential(registrationRequest);
+		System.out.println(Base64.getUrlEncoder().encodeToString(credentialRecord.getPublicKeyCose().getBytes()));
 		// FIXME: Implement this test
 //		assertThatThrownBy(() -> this.rpOperations.registerCredential(registrationRequest)).hasMessageContaining("Flag combination is invalid");
 	}

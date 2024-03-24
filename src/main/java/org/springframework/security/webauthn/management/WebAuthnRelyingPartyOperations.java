@@ -32,7 +32,7 @@ public interface WebAuthnRelyingPartyOperations {
 	 */
 	PublicKeyCredentialCreationOptions createPublicKeyCredentialCreationOptions(Authentication authentication);
 
-	UserCredential registerCredential(RelyingPartyRegistrationRequest relyingPartyRegistrationRequest);
+	CredentialRecord registerCredential(RelyingPartyRegistrationRequest relyingPartyRegistrationRequest);
 
 	PublicKeyCredentialRequestOptions createCredentialRequestOptions(Authentication authentication);
 

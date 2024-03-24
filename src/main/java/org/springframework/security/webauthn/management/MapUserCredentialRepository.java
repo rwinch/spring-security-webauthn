@@ -17,40 +17,39 @@
 package org.springframework.security.webauthn.management;
 
 import org.springframework.security.webauthn.api.Base64Url;
-import org.springframework.security.webauthn.api.Base64Url;
 
 import java.util.*;
 
 public class MapUserCredentialRepository implements UserCredentialRepository {
 
-	private final Map<Base64Url,UserCredential> credentialIdToUserCredential = new HashMap<>();
+	private final Map<Base64Url, CredentialRecord> credentialIdToUserCredential = new HashMap<>();
 
-	private final Map<Base64Url,List<UserCredential>> userEntityIdToUserCredentials = new HashMap<>();
+	private final Map<Base64Url,List<CredentialRecord>> userEntityIdToUserCredentials = new HashMap<>();
 
 	@Override
 	public void delete(Base64Url credentialId) {
-		UserCredential userCredential = this.credentialIdToUserCredential.remove(credentialId);
-		if (userCredential != null) {
-			List<UserCredential> userCredentials = this.userEntityIdToUserCredentials.get(userCredential.getUserEntityUserId());
-			if (userCredentials != null) {
-				userCredentials.remove(userCredential);
+		CredentialRecord credentialRecord = this.credentialIdToUserCredential.remove(credentialId);
+		if (credentialRecord != null) {
+			List<CredentialRecord> credentialRecords = this.userEntityIdToUserCredentials.get(credentialRecord.getUserEntityUserId());
+			if (credentialRecords != null) {
+				credentialRecords.remove(credentialRecord);
 			}
 		}
 	}
 
 	@Override
-	public void save(UserCredential userCredential) {
-		this.credentialIdToUserCredential.put(userCredential.getCredentialId(), userCredential);
-		this.userEntityIdToUserCredentials.computeIfAbsent(userCredential.getUserEntityUserId(), (id) -> new ArrayList<>()).add(userCredential);
+	public void save(CredentialRecord credentialRecord) {
+		this.credentialIdToUserCredential.put(credentialRecord.getCredentialId(), credentialRecord);
+		this.userEntityIdToUserCredentials.computeIfAbsent(credentialRecord.getUserEntityUserId(), (id) -> new ArrayList<>()).add(credentialRecord);
 	}
 
 	@Override
-	public UserCredential findByCredentialId(Base64Url credentialId) {
+	public CredentialRecord findByCredentialId(Base64Url credentialId) {
 		return this.credentialIdToUserCredential.get(credentialId);
 	}
 
 	@Override
-	public List<UserCredential> findByUserId(Base64Url userId) {
+	public List<CredentialRecord> findByUserId(Base64Url userId) {
 		return Collections.unmodifiableList(this.userEntityIdToUserCredentials.getOrDefault(userId, Collections.emptyList()));
 	}
 }

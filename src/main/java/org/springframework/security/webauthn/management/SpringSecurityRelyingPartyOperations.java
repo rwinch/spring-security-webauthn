@@ -16,17 +16,11 @@
 
 package org.springframework.security.webauthn.management;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.json.JsonMapper;
 import org.springframework.core.ResolvableType;
-import org.springframework.http.converter.GenericHttpMessageConverter;
-import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
-import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.webauthn.api.*;
-import org.springframework.security.webauthn.jackson.WebauthnJackson2Module;
 
-import java.io.IOException;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
@@ -62,7 +56,7 @@ public class SpringSecurityRelyingPartyOperations implements WebAuthnRelyingPart
 
 
 		PublicKeyCredentialUserEntity userEntity = findUserEntityOrCreateAndSave(authentication.getName());
-		List<UserCredential> userCredentials = this.userCredentials.findByUserId(userEntity.getId());
+		List<CredentialRecord> credentialRecords = this.userCredentials.findByUserId(userEntity.getId());
 		DefaultAuthenticationExtensionsClientInputs clientInputs = new DefaultAuthenticationExtensionsClientInputs();
 		clientInputs.add(ImmutableAuthenticationExtensionsClientInput.credProps);
 		PublicKeyCredentialCreationOptions options = PublicKeyCredentialCreationOptions.builder()
@@ -73,20 +67,20 @@ public class SpringSecurityRelyingPartyOperations implements WebAuthnRelyingPart
 				.challenge(Base64Url.random())
 				.rp(this.rp)
 				.extensions(clientInputs)
-				.excludeCredentials(convertCredentials(userCredentials))
+				.excludeCredentials(convertCredentials(credentialRecords))
 				.timeout(Duration.ofMinutes(10))
 				.build();
 		return options;
 	}
 
 
-	private List<PublicKeyCredentialDescriptor> convertCredentials(List<UserCredential> userCredentials) {
+	private List<PublicKeyCredentialDescriptor> convertCredentials(List<CredentialRecord> credentialRecords) {
 		List result = new ArrayList();
-		for (UserCredential userCredential : userCredentials) {
-			Base64Url id = Base64Url.fromBase64(userCredential.getCredentialId().getBytesAsBase64());
+		for (CredentialRecord credentialRecord : credentialRecords) {
+			Base64Url id = Base64Url.fromBase64(credentialRecord.getCredentialId().getBytesAsBase64());
 			PublicKeyCredentialDescriptor credentialDescriptor = PublicKeyCredentialDescriptor.builder()
 					.id(id)
-					.transports(userCredential.getTransports())
+					.transports(credentialRecord.getTransports())
 					.build();
 			result.add(credentialDescriptor);
 		}
@@ -109,7 +103,7 @@ public class SpringSecurityRelyingPartyOperations implements WebAuthnRelyingPart
 	}
 
 	@Override
-	public UserCredential registerCredential(RelyingPartyRegistrationRequest rpRegistrationRequest) {
+	public CredentialRecord registerCredential(RelyingPartyRegistrationRequest rpRegistrationRequest) {
 		PublicKeyCredentialCreationOptions options = rpRegistrationRequest.getCreationOptions();
 		PublicKeyCredential<AuthenticatorAttestationResponse> credential = rpRegistrationRequest.getPublicKey().getCredential();
 		AuthenticatorAttestationResponse response = credential.getResponse();

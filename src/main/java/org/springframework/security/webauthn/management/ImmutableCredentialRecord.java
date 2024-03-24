@@ -24,8 +24,9 @@ import java.util.Optional;
 
 import org.springframework.security.webauthn.api.Base64Url;
 import org.springframework.security.webauthn.api.AuthenticatorTransport;
+import org.springframework.security.webauthn.api.PublicKeyCredentialType;
 
-public class ImmutableUserCredential implements UserCredential {
+public class ImmutableCredentialRecord implements CredentialRecord {
 
 	private final Base64Url credentialId;
 
@@ -35,9 +36,11 @@ public class ImmutableUserCredential implements UserCredential {
 
 	private final long signatureCount;
 
-	private final Optional<Boolean> backupEligible;
+	private final boolean backupEligible;
 
-	private final Optional<Boolean> backupState;
+	private final boolean backupState;
+
+	private final boolean uvInitialized;
 
 	private final Instant created;
 
@@ -47,13 +50,13 @@ public class ImmutableUserCredential implements UserCredential {
 
 	private final List<AuthenticatorTransport> transports;
 
-	private ImmutableUserCredential(Base64Url credentialId, Base64Url userEntityUserId,
-									PublicKeyCose publicKeyCose, long signatureCount,
-									Optional<Boolean> backupEligible, Optional<Boolean> backupState,
-									Instant created,
-									Instant lastUsed,
-									String label,
-									List<AuthenticatorTransport> transports) {
+	private ImmutableCredentialRecord(Base64Url credentialId, Base64Url userEntityUserId,
+									  PublicKeyCose publicKeyCose, long signatureCount,
+									  Optional<Boolean> backupEligible, Optional<Boolean> backupState,
+									  Instant created,
+									  Instant lastUsed,
+									  String label,
+									  List<AuthenticatorTransport> transports) {
 		this.credentialId = credentialId;
 		this.userEntityUserId = userEntityUserId;
 		this.publicKeyCose = publicKeyCose;
@@ -64,6 +67,11 @@ public class ImmutableUserCredential implements UserCredential {
 		this.lastUsed = lastUsed;
 		this.label = label;
 		this.transports = transports;
+	}
+
+	@Override
+	public PublicKeyCredentialType getType() {
+		return PublicKeyCredentialType.PUBLIC_KEY;
 	}
 
 	@Override
@@ -86,15 +94,6 @@ public class ImmutableUserCredential implements UserCredential {
 		return this.signatureCount;
 	}
 
-	@Override
-	public Optional<Boolean> getBackupEligible() {
-		return this.backupEligible;
-	}
-
-	@Override
-	public Optional<Boolean> getBackupState() {
-		return this.backupState;
-	}
 
 	@Override
 	public List<AuthenticatorTransport> getTransports() {
@@ -120,7 +119,7 @@ public class ImmutableUserCredential implements UserCredential {
 
 	@Override
 	public boolean equals(Object obj) {
-		if (obj instanceof UserCredential credential) {
+		if (obj instanceof CredentialRecord credential) {
 			return getCredentialId().equals(credential.getCredentialId());
 		}
 		return false;
@@ -130,18 +129,18 @@ public class ImmutableUserCredential implements UserCredential {
 		return new ImmutableUserCredentialBuilder();
 	}
 
-	public static ImmutableUserCredentialBuilder fromUserCredential(UserCredential userCredential) {
+	public static ImmutableUserCredentialBuilder fromUserCredential(CredentialRecord credentialRecord) {
 		return builder()
-				.credentialId(userCredential.getCredentialId())
-				.userEntityUserId(userCredential.getUserEntityUserId())
-				.publicKeyCose(userCredential.getPublicKeyCose())
-				.signatureCount(userCredential.getSignatureCount())
-				.backupEligible(userCredential.getBackupEligible())
-				.backupState(userCredential.getBackupState())
-				.created(userCredential.getCreated())
-				.lastUsed(userCredential.getLastUsed())
-				.label(userCredential.getLabel())
-				.transports(userCredential.getTransports());
+				.credentialId(credentialRecord.getCredentialId())
+				.userEntityUserId(credentialRecord.getUserEntityUserId())
+				.publicKeyCose(credentialRecord.getPublicKeyCose())
+				.signatureCount(credentialRecord.getSignatureCount())
+				.backupEligible(credentialRecord.getBackupEligible())
+				.backupState(credentialRecord.getBackupState())
+				.created(credentialRecord.getCreated())
+				.lastUsed(credentialRecord.getLastUsed())
+				.label(credentialRecord.getLabel())
+				.transports(credentialRecord.getTransports());
 	}
 
 	public static final class ImmutableUserCredentialBuilder {
@@ -222,8 +221,8 @@ public class ImmutableUserCredential implements UserCredential {
 			return this;
 		}
 
-		public ImmutableUserCredential build() {
-			return new ImmutableUserCredential(this.credentialId, this.userEntityUserId, this.publicKeyCose, this.signatureCount, this.backupEligible, this.backupState, this.created, this.lastUsed, this.label, this.transports);
+		public ImmutableCredentialRecord build() {
+			return new ImmutableCredentialRecord(this.credentialId, this.userEntityUserId, this.publicKeyCose, this.signatureCount, this.backupEligible, this.backupState, this.created, this.lastUsed, this.label, this.transports);
 		}
 	}
 

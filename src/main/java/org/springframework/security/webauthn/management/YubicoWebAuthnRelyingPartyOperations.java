@@ -24,7 +24,6 @@ import com.yubico.webauthn.exception.RegistrationFailedException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.webauthn.api.PublicKeyCredentialRequestOptions;
 import org.springframework.security.webauthn.api.Base64Url;
-import org.springframework.security.webauthn.api.Base64Url;
 import org.springframework.security.webauthn.api.*;
 
 import java.io.IOException;
@@ -62,7 +61,7 @@ public class YubicoWebAuthnRelyingPartyOperations implements WebAuthnRelyingPart
 
 
 		PublicKeyCredentialUserEntity userEntity = findUserEntityOrCreateAndSave(authentication.getName());
-		List<UserCredential> userCredentials = this.userCredentials.findByUserId(userEntity.getId());
+		List<CredentialRecord> credentialRecords = this.userCredentials.findByUserId(userEntity.getId());
 		DefaultAuthenticationExtensionsClientInputs clientInputs = new DefaultAuthenticationExtensionsClientInputs();
 		clientInputs.add(ImmutableAuthenticationExtensionsClientInput.credProps);
 		PublicKeyCredentialCreationOptions options = PublicKeyCredentialCreationOptions.builder()
@@ -73,19 +72,19 @@ public class YubicoWebAuthnRelyingPartyOperations implements WebAuthnRelyingPart
 				.challenge(Base64Url.random())
 				.rp(this.rp)
 				.extensions(clientInputs)
-				.excludeCredentials(convertCredentials(userCredentials))
+				.excludeCredentials(convertCredentials(credentialRecords))
 				.timeout(Duration.ofMinutes(10))
 				.build();
 		return options;
 	}
 
-	private List<PublicKeyCredentialDescriptor> convertCredentials(List<UserCredential> userCredentials) {
+	private List<PublicKeyCredentialDescriptor> convertCredentials(List<CredentialRecord> credentialRecords) {
 		List result = new ArrayList();
-		for (UserCredential userCredential : userCredentials) {
-			Base64Url id = Base64Url.fromBase64(userCredential.getCredentialId().getBytesAsBase64());
+		for (CredentialRecord credentialRecord : credentialRecords) {
+			Base64Url id = Base64Url.fromBase64(credentialRecord.getCredentialId().getBytesAsBase64());
 			PublicKeyCredentialDescriptor credentialDescriptor = PublicKeyCredentialDescriptor.builder()
 				.id(id)
-				.transports(userCredential.getTransports())
+				.transports(credentialRecord.getTransports())
 				.build();
 			result.add(credentialDescriptor);
 		}
@@ -108,7 +107,7 @@ public class YubicoWebAuthnRelyingPartyOperations implements WebAuthnRelyingPart
 	}
 
 	@Override
-	public UserCredential registerCredential(RelyingPartyRegistrationRequest relyingPartyRegistrationRequest) {
+	public CredentialRecord registerCredential(RelyingPartyRegistrationRequest relyingPartyRegistrationRequest) {
 		RelyingPartyPublicKey registrationRequest = relyingPartyRegistrationRequest.getPublicKey();
 		PublicKeyCredential<AuthenticatorAttestationResponse> credential = registrationRequest.getCredential();
 		com.yubico.webauthn.data.PublicKeyCredentialCreationOptions yubicoOptions = YubicoConverter.createCreationOptions(relyingPartyRegistrationRequest.getCreationOptions());
@@ -119,7 +118,7 @@ public class YubicoWebAuthnRelyingPartyOperations implements WebAuthnRelyingPart
 					.response(YubicoConverter.convertPublicKeyCredential(credential))
 					.build());
 
-			ImmutableUserCredential userCredential = ImmutableUserCredential.builder()
+			ImmutableCredentialRecord userCredential = ImmutableCredentialRecord.builder()
 					.label(registrationRequest.getLabel())
 					.credentialId(credential.getRawId())
 					.userEntityUserId(relyingPartyRegistrationRequest.getCreationOptions().getUser().getId())
@@ -212,7 +211,7 @@ public class YubicoWebAuthnRelyingPartyOperations implements WebAuthnRelyingPart
 		}
 
 		private RegisteredCredential findById(ByteArray credentialId) {
-			UserCredential credential = YubicoWebAuthnRelyingPartyOperations.this.userCredentials.findByCredentialId(new Base64Url(credentialId.getBytes()));
+			CredentialRecord credential = YubicoWebAuthnRelyingPartyOperations.this.userCredentials.findByCredentialId(new Base64Url(credentialId.getBytes()));
 			if (credential == null) {
 				return null;
 			}

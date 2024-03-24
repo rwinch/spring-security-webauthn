@@ -19,17 +19,13 @@ package org.springframework.security.webauthn.management;
 import com.webauthn4j.WebAuthnManager;
 import com.webauthn4j.authenticator.Authenticator;
 import com.webauthn4j.authenticator.AuthenticatorImpl;
-import com.webauthn4j.converter.AttestationObjectConverter;
-import com.webauthn4j.converter.CollectedClientDataConverter;
 import com.webauthn4j.converter.util.CborConverter;
 import com.webauthn4j.converter.util.ObjectConverter;
 import com.webauthn4j.data.*;
-import com.webauthn4j.data.attestation.AttestationObject;
 import com.webauthn4j.data.attestation.authenticator.AAGUID;
 import com.webauthn4j.data.attestation.authenticator.AttestedCredentialData;
 import com.webauthn4j.data.attestation.authenticator.AuthenticatorData;
 import com.webauthn4j.data.attestation.authenticator.COSEKey;
-import com.webauthn4j.data.client.CollectedClientData;
 import com.webauthn4j.data.client.Origin;
 import com.webauthn4j.data.client.challenge.Challenge;
 import com.webauthn4j.data.client.challenge.DefaultChallenge;
@@ -87,7 +83,7 @@ public class Webauthn4JRelyingPartyOperations implements WebAuthnRelyingPartyOpe
 
 
 		PublicKeyCredentialUserEntity userEntity = findUserEntityOrCreateAndSave(authentication.getName());
-		List<UserCredential> userCredentials = this.userCredentials.findByUserId(userEntity.getId());
+		List<CredentialRecord> credentialRecords = this.userCredentials.findByUserId(userEntity.getId());
 		DefaultAuthenticationExtensionsClientInputs clientInputs = new DefaultAuthenticationExtensionsClientInputs();
 		clientInputs.add(ImmutableAuthenticationExtensionsClientInput.credProps);
 		PublicKeyCredentialCreationOptions options = PublicKeyCredentialCreationOptions.builder()
@@ -98,20 +94,20 @@ public class Webauthn4JRelyingPartyOperations implements WebAuthnRelyingPartyOpe
 				.challenge(Base64Url.random())
 				.rp(this.rp)
 				.extensions(clientInputs)
-				.excludeCredentials(convertCredentials(userCredentials))
+				.excludeCredentials(convertCredentials(credentialRecords))
 				.timeout(Duration.ofMinutes(10))
 				.build();
 		return options;
 	}
 
 
-	private List<PublicKeyCredentialDescriptor> convertCredentials(List<UserCredential> userCredentials) {
+	private List<PublicKeyCredentialDescriptor> convertCredentials(List<CredentialRecord> credentialRecords) {
 		List result = new ArrayList();
-		for (UserCredential userCredential : userCredentials) {
-			Base64Url id = Base64Url.fromBase64(userCredential.getCredentialId().getBytesAsBase64());
+		for (CredentialRecord credentialRecord : credentialRecords) {
+			Base64Url id = Base64Url.fromBase64(credentialRecord.getCredentialId().getBytesAsBase64());
 			PublicKeyCredentialDescriptor credentialDescriptor = PublicKeyCredentialDescriptor.builder()
 					.id(id)
-					.transports(userCredential.getTransports())
+					.transports(credentialRecord.getTransports())
 					.build();
 			result.add(credentialDescriptor);
 		}
@@ -134,7 +130,7 @@ public class Webauthn4JRelyingPartyOperations implements WebAuthnRelyingPartyOpe
 	}
 
 	@Override
-	public UserCredential registerCredential(RelyingPartyRegistrationRequest rpRegistrationRequest) {
+	public CredentialRecord registerCredential(RelyingPartyRegistrationRequest rpRegistrationRequest) {
 		PublicKeyCredentialCreationOptions creationOptions = rpRegistrationRequest.getCreationOptions();
 		String rpId = creationOptions.getRp().getId();
 		RelyingPartyPublicKey publicKey = rpRegistrationRequest.getPublicKey();
@@ -159,7 +155,7 @@ public class Webauthn4JRelyingPartyOperations implements WebAuthnRelyingPartyOpe
 		CborConverter cborConverter = new ObjectConverter().getCborConverter();
 		byte[] coseKey = cborConverter.writeValueAsBytes(authenticatorData.getAttestedCredentialData().getCOSEKey());
 
-		ImmutableUserCredential userCredential = ImmutableUserCredential.builder()
+		ImmutableCredentialRecord userCredential = ImmutableCredentialRecord.builder()
 				.label(publicKey.getLabel())
 				.credentialId(credential.getRawId())
 				.userEntityUserId(creationOptions.getUser().getId())
@@ -201,14 +197,14 @@ public class Webauthn4JRelyingPartyOperations implements WebAuthnRelyingPartyOpe
 		PublicKeyCredentialRequestOptions requestOptions = request.getRequestOptions();
 		AuthenticatorAssertionResponse assertionResponse = request.getPublicKey().getResponse();
 		Base64Url keyId = request.getPublicKey().getRawId();
-		UserCredential userCredential = this.userCredentials.findByCredentialId(keyId);
+		CredentialRecord credentialRecord = this.userCredentials.findByCredentialId(keyId);
 		CborConverter cborConverter = new ObjectConverter().getCborConverter();
-		COSEKey coseKey = cborConverter.readValue(userCredential.getPublicKeyCose().getBytes(), COSEKey.class);
+		COSEKey coseKey = cborConverter.readValue(credentialRecord.getPublicKeyCose().getBytes(), COSEKey.class);
 
 		AttestedCredentialData data = new AttestedCredentialData(AAGUID.NULL, keyId.getBytes(), coseKey);
 
 
-		Authenticator authenticator = new AuthenticatorImpl(data, null, userCredential.getSignatureCount());
+		Authenticator authenticator = new AuthenticatorImpl(data, null, credentialRecord.getSignatureCount());
 		if (authenticator == null) {
 			throw new IllegalStateException("No authenticator found");
 		}
@@ -231,7 +227,7 @@ public class Webauthn4JRelyingPartyOperations implements WebAuthnRelyingPartyOpe
 		authenticator.setCounter(authenticationData.getAuthenticatorData().getSignCount());
 		// FIXME: update the counter in the repository
 
-		return this.userEntities.findUsernameByUserEntityId(userCredential.getUserEntityUserId());
+		return this.userEntities.findUsernameByUserEntityId(credentialRecord.getUserEntityUserId());
 	}
 
 	private static WebAuthnManager createManager() {

@@ -34,7 +34,7 @@ import org.springframework.security.webauthn.api.Base64Url;
 import org.springframework.security.webauthn.api.PublicKeyCredentialCreationOptions;
 import org.springframework.security.webauthn.management.RelyingPartyPublicKey;
 import org.springframework.security.webauthn.management.RelyingPartyRegistrationRequest;
-import org.springframework.security.webauthn.management.UserCredential;
+import org.springframework.security.webauthn.management.CredentialRecord;
 import org.springframework.security.webauthn.management.UserCredentialRepository;
 import org.springframework.security.webauthn.management.WebAuthnRelyingPartyOperations;
 import org.springframework.util.Assert;
@@ -147,8 +147,8 @@ public class WebAuthnRegistrationFilter extends OncePerRequestFilter {
 			return;
 		}
 		this.creationOptionsRepository.save(request, response, null);
-		UserCredential userCredential = this.rpOptions.registerCredential(new RelyingPartyRegistrationRequest(options, registrationRequest.getPublicKey()));
-		SuccessfulUserRegistrationResponse registrationResponse = new SuccessfulUserRegistrationResponse(userCredential);
+		CredentialRecord credentialRecord = this.rpOptions.registerCredential(new RelyingPartyRegistrationRequest(options, registrationRequest.getPublicKey()));
+		SuccessfulUserRegistrationResponse registrationResponse = new SuccessfulUserRegistrationResponse(credentialRecord);
 		ServletServerHttpResponse outputMessage = new ServletServerHttpResponse(response);
 		this.converter.write(registrationResponse, MediaType.APPLICATION_JSON, outputMessage);
 	}
@@ -184,10 +184,10 @@ public class WebAuthnRegistrationFilter extends OncePerRequestFilter {
 	// FIXME: make private
 	// FIXME: expose userCredential as a getter (need to update JSON mapping)
 	public static class SuccessfulUserRegistrationResponse {
-		private final UserCredential userCredential;
+		private final CredentialRecord credentialRecord;
 
-		public SuccessfulUserRegistrationResponse(UserCredential userCredential) {
-			this.userCredential = userCredential;
+		public SuccessfulUserRegistrationResponse(CredentialRecord credentialRecord) {
+			this.credentialRecord = credentialRecord;
 		}
 
 		public boolean isSuccess() {

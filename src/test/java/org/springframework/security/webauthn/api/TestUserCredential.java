@@ -17,13 +17,11 @@
 package org.springframework.security.webauthn.api;
 
 import org.springframework.security.webauthn.management.ImmutablePublicKeyCose;
-import org.springframework.security.webauthn.management.ImmutableUserCredential;
-
-import java.util.Optional;
+import org.springframework.security.webauthn.management.ImmutableCredentialRecord;
 
 public class TestUserCredential {
-	public static ImmutableUserCredential.ImmutableUserCredentialBuilder userCredential() {
-		return ImmutableUserCredential.builder()
+	public static ImmutableCredentialRecord.ImmutableUserCredentialBuilder userCredential() {
+		return ImmutableCredentialRecord.builder()
 				.label("label")
 				.credentialId(Base64Url.fromBase64("NauGCN7bZ5jEBwThcde51g"))
 				.userEntityUserId(Base64Url.fromBase64("vKBFhsWT3gQnn-gHdT4VXIvjDkVXVYg5w8CLGHPunMM"))

@@ -17,7 +17,6 @@
 package org.springframework.security.webauthn.management;
 
 import org.springframework.security.webauthn.api.Base64Url;
-import org.springframework.security.webauthn.api.Base64Url;
 
 import java.util.List;
 
@@ -25,9 +24,9 @@ public interface UserCredentialRepository {
 
 	void delete(Base64Url credentialId);
 
-	void save(UserCredential userCredential);
+	void save(CredentialRecord credentialRecord);
 
-	UserCredential findByCredentialId(Base64Url credentialId);
+	CredentialRecord findByCredentialId(Base64Url credentialId);
 
-	List<UserCredential> findByUserId(Base64Url userId);
+	List<CredentialRecord> findByUserId(Base64Url userId);
 }

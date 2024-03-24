@@ -16,7 +16,6 @@
 
 package org.springframework.security.web.webauthn.registration;
 
-import com.fasterxml.jackson.databind.Module;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.http.HttpServletResponse;
 import org.junit.jupiter.api.BeforeEach;
@@ -33,12 +32,10 @@ import org.springframework.mock.web.MockServletContext;
 import org.springframework.security.webauthn.api.TestPublicKeyCredentialCreationOptions;
 import org.springframework.security.webauthn.api.TestUserCredential;
 import org.springframework.security.webauthn.api.PublicKeyCredentialCreationOptions;
-import org.springframework.security.webauthn.management.ImmutableUserCredential;
+import org.springframework.security.webauthn.management.ImmutableCredentialRecord;
 import org.springframework.security.webauthn.management.UserCredentialRepository;
 import org.springframework.security.webauthn.management.WebAuthnRelyingPartyOperations;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-
-import java.util.ServiceLoader;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
@@ -74,29 +71,29 @@ class WebAuthnRegistrationFilterTests {
 	private MockHttpServletResponse response = new MockHttpServletResponse();
 
 	private static final String REGISTRATION_REQUEST_BODY = """
-		{
-			"publicKey": {
+	{
+		"publicKey": {
 			"credential": {
 				"id": "dYF7EGnRFFIXkpXi9XU2wg",
 				"rawId": "dYF7EGnRFFIXkpXi9XU2wg",
 				"response": {
-				"attestationObject": "o2NmbXRkbm9uZWdhdHRTdG10oGhhdXRoRGF0YViUy9GqwTRaMpzVDbXq1dyEAXVOxrou08k22ggRC45MKNhdAAAAALraVWanqkAfvZZFYZpVEg0AEHWBexBp0RRSF5KV4vV1NsKlAQIDJiABIVggQjmrekPGzyqtoKK9HPUH-8Z2FLpoqkklFpFPQVICQ3IiWCD6I9Jvmor685fOZOyGXqUd87tXfvJk8rxj9OhuZvUALA",
-				"clientDataJSON": "eyJ0eXBlIjoid2ViYXV0aG4uY3JlYXRlIiwiY2hhbGxlbmdlIjoiSl9RTi10SFJYRWVKYjlNcUNrWmFPLUdOVmlibXpGVGVWMk43Z0ptQUdrQSIsIm9yaWdpbiI6Imh0dHBzOi8vZXhhbXBsZS5sb2NhbGhvc3Q6ODQ0MyIsImNyb3NzT3JpZ2luIjpmYWxzZX0",
-				"transports": [
-					"internal",
-					"hybrid"
-				],
-				"publicKeyAlgorithm": -7,
-				"publicKey": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEQjmrekPGzyqtoKK9HPUH-8Z2FLpoqkklFpFPQVICQ3L6I9Jvmor685fOZOyGXqUd87tXfvJk8rxj9OhuZvUALA",
-				"authenticatorData": "y9GqwTRaMpzVDbXq1dyEAXVOxrou08k22ggRC45MKNhdAAAAALraVWanqkAfvZZFYZpVEg0AEHWBexBp0RRSF5KV4vV1NsKlAQIDJiABIVggQjmrekPGzyqtoKK9HPUH-8Z2FLpoqkklFpFPQVICQ3IiWCD6I9Jvmor685fOZOyGXqUd87tXfvJk8rxj9OhuZvUALA"
+					"attestationObject": "o2NmbXRkbm9uZWdhdHRTdG10oGhhdXRoRGF0YViUy9GqwTRaMpzVDbXq1dyEAXVOxrou08k22ggRC45MKNhdAAAAALraVWanqkAfvZZFYZpVEg0AEHWBexBp0RRSF5KV4vV1NsKlAQIDJiABIVggQjmrekPGzyqtoKK9HPUH-8Z2FLpoqkklFpFPQVICQ3IiWCD6I9Jvmor685fOZOyGXqUd87tXfvJk8rxj9OhuZvUALA",
+					"clientDataJSON": "eyJ0eXBlIjoid2ViYXV0aG4uY3JlYXRlIiwiY2hhbGxlbmdlIjoiSl9RTi10SFJYRWVKYjlNcUNrWmFPLUdOVmlibXpGVGVWMk43Z0ptQUdrQSIsIm9yaWdpbiI6Imh0dHBzOi8vZXhhbXBsZS5sb2NhbGhvc3Q6ODQ0MyIsImNyb3NzT3JpZ2luIjpmYWxzZX0",
+					"transports": [
+						"internal",
+						"hybrid"
+					],
+					"publicKeyAlgorithm": -7,
+					"publicKey": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEQjmrekPGzyqtoKK9HPUH-8Z2FLpoqkklFpFPQVICQ3L6I9Jvmor685fOZOyGXqUd87tXfvJk8rxj9OhuZvUALA",
+					"authenticatorData": "y9GqwTRaMpzVDbXq1dyEAXVOxrou08k22ggRC45MKNhdAAAAALraVWanqkAfvZZFYZpVEg0AEHWBexBp0RRSF5KV4vV1NsKlAQIDJiABIVggQjmrekPGzyqtoKK9HPUH-8Z2FLpoqkklFpFPQVICQ3IiWCD6I9Jvmor685fOZOyGXqUd87tXfvJk8rxj9OhuZvUALA"
 				},
 				"type": "public-key",
 				"clientExtensionResults": {},
 				"authenticatorAttachment": "platform"
 			},
 			"label": "1password"
-			}
 		}
+	}
 	""";
 
 	private WebAuthnRegistrationFilter filter;
@@ -163,7 +160,7 @@ class WebAuthnRegistrationFilterTests {
 				.createPublicKeyCredentialCreationOptions()
 				.build();
 		given(this.creationOptionsRepository.load(any())).willReturn(creationOptions);
-		ImmutableUserCredential userCredential = TestUserCredential
+		ImmutableCredentialRecord userCredential = TestUserCredential
 			.userCredential()
 			.build();
 		given(this.operations.registerCredential(any())).willReturn(userCredential);

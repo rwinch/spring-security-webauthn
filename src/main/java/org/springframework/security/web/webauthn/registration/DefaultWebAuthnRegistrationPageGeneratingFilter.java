@@ -28,7 +28,7 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.security.web.util.matcher.RequestMatcher;
 import org.springframework.security.webauthn.api.PublicKeyCredentialUserEntity;
 import org.springframework.security.webauthn.management.PublicKeyCredentialUserEntityRepository;
-import org.springframework.security.webauthn.management.UserCredential;
+import org.springframework.security.webauthn.management.CredentialRecord;
 import org.springframework.security.webauthn.management.UserCredentialRepository;
 import org.springframework.util.Assert;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -92,14 +92,14 @@ public class DefaultWebAuthnRegistrationPageGeneratingFilter extends OncePerRequ
 
 	private String passkeyRows(String username, Map<String,Object> baseContext) {
 		PublicKeyCredentialUserEntity userEntity = this.userEntities.findByUsername(username);
-		List<UserCredential> credentials = userEntity == null ? Collections.emptyList() : this.userCredentials.findByUserId(userEntity.getId());
+		List<CredentialRecord> credentials = userEntity == null ? Collections.emptyList() : this.userCredentials.findByUserId(userEntity.getId());
 		if (credentials.isEmpty()) {
 			return """
 				<tr><td colspan="4">No Passkeys</td></tr>
 				""";
 		}
 		String html = "";
-		for (UserCredential credential : credentials) {
+		for (CredentialRecord credential : credentials) {
 			Map<String, Object> context = new HashMap<>(baseContext);
 			context.put("label", HtmlUtils.htmlEscape(credential.getLabel()));
 			context.put("created", credential.getCreated());
