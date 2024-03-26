@@ -110,7 +110,7 @@ class Webauthn4jRelyingPartyOperationsTests {
 	 */
 	@Test
 	void registerCredentialWhenClientDataJSONDoesNotMatchHash() {
-		this.rpOperations = new YubicoWebAuthnRelyingPartyOperations(new MapPublicKeyCredentialUserEntityRepository(), this.credentials, PublicKeyCredentialRpEntity.builder()
+		this.rpOperations = new Webauthn4JRelyingPartyOperations(new MapPublicKeyCredentialUserEntityRepository(), this.credentials, PublicKeyCredentialRpEntity.builder()
 				.id("invalid")
 				.name("Spring Security Relying Party")
 				.build(),

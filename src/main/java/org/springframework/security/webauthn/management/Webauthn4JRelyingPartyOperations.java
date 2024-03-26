@@ -170,6 +170,8 @@ public class Webauthn4JRelyingPartyOperations implements WebAuthnRelyingPartyOpe
 				.backupEligible(authData.isFlagBE())
 				.backupState(authData.isFlagBS())
 				.label(publicKey.getLabel())
+				.attestationClientDataJSON(credential.getResponse().getClientDataJSON())
+				.attestationObject(credential.getResponse().getAttestationObject())
 				.build();
 		this.userCredentials.save(userCredential);
 		return userCredential;

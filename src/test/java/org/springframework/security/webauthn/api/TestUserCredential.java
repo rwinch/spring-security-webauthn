@@ -20,12 +20,12 @@ import org.springframework.security.webauthn.management.ImmutablePublicKeyCose;
 import org.springframework.security.webauthn.management.ImmutableCredentialRecord;
 
 public class TestUserCredential {
-	public static ImmutableCredentialRecord.ImmutableUserCredentialBuilder userCredential() {
+	public static ImmutableCredentialRecord.ImmutableCredentialRecordBuilder userCredential() {
 		return ImmutableCredentialRecord.builder()
 				.label("label")
 				.credentialId(Base64Url.fromBase64("NauGCN7bZ5jEBwThcde51g"))
 				.userEntityUserId(Base64Url.fromBase64("vKBFhsWT3gQnn-gHdT4VXIvjDkVXVYg5w8CLGHPunMM"))
-				.publicKeyCose(ImmutablePublicKeyCose.fromBase64("pQECAyYgASFYIC7DAiV_trHFPjieOxXbec7q2taBcgLnIi19zrUwVhCdIlggvN6riHORK_velHcTLFK_uJhyKK0oBkJqzNqR2E-2xf8="))
+				.publicKey(ImmutablePublicKeyCose.fromBase64("pQECAyYgASFYIC7DAiV_trHFPjieOxXbec7q2taBcgLnIi19zrUwVhCdIlggvN6riHORK_velHcTLFK_uJhyKK0oBkJqzNqR2E-2xf8="))
 				.backupEligible(true)
 				.backupState(true);
 	}

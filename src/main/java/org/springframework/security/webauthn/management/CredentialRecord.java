@@ -80,7 +80,7 @@ public interface CredentialRecord {
 	 * 	flag is the same as the BE flag in authData.
 	 * @return
 	 */
-	boolean isBackupElgible();
+	boolean isBackupEligible();
 	/**
 	 * 	The <a href="https://www.w3.org/TR/webauthn-3/#abstract-opdef-credential-record-backupstate">backupState</a>
 	 * 	flag is the same as the BS flag in authData.
@@ -90,7 +90,7 @@ public interface CredentialRecord {
 
 	Base64Url getUserEntityUserId();
 
-	boolean isBackupEligible();
+
 
 	Base64Url getAttestationObject();
 
