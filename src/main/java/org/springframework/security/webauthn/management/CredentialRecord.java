@@ -36,7 +36,7 @@ public interface CredentialRecord {
 	 * The <a href="https://www.w3.org/TR/webauthn-3/#abstract-opdef-credential-record-type">credential.type</a>
 	 * @return
 	 */
-	PublicKeyCredentialType getType();
+	PublicKeyCredentialType getCredentialType();
 
 	/**
 	 * The <a href="https://www.w3.org/TR/webauthn-3/#abstract-opdef-credential-record-id">credential.id</a>.
@@ -50,7 +50,7 @@ public interface CredentialRecord {
 	 * @return
 	 */
 	// FIXME: Change type so it includes the COSE and may (later?) include other parsed properties
-	PublicKeyCose getPublicKeyCose();
+	PublicKeyCose getPublicKey();
 
 	/**
 	 * The <a href="https://www.w3.org/TR/webauthn-3/#abstract-opdef-credential-record-signcount">authData.signCount</a>
@@ -89,6 +89,12 @@ public interface CredentialRecord {
 	boolean isBackupState();
 
 	Base64Url getUserEntityUserId();
+
+	boolean isBackupEligible();
+
+	Base64Url getAttestationObject();
+
+	Base64Url getAttestationClientDataJSON();
 
 	String getLabel();
 

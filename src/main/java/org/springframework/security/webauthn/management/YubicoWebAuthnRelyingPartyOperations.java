@@ -218,7 +218,7 @@ public class YubicoWebAuthnRelyingPartyOperations implements WebAuthnRelyingPart
 			RegisteredCredential.RegisteredCredentialBuilder builder = RegisteredCredential.builder()
 					.credentialId(YubicoConverter.convertByteArray(credential.getCredentialId()))
 					.userHandle(YubicoConverter.convertByteArray(credential.getUserEntityUserId()))
-					.publicKeyCose(new ByteArray(credential.getPublicKeyCose().getBytes()))
+					.publicKeyCose(new ByteArray(credential.getPublicKey().getBytes()))
 					.signatureCount(credential.getSignatureCount());
 			credential.getBackupEligible().map(builder::backupEligible);
 			credential.getBackupState().map(builder::backupState);

@@ -22,17 +22,15 @@ import com.webauthn4j.authenticator.AuthenticatorImpl;
 import com.webauthn4j.converter.util.CborConverter;
 import com.webauthn4j.converter.util.ObjectConverter;
 import com.webauthn4j.data.*;
-import com.webauthn4j.data.attestation.authenticator.AAGUID;
+import com.webauthn4j.data.attestation.AttestationObject;
 import com.webauthn4j.data.attestation.authenticator.AttestedCredentialData;
 import com.webauthn4j.data.attestation.authenticator.AuthenticatorData;
-import com.webauthn4j.data.attestation.authenticator.COSEKey;
 import com.webauthn4j.data.client.Origin;
 import com.webauthn4j.data.client.challenge.Challenge;
 import com.webauthn4j.data.client.challenge.DefaultChallenge;
 import com.webauthn4j.data.extension.authenticator.RegistrationExtensionAuthenticatorOutput;
 import com.webauthn4j.server.ServerProperty;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.webauthn.api.*;
 import org.springframework.security.webauthn.api.AttestationConveyancePreference;
 import org.springframework.security.webauthn.api.AuthenticatorAssertionResponse;
 import org.springframework.security.webauthn.api.AuthenticatorAttestationResponse;
@@ -47,6 +45,7 @@ import org.springframework.security.webauthn.api.PublicKeyCredentialRpEntity;
 import org.springframework.security.webauthn.api.PublicKeyCredentialUserEntity;
 import org.springframework.security.webauthn.api.ResidentKeyRequirement;
 import org.springframework.security.webauthn.api.UserVerificationRequirement;
+import org.springframework.security.webauthn.api.*;
 
 import java.time.Duration;
 import java.util.*;
@@ -150,19 +149,21 @@ public class Webauthn4JRelyingPartyOperations implements WebAuthnRelyingPartyOpe
 		RegistrationParameters registrationParameters = new RegistrationParameters(serverProperty, userVerificationRequired);
 
 		RegistrationData registrationData = this.webAuthnManager.validate(webauthn4jRegistrationRequest, registrationParameters);
-		AuthenticatorData<RegistrationExtensionAuthenticatorOutput> authenticatorData = registrationData.getAttestationObject().getAuthenticatorData();
+		AuthenticatorData<RegistrationExtensionAuthenticatorOutput> authData = registrationData.getAttestationObject().getAuthenticatorData();
 
 		CborConverter cborConverter = new ObjectConverter().getCborConverter();
-		byte[] coseKey = cborConverter.writeValueAsBytes(authenticatorData.getAttestedCredentialData().getCOSEKey());
-
+		byte[] coseKey = cborConverter.writeValueAsBytes(authData.getAttestedCredentialData().getCOSEKey());
 		ImmutableCredentialRecord userCredential = ImmutableCredentialRecord.builder()
-				.label(publicKey.getLabel())
-				.credentialId(credential.getRawId())
 				.userEntityUserId(creationOptions.getUser().getId())
-				.publicKeyCose(new ImmutablePublicKeyCose(coseKey))
-				.backupEligible(authenticatorData.isFlagBE())
-				.backupState(authenticatorData.isFlagBS())
+				.credentialType(credential.getType())
+				.credentialId(credential.getRawId())
+				.publicKey(new ImmutablePublicKeyCose(coseKey))
+				.signatureCount(authData.getSignCount())
+				.uvInitialized(authData.isFlagUV())
 				.transports(convertTransports(registrationData.getTransports()))
+				.backupEligible(authData.isFlagBE())
+				.backupState(authData.isFlagBS())
+				.label(publicKey.getLabel())
 				.build();
 		this.userCredentials.save(userCredential);
 		return userCredential;
@@ -198,13 +199,15 @@ public class Webauthn4JRelyingPartyOperations implements WebAuthnRelyingPartyOpe
 		AuthenticatorAssertionResponse assertionResponse = request.getPublicKey().getResponse();
 		Base64Url keyId = request.getPublicKey().getRawId();
 		CredentialRecord credentialRecord = this.userCredentials.findByCredentialId(keyId);
+
 		CborConverter cborConverter = new ObjectConverter().getCborConverter();
-		COSEKey coseKey = cborConverter.readValue(credentialRecord.getPublicKeyCose().getBytes(), COSEKey.class);
+		AttestationObject attestationObject = cborConverter.readValue(credentialRecord.getAttestationObject().getBytes(), AttestationObject.class);
 
-		AttestedCredentialData data = new AttestedCredentialData(AAGUID.NULL, keyId.getBytes(), coseKey);
+		AuthenticatorData<RegistrationExtensionAuthenticatorOutput> authData = attestationObject.getAuthenticatorData();
+		AttestedCredentialData data = new AttestedCredentialData(authData.getAttestedCredentialData().getAaguid(), keyId.getBytes(), authData.getAttestedCredentialData().getCOSEKey());
 
 
-		Authenticator authenticator = new AuthenticatorImpl(data, null, credentialRecord.getSignatureCount());
+		Authenticator authenticator = new AuthenticatorImpl(data, attestationObject.getAttestationStatement(), credentialRecord.getSignatureCount());
 		if (authenticator == null) {
 			throw new IllegalStateException("No authenticator found");
 		}
@@ -213,7 +216,7 @@ public class Webauthn4JRelyingPartyOperations implements WebAuthnRelyingPartyOpe
 		// FIXME: should populate this
 		byte[] tokenBindingId = null /* set tokenBindingId */;
 		ServerProperty serverProperty = new ServerProperty(origins,requestOptions.getRpId(), challenge, tokenBindingId);
-		boolean userVerificationRequired = false;
+		boolean userVerificationRequired = request.getRequestOptions().getUserVerification() == UserVerificationRequirement.REQUIRED;
 
 		com.webauthn4j.data.AuthenticationRequest authenticationRequest = new com.webauthn4j.data.AuthenticationRequest(
 				request.getPublicKey().getId().getBytes(),
@@ -224,8 +227,14 @@ public class Webauthn4JRelyingPartyOperations implements WebAuthnRelyingPartyOpe
 		AuthenticationParameters authenticationParameters = new AuthenticationParameters(serverProperty, authenticator, userVerificationRequired);
 
 		AuthenticationData authenticationData = this.webAuthnManager.validate(authenticationRequest, authenticationParameters);
-		authenticator.setCounter(authenticationData.getAuthenticatorData().getSignCount());
-		// FIXME: update the counter in the repository
+
+		long updatedSignCount = authenticationData.getAuthenticatorData().getSignCount();
+		if (updatedSignCount != credentialRecord.getSignatureCount()) {
+			ImmutableCredentialRecord updatedRecord = ImmutableCredentialRecord.fromCredentialRecord(credentialRecord)
+					.signatureCount(updatedSignCount)
+					.build();
+			this.userCredentials.save(updatedRecord);
+		}
 
 		return this.userEntities.findUsernameByUserEntityId(credentialRecord.getUserEntityUserId());
 	}

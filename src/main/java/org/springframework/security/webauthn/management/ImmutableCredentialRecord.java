@@ -17,10 +17,7 @@
 package org.springframework.security.webauthn.management;
 
 import java.time.Instant;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import java.util.Optional;
 
 import org.springframework.security.webauthn.api.Base64Url;
 import org.springframework.security.webauthn.api.AuthenticatorTransport;
@@ -28,19 +25,27 @@ import org.springframework.security.webauthn.api.PublicKeyCredentialType;
 
 public class ImmutableCredentialRecord implements CredentialRecord {
 
+	private final PublicKeyCredentialType credentialType;
+
 	private final Base64Url credentialId;
 
 	private final Base64Url userEntityUserId;
 
-	private final PublicKeyCose publicKeyCose;
+	private final PublicKeyCose publicKey;
 
 	private final long signatureCount;
+
+	private final boolean uvInitialized;
+
+	private final List<AuthenticatorTransport> transports;
 
 	private final boolean backupEligible;
 
 	private final boolean backupState;
 
-	private final boolean uvInitialized;
+	private final Base64Url attestationObject;
+
+	private final Base64Url attestationClientDataJSON;
 
 	private final Instant created;
 
@@ -48,30 +53,26 @@ public class ImmutableCredentialRecord implements CredentialRecord {
 
 	private final String label;
 
-	private final List<AuthenticatorTransport> transports;
-
-	private ImmutableCredentialRecord(Base64Url credentialId, Base64Url userEntityUserId,
-									  PublicKeyCose publicKeyCose, long signatureCount,
-									  Optional<Boolean> backupEligible, Optional<Boolean> backupState,
-									  Instant created,
-									  Instant lastUsed,
-									  String label,
-									  List<AuthenticatorTransport> transports) {
+	private ImmutableCredentialRecord(PublicKeyCredentialType credentialType, Base64Url credentialId, Base64Url userEntityUserId, PublicKeyCose publicKey, long signatureCount, boolean uvInitialized, List<AuthenticatorTransport> transports, boolean backupEligible, boolean backupState, Base64Url attestationObject, Base64Url attestationClientDataJSON, Instant created, Instant lastUsed, String label) {
+		this.credentialType = credentialType;
 		this.credentialId = credentialId;
 		this.userEntityUserId = userEntityUserId;
-		this.publicKeyCose = publicKeyCose;
+		this.publicKey = publicKey;
 		this.signatureCount = signatureCount;
+		this.uvInitialized = uvInitialized;
+		this.transports = transports;
 		this.backupEligible = backupEligible;
 		this.backupState = backupState;
+		this.attestationObject = attestationObject;
+		this.attestationClientDataJSON = attestationClientDataJSON;
 		this.created = created;
 		this.lastUsed = lastUsed;
 		this.label = label;
-		this.transports = transports;
 	}
 
 	@Override
-	public PublicKeyCredentialType getType() {
-		return PublicKeyCredentialType.PUBLIC_KEY;
+	public PublicKeyCredentialType getCredentialType() {
+		return this.credentialType;
 	}
 
 	@Override
@@ -85,8 +86,8 @@ public class ImmutableCredentialRecord implements CredentialRecord {
 	}
 
 	@Override
-	public PublicKeyCose getPublicKeyCose() {
-		return this.publicKeyCose;
+	public PublicKeyCose getPublicKey() {
+		return this.publicKey;
 	}
 
 	@Override
@@ -94,136 +95,168 @@ public class ImmutableCredentialRecord implements CredentialRecord {
 		return this.signatureCount;
 	}
 
+	@Override
+	public boolean isUvInitialized() {
+		return this.uvInitialized;
+	}
 
 	@Override
 	public List<AuthenticatorTransport> getTransports() {
 		return this.transports;
 	}
 
+	@Override
+	public boolean isBackupEligible() {
+		return this.backupEligible;
+	}
+
+	@Override
+	public boolean isBackupState() {
+		return this.backupState;
+	}
+
+	@Override
+	public Base64Url getAttestationObject() {
+		return this.attestationObject;
+	}
+
+	@Override
+	public Base64Url getAttestationClientDataJSON() {
+		return this.attestationClientDataJSON;
+	}
+
+	@Override
 	public Instant getCreated() {
-		return created;
+		return this.created;
 	}
 
+	@Override
 	public Instant getLastUsed() {
-		return lastUsed;
+		return this.lastUsed;
 	}
 
+	@Override
 	public String getLabel() {
-		return label;
+		return this.label;
 	}
 
-	@Override
-	public int hashCode() {
-		return this.credentialId.hashCode();
+	public static ImmutableCredentialRecordBuilder builder() {
+		return new ImmutableCredentialRecordBuilder();
 	}
 
-	@Override
-	public boolean equals(Object obj) {
-		if (obj instanceof CredentialRecord credential) {
-			return getCredentialId().equals(credential.getCredentialId());
-		}
-		return false;
+	public static ImmutableCredentialRecordBuilder fromCredentialRecord(CredentialRecord credentialRecord) {
+		return new ImmutableCredentialRecordBuilder(credentialRecord);
 	}
 
-	public static ImmutableUserCredentialBuilder builder() {
-		return new ImmutableUserCredentialBuilder();
-	}
-
-	public static ImmutableUserCredentialBuilder fromUserCredential(CredentialRecord credentialRecord) {
-		return builder()
-				.credentialId(credentialRecord.getCredentialId())
-				.userEntityUserId(credentialRecord.getUserEntityUserId())
-				.publicKeyCose(credentialRecord.getPublicKeyCose())
-				.signatureCount(credentialRecord.getSignatureCount())
-				.backupEligible(credentialRecord.getBackupEligible())
-				.backupState(credentialRecord.getBackupState())
-				.created(credentialRecord.getCreated())
-				.lastUsed(credentialRecord.getLastUsed())
-				.label(credentialRecord.getLabel())
-				.transports(credentialRecord.getTransports());
-	}
-
-	public static final class ImmutableUserCredentialBuilder {
-
-		private List<AuthenticatorTransport> transports = new ArrayList<>();
+	public static final class ImmutableCredentialRecordBuilder {
+		private PublicKeyCredentialType credentialType;
 		private Base64Url credentialId;
 		private Base64Url userEntityUserId;
-		private PublicKeyCose publicKeyCose;
+		private PublicKeyCose publicKey;
 		private long signatureCount;
-		private Optional<Boolean> backupEligible = Optional.empty();
-		private Optional<Boolean> backupState = Optional.empty();
+		private boolean uvInitialized;
+		private List<AuthenticatorTransport> transports;
+		private boolean backupEligible;
+		private boolean backupState;
+		private Base64Url attestationObject;
+		private Base64Url attestationClientDataJSON;
 		private Instant created = Instant.now();
 		private Instant lastUsed = Instant.now();
 		private String label;
 
-		private ImmutableUserCredentialBuilder() {
+		private ImmutableCredentialRecordBuilder() {
 		}
 
-		public ImmutableUserCredentialBuilder transports(List<AuthenticatorTransport> transports) {
-			this.transports = transports;
+		private ImmutableCredentialRecordBuilder(CredentialRecord other) {
+			this.credentialType = other.getCredentialType();
+			this.credentialId = other.getCredentialId();
+			this.userEntityUserId = other.getUserEntityUserId();
+			this.publicKey = other.getPublicKey();
+			this.signatureCount = other.getSignatureCount();
+			this.uvInitialized = other.isUvInitialized();
+			this.transports = other.getTransports();
+			this.backupEligible = other.isBackupEligible();
+			this.backupState = other.isBackupState();
+			this.attestationObject = other.getAttestationObject();
+			this.attestationClientDataJSON = other.getAttestationClientDataJSON();
+			this.created = other.getCreated();
+			this.lastUsed = other.getLastUsed();
+			this.label = other.getLabel();
+		}
+
+
+		public ImmutableCredentialRecordBuilder credentialType(PublicKeyCredentialType credentialType) {
+			this.credentialType = credentialType;
 			return this;
 		}
 
-		public ImmutableUserCredentialBuilder transports(AuthenticatorTransport... transports) {
-			return transports(Arrays.asList(transports));
-		}
-
-		public ImmutableUserCredentialBuilder credentialId(Base64Url credentialId) {
+		public ImmutableCredentialRecordBuilder credentialId(Base64Url credentialId) {
 			this.credentialId = credentialId;
 			return this;
 		}
 
-		public ImmutableUserCredentialBuilder userEntityUserId(Base64Url userEntityUserId) {
+		public ImmutableCredentialRecordBuilder userEntityUserId(Base64Url userEntityUserId) {
 			this.userEntityUserId = userEntityUserId;
 			return this;
 		}
 
-		public ImmutableUserCredentialBuilder publicKeyCose(PublicKeyCose publicKeyCose) {
-			this.publicKeyCose = publicKeyCose;
+		public ImmutableCredentialRecordBuilder publicKey(PublicKeyCose publicKey) {
+			this.publicKey = publicKey;
 			return this;
 		}
 
-		public ImmutableUserCredentialBuilder signatureCount(long signatureCount) {
+		public ImmutableCredentialRecordBuilder signatureCount(long signatureCount) {
 			this.signatureCount = signatureCount;
 			return this;
 		}
 
-		public ImmutableUserCredentialBuilder backupEligible(Optional<Boolean> backupEligible) {
+		public ImmutableCredentialRecordBuilder uvInitialized(boolean uvInitialized) {
+			this.uvInitialized = uvInitialized;
+			return this;
+		}
+
+		public ImmutableCredentialRecordBuilder transports(List<AuthenticatorTransport> transports) {
+			this.transports = transports;
+			return this;
+		}
+
+		public ImmutableCredentialRecordBuilder backupEligible(boolean backupEligible) {
 			this.backupEligible = backupEligible;
 			return this;
 		}
 
-		public ImmutableUserCredentialBuilder backupEligible(boolean backupEligible) {
-			return backupEligible(Optional.of(backupEligible));
-		}
-
-		public ImmutableUserCredentialBuilder backupState(Optional<Boolean> backupState) {
+		public ImmutableCredentialRecordBuilder backupState(boolean backupState) {
 			this.backupState = backupState;
 			return this;
 		}
 
-		public ImmutableUserCredentialBuilder backupState(boolean backupState) {
-			return backupState(Optional.of(backupState));
+		public ImmutableCredentialRecordBuilder attestationObject(Base64Url attestationObject) {
+			this.attestationObject = attestationObject;
+			return this;
 		}
 
-		public ImmutableUserCredentialBuilder created(Instant created) {
+		public ImmutableCredentialRecordBuilder attestationClientDataJSON(Base64Url attestationClientDataJSON) {
+			this.attestationClientDataJSON = attestationClientDataJSON;
+			return this;
+		}
+
+		public ImmutableCredentialRecordBuilder created(Instant created) {
 			this.created = created;
 			return this;
 		}
 
-		public ImmutableUserCredentialBuilder lastUsed(Instant lastUsed) {
+		public ImmutableCredentialRecordBuilder lastUsed(Instant lastUsed) {
 			this.lastUsed = lastUsed;
 			return this;
 		}
 
-		public ImmutableUserCredentialBuilder label(String label) {
+		public ImmutableCredentialRecordBuilder label(String label) {
 			this.label = label;
 			return this;
 		}
 
 		public ImmutableCredentialRecord build() {
-			return new ImmutableCredentialRecord(this.credentialId, this.userEntityUserId, this.publicKeyCose, this.signatureCount, this.backupEligible, this.backupState, this.created, this.lastUsed, this.label, this.transports);
+			return new ImmutableCredentialRecord(credentialType, credentialId, userEntityUserId, publicKey, signatureCount, uvInitialized, transports, backupEligible, backupState, attestationObject, attestationClientDataJSON, created, lastUsed, label);
 		}
 	}
-
 }

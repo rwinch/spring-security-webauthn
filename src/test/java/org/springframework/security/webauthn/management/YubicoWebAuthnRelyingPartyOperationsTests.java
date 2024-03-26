@@ -248,7 +248,7 @@ class YubicoWebAuthnRelyingPartyOperationsTests {
 		RelyingPartyRegistrationRequest registrationRequest = new RelyingPartyRegistrationRequest(options, rpPublicKey);
 
 		CredentialRecord credentialRecord = this.rpOperations.registerCredential(registrationRequest);
-		System.out.println(Base64.getUrlEncoder().encodeToString(credentialRecord.getPublicKeyCose().getBytes()));
+		System.out.println(Base64.getUrlEncoder().encodeToString(credentialRecord.getPublicKey().getBytes()));
 		// FIXME: Implement this test
 //		assertThatThrownBy(() -> this.rpOperations.registerCredential(registrationRequest)).hasMessageContaining("Flag combination is invalid");
 	}

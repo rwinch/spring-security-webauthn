@@ -62,7 +62,7 @@ class Webauthn4jRelyingPartyOperationsTests {
 		RelyingPartyRegistrationRequest registrationRequest = new RelyingPartyRegistrationRequest(options, new RelyingPartyPublicKey(publicKey, this.label));
 
 		CredentialRecord credentialRecord = this.rpOperations.registerCredential(registrationRequest);
-		String base64String = Base64.getUrlEncoder().encodeToString(credentialRecord.getPublicKeyCose().getBytes());
+		String base64String = Base64.getUrlEncoder().encodeToString(credentialRecord.getPublicKey().getBytes());
 		assertThat(base64String).isEqualTo("pQECAyYgASFYIOB5K59pGxpqWU3aA2VDa6aaPdzqoEFezjc1b6ORiwhXIlggq3-siEIIKtgX2Z7WsMUbAQW1hvxVpGAKFPMj4qUvuYY=");
 	}
 
