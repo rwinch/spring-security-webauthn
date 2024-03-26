@@ -21,7 +21,11 @@ import com.webauthn4j.authenticator.Authenticator;
 import com.webauthn4j.authenticator.AuthenticatorImpl;
 import com.webauthn4j.converter.util.CborConverter;
 import com.webauthn4j.converter.util.ObjectConverter;
-import com.webauthn4j.data.*;
+import com.webauthn4j.data.AuthenticationData;
+import com.webauthn4j.data.AuthenticationParameters;
+import com.webauthn4j.data.RegistrationData;
+import com.webauthn4j.data.RegistrationParameters;
+import com.webauthn4j.data.RegistrationRequest;
 import com.webauthn4j.data.attestation.AttestationObject;
 import com.webauthn4j.data.attestation.authenticator.AttestedCredentialData;
 import com.webauthn4j.data.attestation.authenticator.AuthenticatorData;
@@ -48,18 +52,21 @@ import org.springframework.security.webauthn.api.PublicKeyCredentialRpEntity;
 import org.springframework.security.webauthn.api.PublicKeyCredentialUserEntity;
 import org.springframework.security.webauthn.api.ResidentKeyRequirement;
 import org.springframework.security.webauthn.api.UserVerificationRequirement;
+import org.springframework.util.Assert;
 
 import java.time.Duration;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 public class Webauthn4JRelyingPartyOperations implements WebAuthnRelyingPartyOperations {
 
-	private final WebAuthnManager webAuthnManager = createManager();
+	private WebAuthnManager webAuthnManager = WebAuthnManager.createNonStrictWebAuthnManager();
+
+	private ObjectConverter objectConverter = new ObjectConverter();
 
 	private final PublicKeyCredentialUserEntityRepository userEntities;
 
@@ -69,6 +76,10 @@ public class Webauthn4JRelyingPartyOperations implements WebAuthnRelyingPartyOpe
 
 	private final PublicKeyCredentialRpEntity rp;
 
+	private Consumer<PublicKeyCredentialCreationOptions.PublicKeyCredentialCreationOptionsBuilder> customizeCreationOptions = defaultCreationOptions();
+
+	private Consumer<PublicKeyCredentialRequestOptions.PublicKeyCredentialRequestOptionsBuilder> customizeRequestOptions = defaultRequestOptions();
+
 	public Webauthn4JRelyingPartyOperations(PublicKeyCredentialUserEntityRepository userEntities, UserCredentialRepository userCredentials, PublicKeyCredentialRpEntity rpEntity, Set<String> allowedOrigins) {
 		this.userEntities = userEntities;
 		this.userCredentials = userCredentials;
@@ -76,37 +87,36 @@ public class Webauthn4JRelyingPartyOperations implements WebAuthnRelyingPartyOpe
 		this.allowedOrigins = allowedOrigins;
 	}
 
+	public void setWebAuthnManager(WebAuthnManager webAuthnManager) {
+		Assert.notNull(webAuthnManager, "webAuthnManager cannot be null");
+		this.webAuthnManager = webAuthnManager;
+	}
+
+	public void setCustomizeRequestOptions(Consumer<PublicKeyCredentialRequestOptions.PublicKeyCredentialRequestOptionsBuilder> customizeRequestOptions) {
+		Assert.notNull(customizeRequestOptions, "customizeRequestOptions cannot be null");
+		this.customizeRequestOptions = customizeRequestOptions;
+	}
+
+	public void setCustomizeCreationOptions(Consumer<PublicKeyCredentialCreationOptions.PublicKeyCredentialCreationOptionsBuilder> customizeCreationOptions) {
+		Assert.notNull(customizeCreationOptions, "customizeCreationOptions must not be null");
+		this.customizeCreationOptions = customizeCreationOptions;
+	}
+
 	@Override
 	public PublicKeyCredentialCreationOptions createPublicKeyCredentialCreationOptions(Authentication authentication) {
-// FIXME: exclude ids is it from attStmt?
-		// FIXME: Remove hard coded values
-		AuthenticatorSelectionCriteria authenticatorSelection = AuthenticatorSelectionCriteria.builder()
-//				.authenticatorAttachment(AuthenticatorAttachment.CROSS_PLATFORM) // specifying this just limits to either platform or cross platform
-				.userVerification(UserVerificationRequirement.PREFERRED)
-				.residentKey(ResidentKeyRequirement.REQUIRED) // REQUIRED
-				.build();
-
-
 		PublicKeyCredentialUserEntity userEntity = findUserEntityOrCreateAndSave(authentication.getName());
 		List<CredentialRecord> credentialRecords = this.userCredentials.findByUserId(userEntity.getId());
-		DefaultAuthenticationExtensionsClientInputs clientInputs = new DefaultAuthenticationExtensionsClientInputs();
-		clientInputs.add(ImmutableAuthenticationExtensionsClientInput.credProps);
+
 		PublicKeyCredentialCreationOptions options = PublicKeyCredentialCreationOptions.builder()
-				.attestation(AttestationConveyancePreference.DIRECT)
 				.user(userEntity)
-				.pubKeyCredParams(PublicKeyCredentialParameters.ES256, PublicKeyCredentialParameters.RS256)
-				.authenticatorSelection(authenticatorSelection)
-				.challenge(Base64Url.random())
 				.rp(this.rp)
-				.extensions(clientInputs)
-				.excludeCredentials(convertCredentials(credentialRecords))
-				.timeout(Duration.ofMinutes(10))
+				.excludeCredentials(credentialDescriptors(credentialRecords))
+				.customize(this.customizeCreationOptions)
 				.build();
 		return options;
 	}
 
-
-	private List<PublicKeyCredentialDescriptor> convertCredentials(List<CredentialRecord> credentialRecords) {
+	private static List<PublicKeyCredentialDescriptor> credentialDescriptors(List<CredentialRecord> credentialRecords) {
 		List result = new ArrayList();
 		for (CredentialRecord credentialRecord : credentialRecords) {
 			Base64Url id = Base64Url.fromBase64(credentialRecord.getCredentialId().getBytesAsBase64());
@@ -157,7 +167,7 @@ public class Webauthn4JRelyingPartyOperations implements WebAuthnRelyingPartyOpe
 		RegistrationData registrationData = this.webAuthnManager.validate(webauthn4jRegistrationRequest, registrationParameters);
 		AuthenticatorData<RegistrationExtensionAuthenticatorOutput> authData = registrationData.getAttestationObject().getAuthenticatorData();
 
-		CborConverter cborConverter = new ObjectConverter().getCborConverter();
+		CborConverter cborConverter = this.objectConverter.getCborConverter();
 		byte[] coseKey = cborConverter.writeValueAsBytes(authData.getAttestedCredentialData().getCOSEKey());
 		ImmutableCredentialRecord userCredential = ImmutableCredentialRecord.builder()
 				.userEntityUserId(creationOptions.getUser().getId())
@@ -192,13 +202,22 @@ public class Webauthn4JRelyingPartyOperations implements WebAuthnRelyingPartyOpe
 
 	@Override
 	public PublicKeyCredentialRequestOptions createCredentialRequestOptions(Authentication authentication) {
+		PublicKeyCredentialUserEntity userEntity = findUserEntityOrCreateAndSave(authentication.getName());
+		List<CredentialRecord> credentialRecords = this.userCredentials.findByUserId(userEntity.getId());
 		return PublicKeyCredentialRequestOptions.builder()
-				.allowCredentials(Arrays.asList())
+				.allowCredentials(credentialDescriptors(credentialRecords))
 				.challenge(Base64Url.random())
 				.rpId(this.rp.getId())
-				.timeout(Duration.ofMinutes(5))
-				.userVerification(UserVerificationRequirement.REQUIRED)
+				.customize(this.customizeRequestOptions)
 				.build();
+	}
+
+	private static Consumer<PublicKeyCredentialRequestOptions.PublicKeyCredentialRequestOptionsBuilder> defaultRequestOptions() {
+		return options -> {
+			options
+				.timeout(Duration.ofMinutes(5))
+				.userVerification(UserVerificationRequirement.REQUIRED);
+		};
 	}
 
 	@Override
@@ -208,7 +227,7 @@ public class Webauthn4JRelyingPartyOperations implements WebAuthnRelyingPartyOpe
 		Base64Url keyId = request.getPublicKey().getRawId();
 		CredentialRecord credentialRecord = this.userCredentials.findByCredentialId(keyId);
 
-		CborConverter cborConverter = new ObjectConverter().getCborConverter();
+		CborConverter cborConverter = this.objectConverter.getCborConverter();
 		AttestationObject attestationObject = cborConverter.readValue(credentialRecord.getAttestationObject().getBytes(), AttestationObject.class);
 
 		AuthenticatorData<RegistrationExtensionAuthenticatorOutput> authData = attestationObject.getAuthenticatorData();
@@ -247,13 +266,24 @@ public class Webauthn4JRelyingPartyOperations implements WebAuthnRelyingPartyOpe
 		return this.userEntities.findUsernameByUserEntityId(credentialRecord.getUserEntityUserId());
 	}
 
-	private static WebAuthnManager createManager() {
+	private static Consumer<PublicKeyCredentialCreationOptions.PublicKeyCredentialCreationOptionsBuilder> defaultCreationOptions() {
+		return options -> {
+			AuthenticatorSelectionCriteria authenticatorSelection = AuthenticatorSelectionCriteria.builder()
+					.userVerification(UserVerificationRequirement.PREFERRED)
+					.residentKey(ResidentKeyRequirement.REQUIRED)
+					.build();
 
-		ObjectConverter objectConverter = new ObjectConverter();
-		// com.webauthn4j.WebAuthnManager.createNonStrictWebAuthnManager() returns a com.webauthn4j.WebAuthnManager instance
-		// which doesn't validate an attestation statement. It is recommended configuration for most web application.
-		// If you are building enterprise web application and need to validate the attestation statement, use the constructor of
-		// WebAuthnRegistrationContextValidator and provide validators you like
-		return com.webauthn4j.WebAuthnManager.createNonStrictWebAuthnManager(objectConverter);
+			DefaultAuthenticationExtensionsClientInputs clientInputs = new DefaultAuthenticationExtensionsClientInputs();
+			clientInputs.add(ImmutableAuthenticationExtensionsClientInput.credProps);
+
+			options
+					.attestation(AttestationConveyancePreference.DIRECT)
+					.pubKeyCredParams(PublicKeyCredentialParameters.ES256, PublicKeyCredentialParameters.RS256)
+					.authenticatorSelection(authenticatorSelection)
+					.challenge(Base64Url.random())
+					.extensions(clientInputs)
+					.timeout(Duration.ofMinutes(10));
+		};
 	}
+
 }

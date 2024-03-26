@@ -20,6 +20,7 @@ import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.function.Consumer;
 
 /**
  * Represents the
@@ -195,6 +196,11 @@ public class PublicKeyCredentialCreationOptions {
 
 		public PublicKeyCredentialCreationOptionsBuilder extensions(AuthenticationExtensionsClientInputs extensions) {
 			this.extensions = extensions;
+			return this;
+		}
+
+		public PublicKeyCredentialCreationOptionsBuilder customize(Consumer<PublicKeyCredentialCreationOptionsBuilder> customizer) {
+			customizer.accept(this);
 			return this;
 		}
 

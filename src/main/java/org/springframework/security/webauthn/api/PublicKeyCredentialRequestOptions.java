@@ -21,6 +21,7 @@ import org.springframework.util.Assert;
 import java.time.Duration;
 import java.util.Collections;
 import java.util.List;
+import java.util.function.Consumer;
 
 public class PublicKeyCredentialRequestOptions {
 	private final Base64Url challenge;
@@ -113,6 +114,11 @@ public class PublicKeyCredentialRequestOptions {
 
 		public PublicKeyCredentialRequestOptionsBuilder extensions(AuthenticationExtensionsClientInputs extensions) {
 			this.extensions = extensions;
+			return this;
+		}
+
+		public PublicKeyCredentialRequestOptionsBuilder customize(Consumer<PublicKeyCredentialRequestOptionsBuilder> customizer) {
+			customizer.accept(this);
 			return this;
 		}
 
