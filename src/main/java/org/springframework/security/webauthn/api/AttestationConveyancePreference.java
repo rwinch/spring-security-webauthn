@@ -17,6 +17,7 @@
 package org.springframework.security.webauthn.api;
 
 /**
+ * FIXME: Perhaps not an enum? It is deliberately not referenced see https://www.w3.org/TR/webauthn-3/#sct-domstring-backwards-compatibility
  * <a href="https://www.w3.org/TR/webauthn-3/#webauthn-relying-party">WebAuthn Relying Parties</a> may use
  * <a href="https://www.w3.org/TR/webauthn-3/#enumdef-attestationconveyancepreference">AttestationConveyancePreference</a>
  * to specify their preference regarding attestation conveyance during credential generation.
