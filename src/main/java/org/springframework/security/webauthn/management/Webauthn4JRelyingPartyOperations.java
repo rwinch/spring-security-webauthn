@@ -36,6 +36,9 @@ import org.springframework.security.webauthn.api.AuthenticatorAssertionResponse;
 import org.springframework.security.webauthn.api.AuthenticatorAttestationResponse;
 import org.springframework.security.webauthn.api.AuthenticatorSelectionCriteria;
 import org.springframework.security.webauthn.api.AuthenticatorTransport;
+import org.springframework.security.webauthn.api.Base64Url;
+import org.springframework.security.webauthn.api.DefaultAuthenticationExtensionsClientInputs;
+import org.springframework.security.webauthn.api.ImmutableAuthenticationExtensionsClientInput;
 import org.springframework.security.webauthn.api.PublicKeyCredential;
 import org.springframework.security.webauthn.api.PublicKeyCredentialCreationOptions;
 import org.springframework.security.webauthn.api.PublicKeyCredentialDescriptor;
@@ -45,10 +48,13 @@ import org.springframework.security.webauthn.api.PublicKeyCredentialRpEntity;
 import org.springframework.security.webauthn.api.PublicKeyCredentialUserEntity;
 import org.springframework.security.webauthn.api.ResidentKeyRequirement;
 import org.springframework.security.webauthn.api.UserVerificationRequirement;
-import org.springframework.security.webauthn.api.*;
 
 import java.time.Duration;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 public class Webauthn4JRelyingPartyOperations implements WebAuthnRelyingPartyOperations {
