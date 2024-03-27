@@ -24,10 +24,17 @@ import org.springframework.security.webauthn.api.AuthenticationExtensionsClientI
 
 import java.io.IOException;
 
-public class AuthenticationExtensionsClientInputsSerializer extends StdSerializer<AuthenticationExtensionsClientInputs> {
+/**
+ * Provides Jackson serialization of {@link AuthenticationExtensionsClientInputs}.
+ * @since 6.3
+ * @author Rob Winch
+ */
+class AuthenticationExtensionsClientInputsSerializer extends StdSerializer<AuthenticationExtensionsClientInputs> {
 
-
-	public AuthenticationExtensionsClientInputsSerializer() {
+	/**
+	 * Creates a new instance.
+	 */
+	AuthenticationExtensionsClientInputsSerializer() {
 		super(AuthenticationExtensionsClientInputs.class);
 	}
 

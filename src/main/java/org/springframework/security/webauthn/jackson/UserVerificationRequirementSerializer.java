@@ -19,14 +19,21 @@ package org.springframework.security.webauthn.jackson;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.ser.std.StdSerializer;
-import org.springframework.security.webauthn.api.ResidentKeyRequirement;
 import org.springframework.security.webauthn.api.UserVerificationRequirement;
 
 import java.io.IOException;
 
-public class UserVerificationRequirementSerializer extends StdSerializer<UserVerificationRequirement> {
+/**
+ * Jackson serializer for {@link UserVerificationRequirement}
+ * @since 6.3
+ * @author Rob Winch
+ */
+class UserVerificationRequirementSerializer extends StdSerializer<UserVerificationRequirement> {
 
-	public UserVerificationRequirementSerializer() {
+	/**
+	 * Creates a new instance.
+	 */
+	UserVerificationRequirementSerializer() {
 		super(UserVerificationRequirement.class);
 	}
 

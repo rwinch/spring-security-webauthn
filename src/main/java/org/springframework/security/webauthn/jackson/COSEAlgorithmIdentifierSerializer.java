@@ -24,9 +24,15 @@ import org.springframework.security.webauthn.api.PublicKeyCredentialType;
 
 import java.io.IOException;
 
-public class COSEAlgorithmIdentifierSerializer extends StdSerializer<COSEAlgorithmIdentifier> {
+/**
+ * Jackson serializer for {@link COSEAlgorithmIdentifier}
+ * @since 6.3
+ * @author Rob Winch
+ */
 
-	public COSEAlgorithmIdentifierSerializer() {
+class COSEAlgorithmIdentifierSerializer extends StdSerializer<COSEAlgorithmIdentifier> {
+
+	COSEAlgorithmIdentifierSerializer() {
 		super(COSEAlgorithmIdentifier.class);
 	}
 

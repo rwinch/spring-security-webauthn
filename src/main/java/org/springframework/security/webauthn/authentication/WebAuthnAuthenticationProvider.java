@@ -23,14 +23,33 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.webauthn.management.AuthenticationRequest;
 import org.springframework.security.webauthn.management.WebAuthnRelyingPartyOperations;
+import org.springframework.util.Assert;
 
+/**
+ * An {@link AuthenticationProvider} that uses {@link WebAuthnRelyingPartyOperations} for authentication using an
+ * {@link WebAuthnAuthenticationRequestToken}. First
+ * {@link WebAuthnRelyingPartyOperations#authenticate(AuthenticationRequest)} is invoked. The result is a username
+ * passed into {@link UserDetailsService}. The {@link UserDetails} is used to create an {@link Authentication}.
+ *
+ * @since 6.3
+ * @author Rob Winch
+ */
 public class WebAuthnAuthenticationProvider implements AuthenticationProvider {
+
 	private final WebAuthnRelyingPartyOperations relyingPartyOperations;
 
 	private final UserDetailsService userDetailsService;
 
+	/**
+	 * Creates a new instance.
+	 * @param relyingPartyOperations the {@link WebAuthnRelyingPartyOperations} to use. Cannot be null.
+	 * @param userDetailsService the {@link UserDetailsService} to use. Cannot be null.
+	 */
 	public WebAuthnAuthenticationProvider(WebAuthnRelyingPartyOperations relyingPartyOperations, UserDetailsService userDetailsService) {
+		Assert.notNull(relyingPartyOperations, "relyingPartyOperations cannot be null");
+		Assert.notNull(userDetailsService, "userDetailsService cannot be null");
 		this.relyingPartyOperations = relyingPartyOperations;
 		this.userDetailsService = userDetailsService;
 	}
@@ -52,4 +71,5 @@ public class WebAuthnAuthenticationProvider implements AuthenticationProvider {
 	public boolean supports(Class<?> authentication) {
 		return WebAuthnAuthenticationRequestToken.class.isAssignableFrom(authentication);
 	}
+
 }

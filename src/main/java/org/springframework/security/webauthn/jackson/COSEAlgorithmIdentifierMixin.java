@@ -19,6 +19,11 @@ package org.springframework.security.webauthn.jackson;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
+/**
+ * Jackson mixin for {@link org.springframework.security.webauthn.api.COSEAlgorithmIdentifier}
+ * @since 6.3
+ * @author Rob Winch
+ */
 @JsonSerialize(using = COSEAlgorithmIdentifierSerializer.class)
 @JsonDeserialize(using = COSEAlgorithmIdentifierDeserializer.class)
 abstract class COSEAlgorithmIdentifierMixin {

@@ -20,14 +20,21 @@ import com.fasterxml.jackson.core.JacksonException;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
-import org.springframework.security.webauthn.api.COSEAlgorithmIdentifier;
 import org.springframework.security.webauthn.api.PublicKeyCredentialType;
 
 import java.io.IOException;
 
-public class PublicKeyCredentialTypeDeserializer extends StdDeserializer<PublicKeyCredentialType> {
+/**
+ * Jackson deserializer for {@link PublicKeyCredentialType}
+ * @since 6.3
+ * @author Rob Winch
+ */
+class PublicKeyCredentialTypeDeserializer extends StdDeserializer<PublicKeyCredentialType> {
 
-	public PublicKeyCredentialTypeDeserializer() {
+	/**
+	 * Creates a new instance.
+	 */
+	PublicKeyCredentialTypeDeserializer() {
 		super(PublicKeyCredentialType.class);
 	}
 

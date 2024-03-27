@@ -24,8 +24,17 @@ import org.springframework.security.webauthn.api.CredentialPropertiesOutput;
 
 import java.io.IOException;
 
-public class CredentialPropertiesOutputDeserializer extends StdDeserializer<CredentialPropertiesOutput> {
-	public CredentialPropertiesOutputDeserializer() {
+/**
+ * Jackson deserializer for {@link CredentialPropertiesOutput}
+ * @since 6.3
+ * @author Rob Winch
+ */
+class CredentialPropertiesOutputDeserializer extends StdDeserializer<CredentialPropertiesOutput> {
+
+	/**
+	 * Create a new instance.
+	 */
+	CredentialPropertiesOutputDeserializer() {
 		super(CredentialPropertiesOutput.class);
 	}
 

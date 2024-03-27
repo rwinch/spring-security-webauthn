@@ -25,9 +25,14 @@ import org.springframework.security.webauthn.api.COSEAlgorithmIdentifier;
 
 import java.io.IOException;
 
-public class COSEAlgorithmIdentifierDeserializer extends StdDeserializer<COSEAlgorithmIdentifier> {
+/**
+ * Jackson serializer for {@link COSEAlgorithmIdentifier}
+ * @since 6.3
+ * @author Rob Winch
+ */
+class COSEAlgorithmIdentifierDeserializer extends StdDeserializer<COSEAlgorithmIdentifier> {
 
-	public COSEAlgorithmIdentifierDeserializer() {
+	COSEAlgorithmIdentifierDeserializer() {
 		super(COSEAlgorithmIdentifier.class);
 	}
 

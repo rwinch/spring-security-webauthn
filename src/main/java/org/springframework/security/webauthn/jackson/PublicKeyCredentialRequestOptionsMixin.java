@@ -21,6 +21,11 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 import java.time.Duration;
 
+/**
+ * Jackson mixin for {@link org.springframework.security.webauthn.api.PublicKeyCredentialRequestOptions}
+ * @since 6.3
+ * @author Rob Winch
+ */
 @JsonInclude(content = JsonInclude.Include.NON_NULL)
 class PublicKeyCredentialRequestOptionsMixin {
 	@JsonSerialize(using = DurationSerializer.class)

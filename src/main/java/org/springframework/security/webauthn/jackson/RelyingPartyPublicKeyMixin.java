@@ -20,6 +20,11 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import org.springframework.security.webauthn.api.AuthenticatorAttestationResponse;
 import org.springframework.security.webauthn.api.PublicKeyCredential;
 
+/**
+ * Jackson mixin for {@link org.springframework.security.webauthn.management.RelyingPartyPublicKey}
+ * @since 6.3
+ * @author Rob Winch
+ */
 abstract class RelyingPartyPublicKeyMixin {
 	RelyingPartyPublicKeyMixin(@JsonProperty("credential") PublicKeyCredential<AuthenticatorAttestationResponse> credential, @JsonProperty("label") String label) {
 	}

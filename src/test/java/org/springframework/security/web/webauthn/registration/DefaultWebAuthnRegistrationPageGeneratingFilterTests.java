@@ -82,7 +82,11 @@ class DefaultWebAuthnRegistrationPageGeneratingFilterTests {
 
 	@Test
 	void doFilterThenCsrfDataAttrsPresent() throws Exception {
-		PublicKeyCredentialUserEntity userEntity = new PublicKeyCredentialUserEntity("user", Base64Url.random(), "User");
+		PublicKeyCredentialUserEntity userEntity = PublicKeyCredentialUserEntity.builder()
+				.name("user")
+				.id(Base64Url.random())
+				.displayName("User")
+				.build();
 		when(this.userEntities.findByUsername(any())).thenReturn(userEntity);
 		when(this.userCredentials.findByUserId(userEntity.getId())).thenReturn(Arrays.asList(TestUserCredential.userCredential().build()));
 		String body = bodyAsString(matchingRequest());
@@ -100,7 +104,11 @@ class DefaultWebAuthnRegistrationPageGeneratingFilterTests {
 
 	@Test
 	void doFilterWhenNoCredentialsThenNoResults() throws Exception {
-		PublicKeyCredentialUserEntity userEntity = new PublicKeyCredentialUserEntity("user", Base64Url.random(), "User");
+		PublicKeyCredentialUserEntity userEntity = PublicKeyCredentialUserEntity.builder()
+				.name("user")
+				.id(Base64Url.random())
+				.displayName("User")
+				.build();
 		when(this.userEntities.findByUsername(any())).thenReturn(userEntity);
 		when(this.userCredentials.findByUserId(userEntity.getId())).thenReturn(Collections.emptyList());
 		String body = bodyAsString(matchingRequest());
@@ -110,7 +118,11 @@ class DefaultWebAuthnRegistrationPageGeneratingFilterTests {
 
 	@Test
 	void doFilterWhenResultsThenDisplayed() throws Exception {
-		PublicKeyCredentialUserEntity userEntity = new PublicKeyCredentialUserEntity("user", Base64Url.random(), "User");
+		PublicKeyCredentialUserEntity userEntity = PublicKeyCredentialUserEntity.builder()
+				.name("user")
+				.id(Base64Url.random())
+				.displayName("User")
+				.build();
 		ImmutableCredentialRecord credential = TestUserCredential.userCredential().build();
 		when(this.userEntities.findByUsername(any())).thenReturn(userEntity);
 		when(this.userCredentials.findByUserId(userEntity.getId())).thenReturn(Arrays.asList(credential));
@@ -127,7 +139,11 @@ class DefaultWebAuthnRegistrationPageGeneratingFilterTests {
 		String label = "<script>alert('Hello');</script>";
 		String htmlEncodedLabel = HtmlUtils.htmlEscape(label);
 		assertThat(label).isNotEqualTo(htmlEncodedLabel);
-		PublicKeyCredentialUserEntity userEntity = new PublicKeyCredentialUserEntity("user", Base64Url.random(), "User");
+		PublicKeyCredentialUserEntity userEntity = PublicKeyCredentialUserEntity.builder()
+				.name("user")
+				.id(Base64Url.random())
+				.displayName("User")
+				.build();
 		ImmutableCredentialRecord credential = TestUserCredential.userCredential()
 			.label(label)
 			.build();
@@ -152,7 +168,11 @@ class DefaultWebAuthnRegistrationPageGeneratingFilterTests {
 
 	@Test
 	void doFilterWhenContextEmptyThenUrlsEmptyPrefix() throws Exception {
-		PublicKeyCredentialUserEntity userEntity = new PublicKeyCredentialUserEntity("user", Base64Url.random(), "User");
+		PublicKeyCredentialUserEntity userEntity = PublicKeyCredentialUserEntity.builder()
+				.name("user")
+				.id(Base64Url.random())
+				.displayName("User")
+				.build();
 		ImmutableCredentialRecord credential = TestUserCredential.userCredential().build();
 		when(this.userEntities.findByUsername(any())).thenReturn(userEntity);
 		when(this.userCredentials.findByUserId(userEntity.getId())).thenReturn(Arrays.asList(credential));
@@ -165,7 +185,11 @@ class DefaultWebAuthnRegistrationPageGeneratingFilterTests {
 
 	@Test
 	void doFilterWhenContextNotEmptyThenUrlsPrefixed() throws Exception {
-		PublicKeyCredentialUserEntity userEntity = new PublicKeyCredentialUserEntity("user", Base64Url.random(), "User");
+		PublicKeyCredentialUserEntity userEntity = PublicKeyCredentialUserEntity.builder()
+				.name("user")
+				.id(Base64Url.random())
+				.displayName("User")
+				.build();
 		ImmutableCredentialRecord credential = TestUserCredential.userCredential().build();
 		when(this.userEntities.findByUsername(any())).thenReturn(userEntity);
 		when(this.userCredentials.findByUserId(userEntity.getId())).thenReturn(Arrays.asList(credential));

@@ -23,10 +23,17 @@ import com.fasterxml.jackson.databind.ser.std.StdSerializer;
 import java.io.IOException;
 import java.time.Duration;
 
-public class DurationSerializer extends StdSerializer<Duration> {
+/**
+ * Jackson serializer for {@link Duration}
+ * @since 6.3
+ * @author Rob Winch
+ */
+class DurationSerializer extends StdSerializer<Duration> {
 
-
-	public DurationSerializer() {
+	/**
+	 * Creates an instance.
+	 */
+	DurationSerializer() {
 		super(Duration.class);
 	}
 

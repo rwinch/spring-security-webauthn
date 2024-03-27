@@ -21,14 +21,30 @@ import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.webauthn.management.AuthenticationRequest;
 import org.springframework.util.Assert;
 
+/**
+ * An {@link org.springframework.security.core.Authentication} used in {@link WebAuthnAuthenticationProvider} for
+ * authenticating via WebAuthn.
+ * @since 6.3
+ * @author Rob Winch
+ */
 public class WebAuthnAuthenticationRequestToken extends AbstractAuthenticationToken {
+
 	private final AuthenticationRequest webAuthnRequest;
 
+	/**
+	 * Creates a new instance.
+	 * @param webAuthnRequest the {@link AuthenticationRequest} to use for authentication. Cannot be null.
+	 */
 	public WebAuthnAuthenticationRequestToken(AuthenticationRequest webAuthnRequest) {
 		super(AuthorityUtils.NO_AUTHORITIES);
+		Assert.notNull(webAuthnRequest, "webAuthnRequest cannot be null");
 		this.webAuthnRequest = webAuthnRequest;
 	}
 
+	/**
+	 * Gets the {@link AuthenticationRequest}
+	 * @return the {@link AuthenticationRequest}
+	 */
 	public AuthenticationRequest getWebAuthnRequest() {
 		return this.webAuthnRequest;
 	}

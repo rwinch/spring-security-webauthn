@@ -24,9 +24,14 @@ import org.springframework.security.webauthn.api.ResidentKeyRequirement;
 
 import java.io.IOException;
 
-public class AttestationConveyancePreferenceSerializer extends StdSerializer<AttestationConveyancePreference> {
+/**
+ * Jackson serializer for {@link AttestationConveyancePreference}
+ * @since 6.3
+ * @author Rob Winch
+ */
+class AttestationConveyancePreferenceSerializer extends StdSerializer<AttestationConveyancePreference> {
 
-	public AttestationConveyancePreferenceSerializer() {
+	AttestationConveyancePreferenceSerializer() {
 		super(AttestationConveyancePreference.class);
 	}
 

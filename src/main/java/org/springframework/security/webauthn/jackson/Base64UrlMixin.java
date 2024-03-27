@@ -20,6 +20,11 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import org.springframework.security.webauthn.api.Base64Url;
 
+/**
+ * Jackson mixin for {@link org.springframework.security.webauthn.api.Base64Url}
+ * @since 6.3
+ * @author Rob Winch
+ */
 @JsonSerialize(using = Base64Serializer.class)
 class Base64UrlMixin {
 	@JsonCreator

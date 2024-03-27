@@ -24,7 +24,7 @@ import org.springframework.security.webauthn.api.AuthenticatorAttachment;
 
 import java.io.IOException;
 
-public class AuthenticatorAttachmentDeserializer extends StdDeserializer<AuthenticatorAttachment> {
+class AuthenticatorAttachmentDeserializer extends StdDeserializer<AuthenticatorAttachment> {
 
 	public AuthenticatorAttachmentDeserializer() {
 		super(AuthenticatorAttachment.class);

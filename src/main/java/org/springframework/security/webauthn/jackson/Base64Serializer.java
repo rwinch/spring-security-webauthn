@@ -23,10 +23,17 @@ import org.springframework.security.webauthn.api.Base64Url;
 
 import java.io.IOException;
 
-public class Base64Serializer extends StdSerializer<Base64Url> {
+/**
+ * Jackson serializer for {@link Base64Url}
+ * @since 6.3
+ * @author Rob Winch
+ */
+class Base64Serializer extends StdSerializer<Base64Url> {
 
-
-	public Base64Serializer() {
+	/**
+	 * Creates a new instance.
+	 */
+	Base64Serializer() {
 		super(Base64Url.class);
 	}
 

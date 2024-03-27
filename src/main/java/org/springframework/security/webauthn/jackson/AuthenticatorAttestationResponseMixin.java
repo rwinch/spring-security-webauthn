@@ -24,6 +24,11 @@ import org.springframework.security.webauthn.api.AuthenticatorTransport;
 
 import java.util.List;
 
+/**
+ * Jackson mixin for {@link org.springframework.security.webauthn.api.AuthenticatorAttestationResponse}
+ * @since 6.3
+ * @author Rob Winch
+ */
 @JsonDeserialize(builder = AuthenticatorAttestationResponse.AuthenticatorAttestationResponseBuilder.class) // FIXME: Externalize @JsonDeserialize
 class AuthenticatorAttestationResponseMixin {
 	@JsonPOJOBuilder(withPrefix = "")

@@ -28,9 +28,14 @@ import org.springframework.security.webauthn.api.PublicKeyCredentialType;
 
 import java.io.IOException;
 
-public class AuthenticatorTransportDeserializer extends StdDeserializer<AuthenticatorTransport> {
+/**
+ * Jackson deserializer for {@link AuthenticatorTransport}
+ * @since 6.3
+ * @author Rob Winch
+ */
+class AuthenticatorTransportDeserializer extends StdDeserializer<AuthenticatorTransport> {
 
-	public AuthenticatorTransportDeserializer() {
+	AuthenticatorTransportDeserializer() {
 		super(AuthenticatorTransport.class);
 	}
 

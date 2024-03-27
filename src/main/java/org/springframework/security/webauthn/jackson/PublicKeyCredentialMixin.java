@@ -20,6 +20,11 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 import org.springframework.security.webauthn.api.PublicKeyCredential;
 
+/**
+ * Jackson mixin for {@link org.springframework.security.webauthn.api.PublicKeyCredential}
+ * @since 6.3
+ * @author Rob Winch
+ */
 @JsonDeserialize(builder = PublicKeyCredential.PublicKeyCredentialBuilder.class)
 class PublicKeyCredentialMixin {
 

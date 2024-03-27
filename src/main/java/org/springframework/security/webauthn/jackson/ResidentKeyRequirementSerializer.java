@@ -23,9 +23,17 @@ import org.springframework.security.webauthn.api.ResidentKeyRequirement;
 
 import java.io.IOException;
 
-public class ResidentKeyRequirementSerializer extends StdSerializer<ResidentKeyRequirement> {
+/**
+ * Jackson serializer for {@link ResidentKeyRequirement}
+ * @since 6.3
+ * @author Rob Winch
+ */
+class ResidentKeyRequirementSerializer extends StdSerializer<ResidentKeyRequirement> {
 
-	public ResidentKeyRequirementSerializer() {
+	/**
+	 * Creates a new instance.
+	 */
+	ResidentKeyRequirementSerializer() {
 		super(ResidentKeyRequirement.class);
 	}
 

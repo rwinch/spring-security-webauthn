@@ -21,19 +21,28 @@ import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonToken;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
-import org.springframework.security.webauthn.api.AuthenticationExtensionsClientOutputs;
-import org.springframework.security.webauthn.api.CredentialPropertiesOutput;
-import org.springframework.security.webauthn.api.ImmutableAuthenticationExtensionsClientOutputs;
+import org.springframework.security.webauthn.api.*;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
-public class AuthenticationExtensionsClientOutputsDeserializer extends StdDeserializer<AuthenticationExtensionsClientOutputs> {
-	public AuthenticationExtensionsClientOutputsDeserializer() {
+/**
+ * Provides Jackson deserialization of {@link AuthenticationExtensionsClientOutputs}.
+ * @since 6.3
+ * @author Rob Winch
+ */
+class AuthenticationExtensionsClientOutputsDeserializer extends StdDeserializer<AuthenticationExtensionsClientOutputs> {
+	/**
+	 * Creates a new instance.
+	 */
+	AuthenticationExtensionsClientOutputsDeserializer() {
 		super(AuthenticationExtensionsClientOutputs.class);
 	}
+
 	@Override
 	public AuthenticationExtensionsClientOutputs deserialize(JsonParser parser, DeserializationContext ctxt) throws IOException, JacksonException {
-		ImmutableAuthenticationExtensionsClientOutputs result = new ImmutableAuthenticationExtensionsClientOutputs();
+		List<AuthenticationExtensionsClientOutput<?>> outputs = new ArrayList<>();
 		for (String key = parser.nextFieldName(); key != null; key = parser.nextFieldName()) {
 			JsonToken startObject = parser.nextValue();
 			if (startObject != JsonToken.START_OBJECT) {
@@ -41,7 +50,7 @@ public class AuthenticationExtensionsClientOutputsDeserializer extends StdDeseri
 			}
 			if (CredentialPropertiesOutput.EXTENSION_ID.equals(key)) {
 				CredentialPropertiesOutput output = parser.readValueAs(CredentialPropertiesOutput.class);
-				result.add(output);
+				outputs.add(output);
 			}
 			else {
 				throw new IllegalArgumentException("Cannot process extension with id " + key);
@@ -52,6 +61,6 @@ public class AuthenticationExtensionsClientOutputsDeserializer extends StdDeseri
 			}
 		}
 
-		return result;
+		return new ImmutableAuthenticationExtensionsClientOutputs(outputs);
 	}
 }

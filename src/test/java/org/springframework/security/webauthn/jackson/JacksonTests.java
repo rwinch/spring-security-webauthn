@@ -96,8 +96,7 @@ class JacksonTests {
 				}
 			}
 			""";
-		ImmutableAuthenticationExtensionsClientOutputs clientExtensionResults = new ImmutableAuthenticationExtensionsClientOutputs();
-		clientExtensionResults.add(new CredentialPropertiesOutput(false));
+		ImmutableAuthenticationExtensionsClientOutputs clientExtensionResults = new ImmutableAuthenticationExtensionsClientOutputs(new CredentialPropertiesOutput(false));
 
 		AuthenticationExtensionsClientOutputs outputs = this.mapper.readValue(json, AuthenticationExtensionsClientOutputs.class);
 		assertThat(outputs).usingRecursiveComparison().isEqualTo(clientExtensionResults);
@@ -115,8 +114,7 @@ class JacksonTests {
 				"label": "Cell Phone"
 			}
 			""";
-		ImmutableAuthenticationExtensionsClientOutputs clientExtensionResults = new ImmutableAuthenticationExtensionsClientOutputs();
-		clientExtensionResults.add(new CredentialPropertiesOutput(false));
+		ImmutableAuthenticationExtensionsClientOutputs clientExtensionResults = new ImmutableAuthenticationExtensionsClientOutputs(new CredentialPropertiesOutput(false));
 
 		ClassWithOutputsAndAnotherField expected = new ClassWithOutputsAndAnotherField();
 		expected.setClientOutputs(clientExtensionResults);
@@ -198,8 +196,7 @@ class JacksonTests {
 		PublicKeyCredential<AuthenticatorAttestationResponse> publicKeyCredential = this.mapper.readValue(PUBLIC_KEY_JSON, new TypeReference<PublicKeyCredential<AuthenticatorAttestationResponse>>() {
 		});
 
-		ImmutableAuthenticationExtensionsClientOutputs clientExtensionResults = new ImmutableAuthenticationExtensionsClientOutputs();
-		clientExtensionResults.add(new CredentialPropertiesOutput(false));
+		ImmutableAuthenticationExtensionsClientOutputs clientExtensionResults = new ImmutableAuthenticationExtensionsClientOutputs(new CredentialPropertiesOutput(false));
 
 		PublicKeyCredential<AuthenticatorAttestationResponse> expected = PublicKeyCredential.builder()
 				.id("AX6nVVERrH6opMafUGn3Z9EyNEy6cftfBKV_2YxYl1jdW8CSJxMKGXFV3bnrKTiMSJeInkG7C6B2lPt8E5i3KaM")
@@ -297,8 +294,7 @@ class JacksonTests {
 		WebAuthnRegistrationFilter.WebAuthnRegistrationRequest registrationRequest = this.mapper.readValue(json, WebAuthnRegistrationFilter.WebAuthnRegistrationRequest.class);
 
 
-		ImmutableAuthenticationExtensionsClientOutputs clientExtensionResults = new ImmutableAuthenticationExtensionsClientOutputs();
-		clientExtensionResults.add(new CredentialPropertiesOutput(false));
+		ImmutableAuthenticationExtensionsClientOutputs clientExtensionResults = new ImmutableAuthenticationExtensionsClientOutputs(new CredentialPropertiesOutput(false));
 
 		PublicKeyCredential<AuthenticatorAttestationResponse> credential = PublicKeyCredential.builder()
 				.id("AX6nVVERrH6opMafUGn3Z9EyNEy6cftfBKV_2YxYl1jdW8CSJxMKGXFV3bnrKTiMSJeInkG7C6B2lPt8E5i3KaM")

@@ -19,13 +19,19 @@ package org.springframework.security.webauthn.jackson;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.ser.std.StdSerializer;
+import org.springframework.security.webauthn.api.AttestationConveyancePreference;
 import org.springframework.security.webauthn.api.AuthenticatorAttachment;
 
 import java.io.IOException;
 
-public class AuthenticatorAttachmentSerializer extends StdSerializer<AuthenticatorAttachment> {
+/**
+ * Jackson serializer for {@link AuthenticatorAttachment}
+ * @since 6.3
+ * @author Rob Winch
+ */
+class AuthenticatorAttachmentSerializer extends StdSerializer<AuthenticatorAttachment> {
 
-	public AuthenticatorAttachmentSerializer() {
+	AuthenticatorAttachmentSerializer() {
 		super(AuthenticatorAttachment.class);
 	}
 
