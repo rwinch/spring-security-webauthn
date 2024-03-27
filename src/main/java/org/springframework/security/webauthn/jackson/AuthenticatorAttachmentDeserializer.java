@@ -26,7 +26,7 @@ import java.io.IOException;
 
 class AuthenticatorAttachmentDeserializer extends StdDeserializer<AuthenticatorAttachment> {
 
-	public AuthenticatorAttachmentDeserializer() {
+	AuthenticatorAttachmentDeserializer() {
 		super(AuthenticatorAttachment.class);
 	}
 
