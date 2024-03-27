@@ -1,6 +1,5 @@
-
 /*
- * Copyright 2002-2023 the original author or authors.
+ * Copyright 2002-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,14 +16,29 @@
 
 package org.springframework.security.webauthn.api;
 
+/**
+ * <a href="https://www.w3.org/TR/webauthn-3/#sctn-alg-identifier">COSEAlgorithmIdentifier</a> is used to identify a
+ * cryptographic algorithm.
+ *
+ * @since 6.3
+ * @author Rob Winch
+ */
 public enum COSEAlgorithmIdentifier {
+
 	EdDSA(-8),
+
 	ES256(-7),
+
 	ES384(-35),
+
 	ES512(-36),
+
 	RS256(-257),
+
 	RS384(-258),
+
 	RS512(-259),
+
 	RS1(-65535);
 
 	private final long value;

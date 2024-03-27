@@ -1,6 +1,5 @@
-
 /*
- * Copyright 2002-2023 the original author or authors.
+ * Copyright 2002-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,11 +16,25 @@
 
 package org.springframework.security.webauthn.api;
 
+/**
+ * <a href="https://www.w3.org/TR/webauthn-3/#dictdef-credentialpropertiesoutput">CredentialPropertiesOutput</a> is the
+ * Client extension output.
+ * @since 6.3
+ * @author Rob Winch
+ */
 public class CredentialPropertiesOutput implements AuthenticationExtensionsClientOutput<CredentialPropertiesOutput.ExtensionOutput> {
+
+	/**
+	 * The extension id.
+	 */
 	public static final String EXTENSION_ID = "credProps";
 
 	private final ExtensionOutput output;
 
+	/**
+	 * Creates a new instance.
+	 * @param rk is the resident key is discoverable
+	 */
 	public CredentialPropertiesOutput(boolean rk) {
 		this.output = new ExtensionOutput(rk);
 	}
@@ -36,15 +49,30 @@ public class CredentialPropertiesOutput implements AuthenticationExtensionsClien
 		return this.output;
 	}
 
+	/**
+	 * The output for {@link CredentialPropertiesOutput}
+	 * @see #getOutput()
+	 * @since 6.3
+	 * @author Rob Winch
+	 */
 	public static final class ExtensionOutput {
+
 		private final boolean rk;
 
-		public ExtensionOutput(boolean rk) {
+		private ExtensionOutput(boolean rk) {
 			this.rk = rk;
 		}
 
+		/**
+		 * This OPTIONAL property, known abstractly as the resident key credential property (i.e., client-side
+		 * discoverable credential property), is a Boolean value indicating whether the PublicKeyCredential returned as
+		 * a result of a registration ceremony is a client-side discoverable credential.
+		 * @return is resident key credential property
+		 */
 		public boolean isRk() {
 			return this.rk;
 		}
+
 	}
+
 }

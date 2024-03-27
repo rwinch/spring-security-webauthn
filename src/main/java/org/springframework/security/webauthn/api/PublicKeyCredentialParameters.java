@@ -18,7 +18,10 @@
 package org.springframework.security.webauthn.api;
 
 /**
- * https://www.w3.org/TR/webauthn-3/#dictdef-publickeycredentialparameters
+ * The <a href="https://www.w3.org/TR/webauthn-3/#dictdef-publickeycredentialparameters">PublicKeyCredentialParameters</a>
+ * is used to supply additional parameters when creating a new credential.
+ * @since 6.3
+ * @author Rob Winch
  */
 public class PublicKeyCredentialParameters {
 	public static final PublicKeyCredentialParameters EdDSA = new PublicKeyCredentialParameters(COSEAlgorithmIdentifier.EdDSA);
@@ -44,19 +47,32 @@ public class PublicKeyCredentialParameters {
 	 */
 	private final COSEAlgorithmIdentifier alg;
 
-	public PublicKeyCredentialParameters(COSEAlgorithmIdentifier alg) {
+	private PublicKeyCredentialParameters(COSEAlgorithmIdentifier alg) {
 		this(PublicKeyCredentialType.PUBLIC_KEY, alg);
 	}
-	public PublicKeyCredentialParameters(PublicKeyCredentialType type, COSEAlgorithmIdentifier alg) {
+
+	private PublicKeyCredentialParameters(PublicKeyCredentialType type, COSEAlgorithmIdentifier alg) {
 		this.type = type;
 		this.alg = alg;
 	}
 
+	/**
+	 * The <a href="https://www.w3.org/TR/webauthn-3/#dom-publickeycredentialparameters-type">type</a> property member
+	 * specifies the type of credential to be created.
+	 * @return the type
+	 */
 	public PublicKeyCredentialType getType() {
 		return this.type;
 	}
 
+	/**
+	 * The <a href="https://www.w3.org/TR/webauthn-3/#dom-publickeycredentialparameters-alg">alg</a> member specifies
+	 * the cryptographic signature algorithm with which the newly generated credential will be used, and thus also the
+	 * type of asymmetric key pair to be generated, e.g., RSA or Elliptic Curve.
+	 * @return the algorithm
+	 */
 	public COSEAlgorithmIdentifier getAlg() {
 		return this.alg;
 	}
+
 }

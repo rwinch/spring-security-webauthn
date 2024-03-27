@@ -16,7 +16,13 @@
 
 package org.springframework.security.webauthn.api;
 
-// https://www.w3.org/TR/webauthn-3/#dictdef-publickeycredentialuserentity
+/**
+ * <a href="https://www.w3.org/TR/webauthn-3/#dictdef-publickeycredentialuserentity">PublicKeyCredentialUserEntity</a>
+ * is used to supply additional <a href="https://www.w3.org/TR/webauthn-3/#user-account">user account</a> attributes
+ * when creating a new credential.
+ * @since 6.3
+ * @author Rob Winch
+ */
 public class PublicKeyCredentialUserEntity {
 	/**
 	 * When inherited by PublicKeyCredentialUserEntity, it is a human-palatable identifier for a user account. It is
@@ -77,28 +83,53 @@ public class PublicKeyCredentialUserEntity {
 	 */
 	private final String displayName;
 
-	public PublicKeyCredentialUserEntity(String name, Base64Url id, String displayName) {
+	private PublicKeyCredentialUserEntity(String name, Base64Url id, String displayName) {
 		this.name = name;
 		this.id = id;
 		this.displayName = displayName;
 	}
 
+	/**
+	 * The <a href="https://www.w3.org/TR/webauthn-3/#dom-publickeycredentialentity-name">name</a> property is a
+	 * human-palatable identifier for a user account.
+	 * @return the name
+	 */
 	public String getName() {
 		return this.name;
 	}
 
+	/**
+	 * The <a href="https://www.w3.org/TR/webauthn-3/#dom-publickeycredentialuserentity-id">id</a> is the user handle of
+	 * the user account. A user handle is an opaque byte sequence with a maximum size of 64 bytes, and is not meant to
+	 * be displayed to the user.
+	 * @return the user handle of the user account
+	 */
 	public Base64Url getId() {
 		return this.id;
 	}
 
+	/**
+	 * The <a href="https://www.w3.org/TR/webauthn-3/#dom-publickeycredentialuserentity-displayname">displayName</a> is
+	 * a human-palatable name for the user account, intended only for display.
+	 * @return the display name
+	 */
 	public String getDisplayName() {
 		return this.displayName;
 	}
 
+	/**
+	 * Create a new {@link PublicKeyCredentialUserEntityBuilder}
+	 * @return a new {@link PublicKeyCredentialUserEntityBuilder}
+	 */
 	public static PublicKeyCredentialUserEntityBuilder builder() {
 		return new PublicKeyCredentialUserEntityBuilder();
 	}
 
+	/**
+	 * Used to build {@link PublicKeyCredentialUserEntity}.
+	 * @since 6.3
+	 * @author Rob Winch
+	 */
 	public static final class PublicKeyCredentialUserEntityBuilder {
 		private String name;
 		private Base64Url id;
@@ -107,23 +138,44 @@ public class PublicKeyCredentialUserEntity {
 		private PublicKeyCredentialUserEntityBuilder() {
 		}
 
+		/**
+		 * Sets the {@link #getName()} property.
+		 * @param name the name
+		 * @return the {@link PublicKeyCredentialUserEntityBuilder}
+		 */
 		public PublicKeyCredentialUserEntityBuilder name(String name) {
 			this.name = name;
 			return this;
 		}
 
+		/**
+		 * Sets the {@link #getId()} property.
+		 * @param id the id
+		 * @return the {@link PublicKeyCredentialUserEntityBuilder}
+		 */
 		public PublicKeyCredentialUserEntityBuilder id(Base64Url id) {
 			this.id = id;
 			return this;
 		}
 
+		/**
+		 * Sets the {@link #getDisplayName()} property.
+		 * @param displayName the display name
+		 * @return the {@link PublicKeyCredentialUserEntityBuilder}
+		 */
 		public PublicKeyCredentialUserEntityBuilder displayName(String displayName) {
 			this.displayName = displayName;
 			return this;
 		}
 
+		/**
+		 * Builds a new {@link PublicKeyCredentialUserEntity}
+		 * @return a new {@link PublicKeyCredentialUserEntity}
+		 */
 		public PublicKeyCredentialUserEntity build() {
-			return new PublicKeyCredentialUserEntity(name, id, displayName);
+			return new PublicKeyCredentialUserEntity(this.name, this.id, this.displayName);
 		}
+
 	}
+
 }

@@ -1,6 +1,5 @@
-
 /*
- * Copyright 2002-2023 the original author or authors.
+ * Copyright 2002-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,59 +16,31 @@
 
 package org.springframework.security.webauthn.api;
 
+/**
+ * The <a href="https://www.w3.org/TR/webauthn-3/#enumdef-residentkeyrequirement">ResidentKeyRequirement</a> describes
+ * the Relying Partys requirements for client-side discoverable credentials.
+ * @since 6.3
+ * @author Rob Winch
+ */
 public enum ResidentKeyRequirement {
 
 	/**
-	 * The client and authenticator will try to create a server-side credential if possible, and a
-	 * discoverable credential (passkey) otherwise.
-	 *
-	 * @see <a
-	 * href="https://www.w3.org/TR/2021/REC-webauthn-2-20210408/#enum-residentKeyRequirement">§5.4.6.
-	 * Resident Key Requirement Enumeration (enum ResidentKeyRequirement)</a>
-	 * @see <a
-	 * href="https://www.w3.org/TR/2021/REC-webauthn-2-20210408/#client-side-discoverable-credential">Client-side
-	 * discoverable Credential</a>
-	 * @see <a
-	 * href="https://www.w3.org/TR/2021/REC-webauthn-2-20210408/#server-side-credential">Server-side
-	 * Credential</a>
-	 * @see <a href="https://passkeys.dev/docs/reference/terms/#passkey">Passkey</a> in <a
-	 * href="https://passkeys.dev">passkeys.dev</a> reference
+	 * The <a href="https://www.w3.org/TR/webauthn-3/#dom-residentkeyrequirement-discouraged">discouraged</a> requirement
+	 * indicates that the Relying Party prefers creating a server-side credential, but will accept a client-side
+	 * discoverable credential.
 	 */
 	DISCOURAGED("discouraged"),
 
 	/**
-	 * The client and authenticator will try to create a discoverable credential (passkey) if
-	 * possible, and a server-side credential otherwise.
-	 *
-	 * @see <a
-	 * href="https://www.w3.org/TR/2021/REC-webauthn-2-20210408/#enum-residentKeyRequirement">§5.4.6.
-	 * Resident Key Requirement Enumeration (enum ResidentKeyRequirement)</a>
-	 * @see <a
-	 * href="https://www.w3.org/TR/2021/REC-webauthn-2-20210408/#client-side-discoverable-credential">Client-side
-	 * discoverable Credential</a>
-	 * @see <a
-	 * href="https://www.w3.org/TR/2021/REC-webauthn-2-20210408/#server-side-credential">Server-side
-	 * Credential</a>
-	 * @see <a href="https://passkeys.dev/docs/reference/terms/#passkey">Passkey</a> in <a
-	 * href="https://passkeys.dev">passkeys.dev</a> reference
+	 * The <a href="https://www.w3.org/TR/webauthn-3/#dom-residentkeyrequirement-preferred">preferred</a> requirement
+	 * indicates that the Relying Party strongly prefers creating a client-side discoverable credential, but will accept
+	 * a server-side credential.
 	 */
 	PREFERRED("preferred"),
 
 	/**
-	 * The client and authenticator will try to create a discoverable credential (passkey), and fail
-	 * the registration if that is not possible.
-	 *
-	 * @see <a
-	 * href="https://www.w3.org/TR/2021/REC-webauthn-2-20210408/#enum-residentKeyRequirement">§5.4.6.
-	 * Resident Key Requirement Enumeration (enum ResidentKeyRequirement)</a>
-	 * @see <a
-	 * href="https://www.w3.org/TR/2021/REC-webauthn-2-20210408/#client-side-discoverable-credential">Client-side
-	 * discoverable Credential</a>
-	 * @see <a
-	 * href="https://www.w3.org/TR/2021/REC-webauthn-2-20210408/#server-side-credential">Server-side
-	 * Credential</a>
-	 * @see <a href="https://passkeys.dev/docs/reference/terms/#passkey">Passkey</a> in <a
-	 * href="https://passkeys.dev">passkeys.dev</a> reference
+	 * The <a href="https://www.w3.org/TR/webauthn-3/#dom-residentkeyrequirement-required">required</a> value
+	 * indicates that the Relying Party requires a client-side discoverable credential.
 	 */
 	REQUIRED("required");
 
@@ -79,7 +50,12 @@ public enum ResidentKeyRequirement {
 		this.value = value;
 	}
 
+	/**
+	 * Gets the value.
+	 * @return the value
+	 */
 	public String getValue() {
 		return this.value;
 	}
+
 }

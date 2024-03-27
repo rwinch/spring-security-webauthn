@@ -16,20 +16,30 @@
 
 package org.springframework.security.webauthn.api;
 
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
-public class DefaultAuthenticationExtensionsClientOutputs implements AuthenticationExtensionsClientOutputs {
-	private final List<AuthenticationExtensionsClientOutput<?>> outputs = new ArrayList<>();
+/**
+ * An immutable implementation of {@link AuthenticationExtensionsClientOutputs}.
+ *
+ * @since 6.3
+ * @author Rob Winch
+ */
+public class ImmutableAuthenticationExtensionsClientOutputs implements AuthenticationExtensionsClientOutputs {
 
-	public void add(AuthenticationExtensionsClientOutput<?>... outputs) {
-		for (AuthenticationExtensionsClientOutput<?> output : outputs) {
-			this.outputs.add(output);
-		}
+	private final List<AuthenticationExtensionsClientOutput<?>> outputs;
+
+	public ImmutableAuthenticationExtensionsClientOutputs(List<AuthenticationExtensionsClientOutput<?>> outputs) {
+		this.outputs = outputs;
+	}
+
+	public ImmutableAuthenticationExtensionsClientOutputs(AuthenticationExtensionsClientOutput<?>... outputs) {
+		this(Arrays.asList(outputs));
 	}
 
 	@Override
 	public List<AuthenticationExtensionsClientOutput<?>> getOutputs() {
 		return this.outputs;
 	}
+
 }

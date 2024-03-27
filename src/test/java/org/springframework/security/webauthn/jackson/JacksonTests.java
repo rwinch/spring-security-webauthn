@@ -26,7 +26,6 @@ import org.springframework.security.webauthn.api.TestPublicKeyCredentialCreation
 import org.springframework.security.webauthn.api.AuthenticatorAssertionResponse;
 import org.springframework.security.webauthn.api.PublicKeyCredentialRequestOptions;
 import org.springframework.security.webauthn.api.Base64Url;
-import org.springframework.security.webauthn.api.Base64Url;
 import org.springframework.security.webauthn.api.*;
 import org.springframework.security.webauthn.management.*;
 
@@ -97,7 +96,7 @@ class JacksonTests {
 				}
 			}
 			""";
-		DefaultAuthenticationExtensionsClientOutputs clientExtensionResults = new DefaultAuthenticationExtensionsClientOutputs();
+		ImmutableAuthenticationExtensionsClientOutputs clientExtensionResults = new ImmutableAuthenticationExtensionsClientOutputs();
 		clientExtensionResults.add(new CredentialPropertiesOutput(false));
 
 		AuthenticationExtensionsClientOutputs outputs = this.mapper.readValue(json, AuthenticationExtensionsClientOutputs.class);
@@ -116,7 +115,7 @@ class JacksonTests {
 				"label": "Cell Phone"
 			}
 			""";
-		DefaultAuthenticationExtensionsClientOutputs clientExtensionResults = new DefaultAuthenticationExtensionsClientOutputs();
+		ImmutableAuthenticationExtensionsClientOutputs clientExtensionResults = new ImmutableAuthenticationExtensionsClientOutputs();
 		clientExtensionResults.add(new CredentialPropertiesOutput(false));
 
 		ClassWithOutputsAndAnotherField expected = new ClassWithOutputsAndAnotherField();
@@ -199,7 +198,7 @@ class JacksonTests {
 		PublicKeyCredential<AuthenticatorAttestationResponse> publicKeyCredential = this.mapper.readValue(PUBLIC_KEY_JSON, new TypeReference<PublicKeyCredential<AuthenticatorAttestationResponse>>() {
 		});
 
-		DefaultAuthenticationExtensionsClientOutputs clientExtensionResults = new DefaultAuthenticationExtensionsClientOutputs();
+		ImmutableAuthenticationExtensionsClientOutputs clientExtensionResults = new ImmutableAuthenticationExtensionsClientOutputs();
 		clientExtensionResults.add(new CredentialPropertiesOutput(false));
 
 		PublicKeyCredential<AuthenticatorAttestationResponse> expected = PublicKeyCredential.builder()
@@ -266,7 +265,7 @@ class JacksonTests {
 		PublicKeyCredential<AuthenticatorAssertionResponse> publicKeyCredential = this.mapper.readValue(json, new TypeReference<PublicKeyCredential<AuthenticatorAssertionResponse>>() {
 		});
 
-		DefaultAuthenticationExtensionsClientOutputs clientExtensionResults = new DefaultAuthenticationExtensionsClientOutputs();
+		ImmutableAuthenticationExtensionsClientOutputs clientExtensionResults = new ImmutableAuthenticationExtensionsClientOutputs();
 
 		PublicKeyCredential<AuthenticatorAssertionResponse> expected = PublicKeyCredential.builder()
 				.id("IquGb208Fffq2cROa1ZxMg")
@@ -298,7 +297,7 @@ class JacksonTests {
 		WebAuthnRegistrationFilter.WebAuthnRegistrationRequest registrationRequest = this.mapper.readValue(json, WebAuthnRegistrationFilter.WebAuthnRegistrationRequest.class);
 
 
-		DefaultAuthenticationExtensionsClientOutputs clientExtensionResults = new DefaultAuthenticationExtensionsClientOutputs();
+		ImmutableAuthenticationExtensionsClientOutputs clientExtensionResults = new ImmutableAuthenticationExtensionsClientOutputs();
 		clientExtensionResults.add(new CredentialPropertiesOutput(false));
 
 		PublicKeyCredential<AuthenticatorAttestationResponse> credential = PublicKeyCredential.builder()

@@ -17,13 +17,14 @@
 package org.springframework.security.webauthn.api;
 
 /**
- * https://www.w3.org/TR/webauthn-3/#iface-pkcredential
+ * <a href="https://www.w3.org/TR/webauthn-3/#iface-pkcredential">PublicKeyCredential</a> contains the attributes that
+ * are returned to the caller when a new credential is created, or a new assertion is requested.
+ *
+ * @since 6.3
+ * @author Rob Winch
  */
 public class PublicKeyCredential<R extends AuthenticatorResponse> {
-	/**
-	 * This attribute is inherited from Credential, though PublicKeyCredential overrides Credential's getter, instead
-	 * returning the base64url encoding of the data contained in the object’s [[identifier]] internal slot.
-	 */
+
 	private final String id;
 
 	private final PublicKeyCredentialType type;
@@ -46,30 +47,79 @@ public class PublicKeyCredential<R extends AuthenticatorResponse> {
 		this.clientExtensionResults = clientExtensionResults;
 	}
 
+	/**
+	 * The <a href="https://www.w3.org/TR/credential-management-1/#dom-credential-id">id</a> attribute is inherited from
+	 * Credential, though PublicKeyCredential overrides Credential's getter, instead
+	 * returning the base64url encoding of the data contained in the object’s [[identifier]] internal slot.
+	 */
 	public String getId() {
 		return this.id;
 	}
 
+	/**
+	 * The <a href="https://www.w3.org/TR/credential-management-1/#dom-credential-type">type</a> attribute returns the
+	 * value of the object’s interface object's [[type]] slot, which specifies the credential type represented by this object.
+	 *
+	 * @return the credential type
+	 */
 	public PublicKeyCredentialType getType() {
 		return this.type;
 	}
 
+	/**
+	 * The <a href="https://www.w3.org/TR/webauthn-3/#dom-publickeycredential-rawid">rawId</a> returns the raw
+	 * identifier.
+	 * @return the raw id
+	 */
 	public Base64Url getRawId() {
 		return this.rawId;
 	}
 
+	/**
+	 * The <a href="https://www.w3.org/TR/webauthn-3/#dom-publickeycredential-response">response</a> to the client's
+	 * request to either create a public key credential, or generate an authentication assertion.
+	 * @return the response
+	 */
 	public R getResponse() {
 		return this.response;
 	}
 
+	/**
+	 * The <a href="">authenticatorAttachment</a>  reports the
+	 * <a href="https://www.w3.org/TR/webauthn-3/#authenticator-attachment-modality">authenticator attachment modality</a>
+	 * in effect at the time the navigator.credentials.create() or navigator.credentials.get() methods successfully
+	 * complete.
+	 *
+	 * @return the authenticator attachment
+	 */
+	public AuthenticatorAttachment getAuthenticatorAttachment() {
+		return this.authenticatorAttachment;
+	}
+
+	/**
+	 * The <a href="https://www.w3.org/TR/webauthn-3/#dom-publickeycredential-getclientextensionresults">clientExtensionsResults</a>
+	 * is a mapping of extension identifier to client extension output.
+	 * @return the extension results
+	 */
 	public AuthenticationExtensionsClientOutputs getClientExtensionResults() {
 		return this.clientExtensionResults;
 	}
 
+	/**
+	 * Creates a new {@link PublicKeyCredentialBuilder}
+	 * @return the {@link PublicKeyCredentialBuilder}
+	 * @param <T> the response type
+	 */
 	public static <T extends AuthenticatorResponse> PublicKeyCredentialBuilder<T> builder() {
 		return new PublicKeyCredentialBuilder<T>();
 	}
 
+	/**
+	 * The {@link PublicKeyCredentialBuilder}
+	 * @param <R> the response type
+	 * @since 6.3
+	 * @author Rob Winch
+	 */
 	public static final class PublicKeyCredentialBuilder<R extends AuthenticatorResponse> {
 		private String id;
 		private PublicKeyCredentialType type;
@@ -81,38 +131,74 @@ public class PublicKeyCredential<R extends AuthenticatorResponse> {
 		private PublicKeyCredentialBuilder() {
 		}
 
+		/**
+		 * Sets the {@link #getId()} property
+		 * @param id the id
+		 * @return the PublicKeyCredentialBuilder
+		 */
 		public PublicKeyCredentialBuilder id(String id) {
 			this.id = id;
 			return this;
 		}
 
+		/**
+		 * Sets the {@link #getType()} property.
+		 * @param type the type
+		 * @return the PublicKeyCredentialBuilder
+		 */
 		public PublicKeyCredentialBuilder type(PublicKeyCredentialType type) {
 			this.type = type;
 			return this;
 		}
 
+		/**
+		 * Sets the {@link #getRawId()} property.
+		 * @param rawId the raw id
+		 * @return the PublicKeyCredentialBuilder
+		 */
 		public PublicKeyCredentialBuilder rawId(Base64Url rawId) {
 			this.rawId = rawId;
 			return this;
 		}
 
+		/**
+		 * Sets the {@link #getResponse()} property.
+		 * @param response the response
+		 * @return the PublicKeyCredentialBuilder
+		 */
 		public PublicKeyCredentialBuilder response(R response) {
 			this.response = response;
 			return this;
 		}
 
+		/**
+		 * Sets the {@link #getAuthenticatorAttachment()} property.
+		 * @param authenticatorAttachment the authenticator attachement
+		 * @return the PublicKeyCredentialBuilder
+		 */
 		public PublicKeyCredentialBuilder authenticatorAttachment(AuthenticatorAttachment authenticatorAttachment) {
 			this.authenticatorAttachment = authenticatorAttachment;
 			return this;
 		}
 
+		/**
+		 * Sets the {@link #getClientExtensionResults()} property.
+		 * @param clientExtensionResults the client extension results
+		 * @return the PublicKeyCredentialBuilder
+		 */
 		public PublicKeyCredentialBuilder clientExtensionResults(AuthenticationExtensionsClientOutputs clientExtensionResults) {
 			this.clientExtensionResults = clientExtensionResults;
 			return this;
 		}
 
+		/**
+		 * Creates a new {@link PublicKeyCredential}
+		 * @return a new {@link PublicKeyCredential}
+		 */
 		public PublicKeyCredential<R> build() {
 			return new PublicKeyCredential(this.id, this.type, this.rawId, this.response, this.authenticatorAttachment, this.clientExtensionResults);
 		}
+
 	}
+
 }

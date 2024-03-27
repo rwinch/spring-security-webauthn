@@ -1,6 +1,5 @@
-
 /*
- * Copyright 2002-2023 the original author or authors.
+ * Copyright 2002-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +16,17 @@
 
 package org.springframework.security.webauthn.api;
 
+/**
+ * The <a href="https://www.w3.org/TR/webauthn-3/#enum-credentialType">PublicKeyCredentialType</a> defines the
+ * credential types.
+ * @since 6.3
+ * @author Rob Winch
+ */
 public enum PublicKeyCredentialType {
+
+	/**
+	 * The only credential type that currently exists.
+	 */
 	PUBLIC_KEY("public-key");
 
 	private final String value;
@@ -26,6 +35,10 @@ public enum PublicKeyCredentialType {
 		this.value = value;
 	}
 
+	/**
+	 * Gets the value.
+	 * @return the value
+	 */
 	public String getValue() {
 		return this.value;
 	}

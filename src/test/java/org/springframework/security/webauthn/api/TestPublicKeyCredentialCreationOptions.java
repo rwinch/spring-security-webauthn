@@ -36,8 +36,7 @@ public class TestPublicKeyCredentialCreationOptions {
 				.id(userId)
 				.name("user@example.localhost")
 				.build();
-		DefaultAuthenticationExtensionsClientInputs clientInputs = new DefaultAuthenticationExtensionsClientInputs();
-		clientInputs.add(ImmutableAuthenticationExtensionsClientInput.credProps);
+		ImmutableAuthenticationExtensionsClientInputs clientInputs = new ImmutableAuthenticationExtensionsClientInputs(ImmutableAuthenticationExtensionsClientInput.credProps);
 		return  PublicKeyCredentialCreationOptions.builder()
 				.attestation(AttestationConveyancePreference.NONE)
 				.user(userEntity)

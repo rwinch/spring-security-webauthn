@@ -1,5 +1,5 @@
 /*
- * Copyright 2002-2023 the original author or authors.
+ * Copyright 2002-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,18 +17,31 @@
 package org.springframework.security.webauthn.api;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
-public class DefaultAuthenticationExtensionsClientInputs implements AuthenticationExtensionsClientInputs {
-	private final List<AuthenticationExtensionsClientInput> inputs = new ArrayList<>();
+/**
+ * An immutable implementation of {@link AuthenticationExtensionsClientInputs}.
+ *
+ * @since 6.3
+ * @author Rob Winch
+ */
+public class ImmutableAuthenticationExtensionsClientInputs implements AuthenticationExtensionsClientInputs {
 
-	public void add(AuthenticationExtensionsClientInput... inputs) {
-		for (AuthenticationExtensionsClientInput input : inputs) {
-			this.inputs.add(input);
-		}
+	private final List<AuthenticationExtensionsClientInput> inputs;
+
+
+	public ImmutableAuthenticationExtensionsClientInputs(List<AuthenticationExtensionsClientInput> inputs) {
+		this.inputs = inputs;
 	}
+
+	public ImmutableAuthenticationExtensionsClientInputs(AuthenticationExtensionsClientInput... inputs) {
+		this(Arrays.asList(inputs));
+	}
+
 	@Override
 	public List<AuthenticationExtensionsClientInput> getInputs() {
 		return this.inputs;
 	}
+
 }

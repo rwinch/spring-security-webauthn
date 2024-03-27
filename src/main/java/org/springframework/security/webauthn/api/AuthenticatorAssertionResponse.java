@@ -102,6 +102,12 @@ public class AuthenticatorAssertionResponse extends AuthenticatorResponse  {
 		return new AuthenticatorAssertionResponseBuilder();
 	}
 
+	/**
+	 * Builds a {@link AuthenticatorAssertionResponse}.
+	 *
+	 * @since 6.3
+	 * @author Rob Winch
+	 */
 	public static final class AuthenticatorAssertionResponseBuilder {
 		private Base64Url authenticatorData;
 		private Base64Url signature;

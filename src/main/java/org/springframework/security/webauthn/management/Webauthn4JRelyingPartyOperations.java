@@ -41,7 +41,7 @@ import org.springframework.security.webauthn.api.AuthenticatorAttestationRespons
 import org.springframework.security.webauthn.api.AuthenticatorSelectionCriteria;
 import org.springframework.security.webauthn.api.AuthenticatorTransport;
 import org.springframework.security.webauthn.api.Base64Url;
-import org.springframework.security.webauthn.api.DefaultAuthenticationExtensionsClientInputs;
+import org.springframework.security.webauthn.api.ImmutableAuthenticationExtensionsClientInputs;
 import org.springframework.security.webauthn.api.ImmutableAuthenticationExtensionsClientInput;
 import org.springframework.security.webauthn.api.PublicKeyCredential;
 import org.springframework.security.webauthn.api.PublicKeyCredentialCreationOptions;
@@ -55,10 +55,7 @@ import org.springframework.security.webauthn.api.UserVerificationRequirement;
 import org.springframework.util.Assert;
 
 import java.time.Duration;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
@@ -273,8 +270,7 @@ public class Webauthn4JRelyingPartyOperations implements WebAuthnRelyingPartyOpe
 					.residentKey(ResidentKeyRequirement.REQUIRED)
 					.build();
 
-			DefaultAuthenticationExtensionsClientInputs clientInputs = new DefaultAuthenticationExtensionsClientInputs();
-			clientInputs.add(ImmutableAuthenticationExtensionsClientInput.credProps);
+			ImmutableAuthenticationExtensionsClientInputs clientInputs = new ImmutableAuthenticationExtensionsClientInputs(ImmutableAuthenticationExtensionsClientInput.credProps);
 
 			options
 					.attestation(AttestationConveyancePreference.DIRECT)

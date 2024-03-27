@@ -1,5 +1,5 @@
 /*
- * Copyright 2002-2023 the original author or authors.
+ * Copyright 2002-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,13 @@
 
 package org.springframework.security.webauthn.api;
 
+/**
+ * An immutable {@link AuthenticationExtensionsClientInput}.
+ *
+ * @param <T> the input type
+ * @since 6.3
+ * @author Rob Winch
+ */
 public class ImmutableAuthenticationExtensionsClientInput<T> implements AuthenticationExtensionsClientInput<T> {
 
 	/**
@@ -29,7 +36,11 @@ public class ImmutableAuthenticationExtensionsClientInput<T> implements Authenti
 
 	private final T input;
 
-
+	/**
+	 * Creates a new instance
+	 * @param extensionId the extension id.
+	 * @param input the input.
+	 */
 	public ImmutableAuthenticationExtensionsClientInput(String extensionId, T input) {
 		this.extensionId = extensionId;
 		this.input = input;

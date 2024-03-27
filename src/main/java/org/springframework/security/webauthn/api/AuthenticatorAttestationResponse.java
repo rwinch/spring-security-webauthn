@@ -108,6 +108,12 @@ public class AuthenticatorAttestationResponse extends AuthenticatorResponse {
 		return new AuthenticatorAttestationResponseBuilder();
 	}
 
+	/**
+	 * Builds {@link AuthenticatorAssertionResponse}.
+	 *
+	 * @since 6.3
+	 * @author Rob Winch
+	 */
 	public static final class AuthenticatorAttestationResponseBuilder {
 		private Base64Url attestationObject;
 		private List<AuthenticatorTransport> transports;
@@ -119,42 +125,89 @@ public class AuthenticatorAttestationResponse extends AuthenticatorResponse {
 		private AuthenticatorAttestationResponseBuilder() {
 		}
 
+		/**
+		 * Sets the {@link #getAttestationObject()} property.
+		 *
+		 * @param attestationObject the attestation object.
+		 * @return the {@link AuthenticatorAttestationResponseBuilder}
+		 */
 		public AuthenticatorAttestationResponseBuilder attestationObject(Base64Url attestationObject) {
 			this.attestationObject = attestationObject;
 			return this;
 		}
 
+		/**
+		 * Sets the {@link #getTransports()} property.
+		 *
+		 * @param transports the transports
+		 * @return the {@link AuthenticatorAttestationResponseBuilder}
+		 */
 		public AuthenticatorAttestationResponseBuilder transports(AuthenticatorTransport... transports) {
 			return transports(Arrays.asList(transports));
 		}
 
+		/**
+		 * Sets the {@link #getTransports()} property.
+		 *
+		 * @param transports the transports
+		 * @return the {@link AuthenticatorAttestationResponseBuilder}
+		 */
 		public AuthenticatorAttestationResponseBuilder transports(List<AuthenticatorTransport> transports) {
 			this.transports = transports;
 			return this;
 		}
 
+		/**
+		 * Sets the {@link #getAuthenticatorData()} property.
+		 *
+		 * @param authenticatorData the authenticator data.
+		 * @return  the {@link AuthenticatorAttestationResponseBuilder}
+		 */
 		public AuthenticatorAttestationResponseBuilder authenticatorData(Base64Url authenticatorData) {
 			this.authenticatorData = authenticatorData;
 			return this;
 		}
 
+		/**
+		 * Sets the {@link #getPublicKey()} property.
+		 *
+		 * @param publicKey the public key.
+		 * @return the {@link AuthenticatorAttestationResponseBuilder}
+		 */
 		public AuthenticatorAttestationResponseBuilder publicKey(Base64Url publicKey) {
 			this.publicKey = publicKey;
 			return this;
 		}
 
+		/**
+		 * Sets the {@link #getPublicKeyAlgorithm()} property.
+		 * @param publicKeyAlgorithm the public key algorithm
+		 * @return the {@link AuthenticatorAttestationResponseBuilder}
+		 */
 		public AuthenticatorAttestationResponseBuilder publicKeyAlgorithm(COSEAlgorithmIdentifier publicKeyAlgorithm) {
 			this.publicKeyAlgorithm = publicKeyAlgorithm;
 			return this;
 		}
 
+		/**
+		 * Sets the {@link #getClientDataJSON()} property.
+		 * @param clientDataJSON the client data JSON.
+		 * @return the {@link AuthenticatorAttestationResponseBuilder}
+		 */
 		public AuthenticatorAttestationResponseBuilder clientDataJSON(Base64Url clientDataJSON) {
 			this.clientDataJSON = clientDataJSON;
 			return this;
 		}
 
+		/**
+		 * Builds a {@link AuthenticatorAssertionResponse}.
+		 *
+		 * @return the {@link AuthenticatorAttestationResponseBuilder}
+		 */
 		public AuthenticatorAttestationResponse build() {
 			return new AuthenticatorAttestationResponse(this.clientDataJSON, this.attestationObject, this.transports, this.authenticatorData, this.publicKey, this.publicKeyAlgorithm);
 		}
+
 	}
+
 }
