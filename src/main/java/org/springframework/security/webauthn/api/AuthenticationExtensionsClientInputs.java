@@ -1,6 +1,6 @@
 
 /*
- * Copyright 2002-2023 the original author or authors.
+ * Copyright 2002-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,8 +20,21 @@ package org.springframework.security.webauthn.api;
 import java.util.List;
 
 /**
- * https://www.w3.org/TR/webauthn-3/#iface-authentication-extensions-client-inputs
+ * <a href="https://www.w3.org/TR/webauthn-3/#iface-authentication-extensions-client-inputs">AuthenticationExtensionsClientInputs</a>
+ * is a dictionary containing the <a href="https://www.w3.org/TR/webauthn-3/#client-extension-input">client extension
+ * input</a> values for zero or more <a href="https://www.w3.org/TR/webauthn-3/#webauthn-extensions">WebAuthn
+ * Extensions</a>.
+ *
+ * @since 6.3
+ * @see PublicKeyCredentialCreationOptions#getExtensions()
+ * @author Rob Winch
  */
 public interface AuthenticationExtensionsClientInputs {
+
+	/**
+	 * Gets all of the {@link AuthenticationExtensionsClientInput}.
+	 * @return a non-null {@link List} of {@link AuthenticationExtensionsClientInput}.
+	 */
 	List<AuthenticationExtensionsClientInput> getInputs();
+
 }

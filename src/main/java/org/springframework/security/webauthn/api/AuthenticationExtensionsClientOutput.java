@@ -1,5 +1,5 @@
 /*
- * Copyright 2002-2023 the original author or authors.
+ * Copyright 2002-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,8 +16,23 @@
 
 package org.springframework.security.webauthn.api;
 
+/**
+ * An entry in {@link AuthenticationExtensionsClientOutputs}.
+ * @param <T>
+ * @see CredentialPropertiesOutput
+ */
 public interface AuthenticationExtensionsClientOutput<T> {
+
+	/**
+	 * Gets the <a href="https://www.w3.org/TR/webauthn-3/#extension-identifier">extension identifier</a>.
+	 * @return the <a href="https://www.w3.org/TR/webauthn-3/#extension-identifier">extension identifier</a>.
+	 */
 	String getExtensionId();
 
+	/**
+	 * The <a href="https://www.w3.org/TR/webauthn-3/#client-extension-output>client extension output</a>.
+	 * @return the <a href="https://www.w3.org/TR/webauthn-3/#client-extension-output>client extension output</a>.
+	 */
 	T getOutput();
+
 }

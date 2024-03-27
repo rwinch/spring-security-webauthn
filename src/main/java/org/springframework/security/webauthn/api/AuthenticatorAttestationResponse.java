@@ -1,5 +1,5 @@
 /*
- * Copyright 2002-2023 the original author or authors.
+ * Copyright 2002-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,16 +16,20 @@
 
 package org.springframework.security.webauthn.api;
 
-import com.fasterxml.jackson.annotation.JsonSetter;
-import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
-
 import java.util.Arrays;
 import java.util.List;
 
 /**
- * https://www.w3.org/TR/webauthn-3/#authenticatorattestationresponse
+ * <a href="https://www.w3.org/TR/webauthn-3/#authenticatorattestationresponse">AuthenticatorAttestationResponse</a>
+ * represents the <a href="https://www.w3.org/TR/webauthn-3/#authenticator">authenticator</a>'s response to a client’s
+ * request for the creation of a new <a href="https://www.w3.org/TR/webauthn-3/#public-key-credential">public key
+ * credential</a>.
+ *
+ * @since 6.3
+ * @author Rob Winch
  */
 public class AuthenticatorAttestationResponse extends AuthenticatorResponse {
+
 	private final Base64Url attestationObject;
 
 	private final List<AuthenticatorTransport> transports;
@@ -39,7 +43,7 @@ public class AuthenticatorAttestationResponse extends AuthenticatorResponse {
 
 	private final COSEAlgorithmIdentifier publicKeyAlgorithm;
 
-	public AuthenticatorAttestationResponse(Base64Url clientDataJSON, Base64Url attestationObject, List<AuthenticatorTransport> transports, Base64Url authenticatorData, Base64Url publicKey, COSEAlgorithmIdentifier publicKeyAlgorithm) {
+	private AuthenticatorAttestationResponse(Base64Url clientDataJSON, Base64Url attestationObject, List<AuthenticatorTransport> transports, Base64Url authenticatorData, Base64Url publicKey, COSEAlgorithmIdentifier publicKeyAlgorithm) {
 		super(clientDataJSON);
 		this.attestationObject = attestationObject;
 		this.transports = transports;
@@ -48,31 +52,62 @@ public class AuthenticatorAttestationResponse extends AuthenticatorResponse {
 		this.publicKeyAlgorithm = publicKeyAlgorithm;
 	}
 
+	/**
+	 * The <a href="https://www.w3.org/TR/webauthn-3/#dom-authenticatorattestationresponse-attestationobject">attestationObject</a>
+	 * attribute contains an attestation object, which is opaque to, and cryptographically protected against tampering
+	 * by, the client.
+	 * @return the attestationObject
+	 */
 	public Base64Url getAttestationObject() {
 		return this.attestationObject;
 	}
 
+	/**
+	 * The <a href="https://www.w3.org/TR/webauthn-3/#dom-authenticatorattestationresponse-gettransports">transports</a>
+	 * returns the <a href="https://www.w3.org/TR/webauthn-3/#dom-authenticatorattestationresponse-transports-slot>transports</a>
+	 * @return the transports
+	 */
 	public List<AuthenticatorTransport> getTransports() {
 		return this.transports;
 	}
 
+	/**
+	 * The <a href="https://www.w3.org/TR/webauthn-3/#dom-authenticatorattestationresponse-getauthenticatordata">authenticatorData</a>
+	 * contained within attestationObject. See
+	 * <a href="https://www.w3.org/TR/webauthn-3/#sctn-public-key-easy">5.2.1.1 Easily accessing credential data</a>.
+	 * @return the authenticatorData
+	 */
 	public Base64Url getAuthenticatorData() {
 		return this.authenticatorData;
 	}
 
+	/**
+	 * The <a href="https://www.w3.org/TR/webauthn-3/#dom-authenticatorattestationresponse-getpublickey">publicKey</a>
+	 * returns the DER <a href="https://tools.ietf.org/html/rfc5280#section-4.1.2.7">SubjectPublicKeyInfo</a> of the new
+	 * credential, or null if this is not available.
+	 * @return the publicKey
+	 */
 	public Base64Url getPublicKey() {
 		return this.publicKey;
 	}
 
+	/**
+	 * The <a href="https://www.w3.org/TR/webauthn-3/#dom-authenticatorattestationresponse-getpublickeyalgorithm">publicKeyAlgorithm</a>
+	 * is the {@link COSEAlgorithmIdentifier} of the new credential.
+	 * @return the {@link COSEAlgorithmIdentifier}
+	 */
 	public COSEAlgorithmIdentifier getPublicKeyAlgorithm() {
 		return this.publicKeyAlgorithm;
 	}
 
+	/**
+	 * Creates a new instance.
+	 * @return the {@link AuthenticatorAttestationResponseBuilder}
+	 */
 	public static AuthenticatorAttestationResponseBuilder builder() {
 		return new AuthenticatorAttestationResponseBuilder();
 	}
 
-	@JsonPOJOBuilder(withPrefix = "") // FIXME: Remove JsonPOJOBuilder
 	public static final class AuthenticatorAttestationResponseBuilder {
 		private Base64Url attestationObject;
 		private List<AuthenticatorTransport> transports;
@@ -84,10 +119,6 @@ public class AuthenticatorAttestationResponse extends AuthenticatorResponse {
 		private AuthenticatorAttestationResponseBuilder() {
 		}
 
-		public static AuthenticatorAttestationResponseBuilder anAuthenticatorAttestationResponse() {
-			return new AuthenticatorAttestationResponseBuilder();
-		}
-
 		public AuthenticatorAttestationResponseBuilder attestationObject(Base64Url attestationObject) {
 			this.attestationObject = attestationObject;
 			return this;
@@ -97,7 +128,6 @@ public class AuthenticatorAttestationResponse extends AuthenticatorResponse {
 			return transports(Arrays.asList(transports));
 		}
 
-		@JsonSetter // FIXME: externalize
 		public AuthenticatorAttestationResponseBuilder transports(List<AuthenticatorTransport> transports) {
 			this.transports = transports;
 			return this;
@@ -124,7 +154,7 @@ public class AuthenticatorAttestationResponse extends AuthenticatorResponse {
 		}
 
 		public AuthenticatorAttestationResponse build() {
-			return new AuthenticatorAttestationResponse(clientDataJSON, attestationObject, transports, authenticatorData, publicKey, publicKeyAlgorithm);
+			return new AuthenticatorAttestationResponse(this.clientDataJSON, this.attestationObject, this.transports, this.authenticatorData, this.publicKey, this.publicKeyAlgorithm);
 		}
 	}
 }
