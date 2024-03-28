@@ -17,8 +17,10 @@
 package org.springframework.security.webauthn.management;
 
 import org.springframework.security.webauthn.api.Base64Url;
+import org.springframework.util.Assert;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * A {@link Map} based implementation of {@link UserCredentialRepository}.
@@ -29,32 +31,38 @@ public class MapUserCredentialRepository implements UserCredentialRepository {
 
 	private final Map<Base64Url, CredentialRecord> credentialIdToUserCredential = new HashMap<>();
 
-	private final Map<Base64Url,List<CredentialRecord>> userEntityIdToUserCredentials = new HashMap<>();
+	private final Map<Base64Url,Set<Base64Url>> userEntityIdToUserCredentialIds = new HashMap<>();
 
 	@Override
 	public void delete(Base64Url credentialId) {
 		CredentialRecord credentialRecord = this.credentialIdToUserCredential.remove(credentialId);
 		if (credentialRecord != null) {
-			List<CredentialRecord> credentialRecords = this.userEntityIdToUserCredentials.get(credentialRecord.getUserEntityUserId());
-			if (credentialRecords != null) {
-				credentialRecords.remove(credentialRecord);
+			Set<Base64Url> credentialIds = this.userEntityIdToUserCredentialIds.get(credentialRecord.getUserEntityUserId());
+			if (credentialIds != null) {
+				credentialIds.remove(credentialId);
 			}
 		}
 	}
 
 	@Override
 	public void save(CredentialRecord credentialRecord) {
+		Assert.notNull(credentialRecord, "credentialRecord cannot be null");
 		this.credentialIdToUserCredential.put(credentialRecord.getCredentialId(), credentialRecord);
-		this.userEntityIdToUserCredentials.computeIfAbsent(credentialRecord.getUserEntityUserId(), (id) -> new ArrayList<>()).add(credentialRecord);
+		this.userEntityIdToUserCredentialIds.computeIfAbsent(credentialRecord.getUserEntityUserId(), (id) -> new HashSet<>()).add(credentialRecord.getCredentialId());
 	}
 
 	@Override
 	public CredentialRecord findByCredentialId(Base64Url credentialId) {
+		Assert.notNull(credentialId, "credentialId cannot be null");
 		return this.credentialIdToUserCredential.get(credentialId);
 	}
 
 	@Override
 	public List<CredentialRecord> findByUserId(Base64Url userId) {
-		return Collections.unmodifiableList(this.userEntityIdToUserCredentials.getOrDefault(userId, Collections.emptyList()));
+		Assert.notNull(userId, "userId cannot be null");
+		Set<Base64Url> credentialIds = this.userEntityIdToUserCredentialIds.getOrDefault(userId, Collections.emptySet());
+		return credentialIds.stream()
+			.map(this::findByCredentialId)
+			.collect(Collectors.toUnmodifiableList());
 	}
 }
