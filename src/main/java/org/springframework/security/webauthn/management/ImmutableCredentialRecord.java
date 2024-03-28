@@ -166,7 +166,7 @@ public class ImmutableCredentialRecord implements CredentialRecord {
 		private Base64Url attestationObject;
 		private Base64Url attestationClientDataJSON;
 		private Instant created = Instant.now();
-		private Instant lastUsed = Instant.now();
+		private Instant lastUsed = this.created;
 		private String label;
 
 		private ImmutableCredentialRecordBuilder() {
