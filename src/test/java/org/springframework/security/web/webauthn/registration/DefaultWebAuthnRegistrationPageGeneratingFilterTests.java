@@ -25,7 +25,7 @@ import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.security.web.csrf.CsrfToken;
 import org.springframework.security.web.csrf.DefaultCsrfToken;
-import org.springframework.security.webauthn.api.TestUserCredential;
+import org.springframework.security.webauthn.api.TestCredentialRecord;
 import org.springframework.security.webauthn.api.Base64Url;
 import org.springframework.security.webauthn.api.PublicKeyCredentialUserEntity;
 import org.springframework.security.webauthn.management.ImmutableCredentialRecord;
@@ -88,7 +88,7 @@ class DefaultWebAuthnRegistrationPageGeneratingFilterTests {
 				.displayName("User")
 				.build();
 		when(this.userEntities.findByUsername(any())).thenReturn(userEntity);
-		when(this.userCredentials.findByUserId(userEntity.getId())).thenReturn(Arrays.asList(TestUserCredential.userCredential().build()));
+		when(this.userCredentials.findByUserId(userEntity.getId())).thenReturn(Arrays.asList(TestCredentialRecord.userCredential().build()));
 		String body = bodyAsString(matchingRequest());
 		assertThat(body).contains("data-csrf-token=\"CSRF_TOKEN\"");
 		assertThat(body).contains("data-csrf-header-name=\"X-CSRF-TOKEN\"");
@@ -123,7 +123,7 @@ class DefaultWebAuthnRegistrationPageGeneratingFilterTests {
 				.id(Base64Url.random())
 				.displayName("User")
 				.build();
-		ImmutableCredentialRecord credential = TestUserCredential.userCredential().build();
+		ImmutableCredentialRecord credential = TestCredentialRecord.userCredential().build();
 		when(this.userEntities.findByUsername(any())).thenReturn(userEntity);
 		when(this.userCredentials.findByUserId(userEntity.getId())).thenReturn(Arrays.asList(credential));
 		String body = bodyAsString(matchingRequest());
@@ -144,7 +144,7 @@ class DefaultWebAuthnRegistrationPageGeneratingFilterTests {
 				.id(Base64Url.random())
 				.displayName("User")
 				.build();
-		ImmutableCredentialRecord credential = TestUserCredential.userCredential()
+		ImmutableCredentialRecord credential = TestCredentialRecord.userCredential()
 			.label(label)
 			.build();
 		when(this.userEntities.findByUsername(any())).thenReturn(userEntity);
@@ -173,7 +173,7 @@ class DefaultWebAuthnRegistrationPageGeneratingFilterTests {
 				.id(Base64Url.random())
 				.displayName("User")
 				.build();
-		ImmutableCredentialRecord credential = TestUserCredential.userCredential().build();
+		ImmutableCredentialRecord credential = TestCredentialRecord.userCredential().build();
 		when(this.userEntities.findByUsername(any())).thenReturn(userEntity);
 		when(this.userCredentials.findByUserId(userEntity.getId())).thenReturn(Arrays.asList(credential));
 		String body = bodyAsString(matchingRequest());
@@ -190,7 +190,7 @@ class DefaultWebAuthnRegistrationPageGeneratingFilterTests {
 				.id(Base64Url.random())
 				.displayName("User")
 				.build();
-		ImmutableCredentialRecord credential = TestUserCredential.userCredential().build();
+		ImmutableCredentialRecord credential = TestCredentialRecord.userCredential().build();
 		when(this.userEntities.findByUsername(any())).thenReturn(userEntity);
 		when(this.userCredentials.findByUserId(userEntity.getId())).thenReturn(Arrays.asList(credential));
 		String body = bodyAsString(matchingRequest("/foo"));

@@ -19,7 +19,7 @@ package org.springframework.security.webauthn.api;
 import org.springframework.security.webauthn.management.ImmutablePublicKeyCose;
 import org.springframework.security.webauthn.management.ImmutableCredentialRecord;
 
-public class TestUserCredential {
+public class TestCredentialRecord {
 	public static ImmutableCredentialRecord.ImmutableCredentialRecordBuilder userCredential() {
 		return ImmutableCredentialRecord.builder()
 				.label("label")
