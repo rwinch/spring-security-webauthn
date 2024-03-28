@@ -40,6 +40,8 @@ public interface WebAuthnRelyingPartyOperations {
 	 * @return a new {@link CredentialRecord}
 	 * @throws RuntimeException if the {@link RelyingPartyRegistrationRequest} is not valid.
 	 */
+	// FIXME: Think about the name RelyingPartyRegistrationRequest (does it align with rfc)
+	// FIXME: think about the method name (does it align with rfc)
 	CredentialRecord registerCredential(RelyingPartyRegistrationRequest relyingPartyRegistrationRequest);
 
 	/**
@@ -55,5 +57,7 @@ public interface WebAuthnRelyingPartyOperations {
 	 * @return the principal name (e.g. username) if authentication was successful
 	 * @throws RuntimeException if authentication fails
 	 */
+	// FIXME: Think about the name RelyingPartyAuthenticationRequest (does it align with rfc)
+	// FIXME: think about the method name (does it align with rfc)
 	String authenticate(RelyingPartyAuthenticationRequest request);
 }
