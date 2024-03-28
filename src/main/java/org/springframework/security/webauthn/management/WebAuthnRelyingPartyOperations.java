@@ -20,21 +20,40 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.webauthn.api.PublicKeyCredentialRequestOptions;
 import org.springframework.security.webauthn.api.PublicKeyCredentialCreationOptions;
 
-// FIXME: Maybe use Supplier<Authentication> so that it isn't looked up unnecessarily
+/**
+ * An API for <a href="https://www.w3.org/TR/webauthn-3/#sctn-rp-operations">WebAuthn Relying Party Operations</a>
+ * @since 6.3
+ * @author Rob Winch
+ */
 public interface WebAuthnRelyingPartyOperations {
-	// FIXME: Pass in the host (can have an allow list), perhaps pass PublicKeyCredentialUserEntity
 
 	/**
-	 * Creates the {@link PublicKeyCredentialCreationOptions}.
-	 *
-	 * @param authentication
+	 * Creates the {@link PublicKeyCredentialCreationOptions} used to register new credentials.
+	 * @param authentication the current {@link Authentication}
 	 * @return the {@link PublicKeyCredentialCreationOptions} for the {@link Authentication} passed in. Cannot be null.
 	 */
 	PublicKeyCredentialCreationOptions createPublicKeyCredentialCreationOptions(Authentication authentication);
 
+	/**
+	 * If {@link RelyingPartyRegistrationRequest} is valid, will register and return a new {@link CredentialRecord}.
+	 * @param relyingPartyRegistrationRequest the {@link RelyingPartyRegistrationRequest} to process.
+	 * @return a new {@link CredentialRecord}
+	 * @throws RuntimeException if the {@link RelyingPartyRegistrationRequest} is not valid.
+	 */
 	CredentialRecord registerCredential(RelyingPartyRegistrationRequest relyingPartyRegistrationRequest);
 
+	/**
+	 * Creates the {@link PublicKeyCredentialRequestOptions} used to authenticate a user.
+	 * @param authentication the current {@link Authentication}. Possibly null or an anonymous.
+	 * @return the {@link PublicKeyCredentialRequestOptions} used to authenticate a user.
+	 */
 	PublicKeyCredentialRequestOptions createCredentialRequestOptions(Authentication authentication);
 
-	String authenticate(AuthenticationRequest request);
+	/**
+	 * Authenticates the {@link RelyingPartyAuthenticationRequest} passed in
+	 * @param request the {@link RelyingPartyAuthenticationRequest}
+	 * @return the principal name (e.g. username) if authentication was successful
+	 * @throws RuntimeException if authentication fails
+	 */
+	String authenticate(RelyingPartyAuthenticationRequest request);
 }

@@ -17,16 +17,42 @@
 package org.springframework.security.webauthn.management;
 
 import org.springframework.security.webauthn.api.Base64Url;
+import org.springframework.security.webauthn.api.PublicKeyCredentialUserEntity;
 
 import java.util.List;
 
+/**
+ * A repository for managing {@link CredentialRecord}s associated to a user.
+ * @since 6.3
+ * @author Rob Winch
+ */
 public interface UserCredentialRepository {
 
+	/**
+	 * Deletes an entry by credential id
+	 * @param credentialId {@link CredentialRecord#getCredentialId()}
+	 */
 	void delete(Base64Url credentialId);
 
+	/**
+	 * Saves a {@link CredentialRecord}
+	 * @param credentialRecord the {@link CredentialRecord} to save.
+	 */
 	void save(CredentialRecord credentialRecord);
 
+	/**
+	 * Finds an entry by credential id.
+	 * @param credentialId {@link CredentialRecord#getCredentialId()}
+	 * @return the {@link CredentialRecord} or null if not found.
+	 */
 	CredentialRecord findByCredentialId(Base64Url credentialId);
 
+	/**
+	 * Finds all {@link CredentialRecord} instances for a specific user.
+	 * @param userId the {@link PublicKeyCredentialUserEntity#getId()} to search for a user.
+	 * @return all {@link CredentialRecord} instances for a specific user or empty if no results found. Never null.
+	 * @see PublicKeyCredentialUserEntityRepository
+	 */
 	List<CredentialRecord> findByUserId(Base64Url userId);
+
 }

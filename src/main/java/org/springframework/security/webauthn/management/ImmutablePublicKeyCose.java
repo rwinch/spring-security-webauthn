@@ -19,9 +19,19 @@ package org.springframework.security.webauthn.management;
 import java.util.Arrays;
 import java.util.Base64;
 
+/**
+ * An immutable {@link PublicKeyCose}
+ * @since 6.3
+ * @author Rob Winch
+ */
 public class ImmutablePublicKeyCose implements PublicKeyCose {
+
 	private final byte[] bytes;
 
+	/**
+	 * Creates a new instance.
+	 * @param bytes the raw bytes of the public key.
+	 */
 	public ImmutablePublicKeyCose(byte[] bytes) {
 		this.bytes = Arrays.copyOf(bytes, bytes.length);
 	}
@@ -31,8 +41,13 @@ public class ImmutablePublicKeyCose implements PublicKeyCose {
 		return Arrays.copyOf(this.bytes, this.bytes.length);
 	}
 
-	public static ImmutablePublicKeyCose fromBase64(String base64) {
-		byte[] decode = Base64.getUrlDecoder().decode(base64);
+	/**
+	 * Creates a new instance form a Base64 URL encoded String
+	 * @param base64EncodedString the base64EncodedString encoded String
+	 * @return
+	 */
+	public static ImmutablePublicKeyCose fromBase64(String base64EncodedString) {
+		byte[] decode = Base64.getUrlDecoder().decode(base64EncodedString);
 		return new ImmutablePublicKeyCose(decode);
 	}
 }

@@ -20,6 +20,11 @@ import org.springframework.security.webauthn.api.Base64Url;
 
 import java.util.*;
 
+/**
+ * A {@link Map} based implementation of {@link UserCredentialRepository}.
+ * @since 6.3
+ * @author Rob Winch
+ */
 public class MapUserCredentialRepository implements UserCredentialRepository {
 
 	private final Map<Base64Url, CredentialRecord> credentialIdToUserCredential = new HashMap<>();

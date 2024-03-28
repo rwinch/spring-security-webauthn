@@ -29,7 +29,6 @@ import java.io.IOException;
  * @since 6.3
  * @author Rob Winch
  */
-
 class COSEAlgorithmIdentifierSerializer extends StdSerializer<COSEAlgorithmIdentifier> {
 
 	COSEAlgorithmIdentifierSerializer() {

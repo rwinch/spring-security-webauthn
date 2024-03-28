@@ -19,22 +19,47 @@ package org.springframework.security.webauthn.management;
 import org.springframework.security.webauthn.api.AuthenticatorAssertionResponse;
 import org.springframework.security.webauthn.api.PublicKeyCredentialRequestOptions;
 import org.springframework.security.webauthn.api.PublicKeyCredential;
+import org.springframework.util.Assert;
 
-public class AuthenticationRequest {
+/**
+ * The data object used to provide the information necessary to authenticate a user with WebAuthn.
+ *
+ * @see WebAuthnRelyingPartyOperations#authenticate(RelyingPartyAuthenticationRequest)
+ * @since 6.3
+ * @author Rob Winch
+ */
+public class RelyingPartyAuthenticationRequest {
+
 	private final PublicKeyCredentialRequestOptions requestOptions;
 
 	private final PublicKeyCredential<AuthenticatorAssertionResponse> publicKey;
 
-	public AuthenticationRequest(PublicKeyCredentialRequestOptions requestOptions, PublicKeyCredential<AuthenticatorAssertionResponse> publicKey) {
+	/**
+	 * Creates a new instance.
+	 * @param requestOptions the {@link PublicKeyCredentialRequestOptions}
+	 * @param publicKey the {@link PublicKeyCredential}
+	 */
+	public RelyingPartyAuthenticationRequest(PublicKeyCredentialRequestOptions requestOptions, PublicKeyCredential<AuthenticatorAssertionResponse> publicKey) {
+		Assert.notNull(requestOptions, "requestOptions cannot be null");
+		Assert.notNull(publicKey, "publicKey cannot be null");
 		this.requestOptions = requestOptions;
 		this.publicKey = publicKey;
 	}
 
+	/**
+	 * Ges the request options.
+	 * @return the request options.
+	 */
 	public PublicKeyCredentialRequestOptions getRequestOptions() {
 		return this.requestOptions;
 	}
 
+	/**
+	 * Gets the public key.
+	 * @return the public key.
+	 */
 	public PublicKeyCredential<AuthenticatorAssertionResponse> getPublicKey() {
 		return this.publicKey;
 	}
+
 }

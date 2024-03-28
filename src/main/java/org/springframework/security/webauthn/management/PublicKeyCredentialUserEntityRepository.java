@@ -21,13 +21,31 @@ import org.springframework.security.webauthn.api.PublicKeyCredentialUserEntity;
 
 /**
  * FIXME: only interfaces for inputs and outputs
+ * A repository for managing {@link PublicKeyCredentialUserEntity} instances.
+ * @since 6.3
+ * @author Rob Winch
  */
 public interface PublicKeyCredentialUserEntityRepository {
 
+	/**
+	 * Finds the associated username by the {@link PublicKeyCredentialUserEntity#getId()}
+	 * @param id the id to lookup the username by
+	 * @return the username or null if not found.
+	 */
 	String findUsernameByUserEntityId(Base64Url id);
 
+	/**
+	 * Finds the {@link PublicKeyCredentialUserEntity} by the username.
+	 * @param username the username to lookup the {@link PublicKeyCredentialUserEntity}
+	 * @return the {@link PublicKeyCredentialUserEntity} or null if not found.
+	 */
 	PublicKeyCredentialUserEntity findByUsername(String username);
 
+	/**
+	 * Saves the {@link PublicKeyCredentialUserEntity} to the associated username.
+	 * @param username the username to associate to the provided {@link PublicKeyCredentialUserEntity}
+	 * @param userEntity the {@link PublicKeyCredentialUserEntity} to associate to the provided username.
+	 */
 	void save(String username, PublicKeyCredentialUserEntity userEntity);
 
 }

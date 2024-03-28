@@ -23,14 +23,14 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.webauthn.management.AuthenticationRequest;
+import org.springframework.security.webauthn.management.RelyingPartyAuthenticationRequest;
 import org.springframework.security.webauthn.management.WebAuthnRelyingPartyOperations;
 import org.springframework.util.Assert;
 
 /**
  * An {@link AuthenticationProvider} that uses {@link WebAuthnRelyingPartyOperations} for authentication using an
  * {@link WebAuthnAuthenticationRequestToken}. First
- * {@link WebAuthnRelyingPartyOperations#authenticate(AuthenticationRequest)} is invoked. The result is a username
+ * {@link WebAuthnRelyingPartyOperations#authenticate(RelyingPartyAuthenticationRequest)} is invoked. The result is a username
  * passed into {@link UserDetailsService}. The {@link UserDetails} is used to create an {@link Authentication}.
  *
  * @since 6.3

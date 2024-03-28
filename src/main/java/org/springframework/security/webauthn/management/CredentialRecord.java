@@ -23,12 +23,14 @@ import java.util.Optional;
 import org.springframework.security.webauthn.api.Base64Url;
 import org.springframework.security.webauthn.api.AuthenticatorTransport;
 import org.springframework.security.webauthn.api.PublicKeyCredentialType;
+import org.springframework.security.webauthn.api.PublicKeyCredentialUserEntity;
 
 /**
- * FIXME: This is very similar to {@link RelyingPartyPublicKey}
  * Represents a <a href="https://www.w3.org/TR/webauthn-3/#credential-record">Credential Record</a> that is stored by
  * the Relying Party <a href="https://www.w3.org/TR/webauthn-3/#reg-ceremony-store-credential-record">after successful
  * registration</a>.
+ * @since 6.3
+ * @author Rob Winch
  */
 public interface CredentialRecord {
 
@@ -76,30 +78,54 @@ public interface CredentialRecord {
 	List<AuthenticatorTransport> getTransports();
 
 	/**
-	 * 	The <a href="https://www.w3.org/TR/webauthn-3/#abstract-opdef-credential-record-backupeligible">backupElgible</a>
-	 * 	flag is the same as the BE flag in authData.
+	 * The <a href="https://www.w3.org/TR/webauthn-3/#abstract-opdef-credential-record-backupeligible">backupElgible</a>
+	 * flag is the same as the BE flag in authData.
 	 * @return
 	 */
 	boolean isBackupEligible();
 	/**
-	 * 	The <a href="https://www.w3.org/TR/webauthn-3/#abstract-opdef-credential-record-backupstate">backupState</a>
-	 * 	flag is the same as the BS flag in authData.
+	 * The <a href="https://www.w3.org/TR/webauthn-3/#abstract-opdef-credential-record-backupstate">backupState</a>
+	 * flag is the same as the BS flag in authData.
 	 * @return
 	 */
 	boolean isBackupState();
 
+	/**
+	 * A reference to the associated {@link PublicKeyCredentialUserEntity#getId()}
+	 * @return
+	 */
 	Base64Url getUserEntityUserId();
 
-
-
+	/**
+	 * The <a href="https://www.w3.org/TR/webauthn-3/#abstract-opdef-credential-record-attestationobject">attestationObject</a>
+	 * is the value of the attestationObject attribute when the public key credential source was registered.
+	 * @return the attestationObject
+	 */
 	Base64Url getAttestationObject();
 
+	/**
+	 * The <a href="https://www.w3.org/TR/webauthn-3/#abstract-opdef-credential-record-attestationclientdatajson">attestationClientDataJSON</a>
+	 * is the value of the attestationObject attribute when the public key credential source was registered.
+	 * @return
+	 */
 	Base64Url getAttestationClientDataJSON();
 
+	/**
+	 * A human-readable label for this {@link CredentialRecord} assigned by the user.
+	 * @return a label
+	 */
 	String getLabel();
 
+	/**
+	 * The last time this {@link CredentialRecord} was used.
+	 * @return the last time this {@link CredentialRecord} was used.
+	 */
 	Instant getLastUsed();
 
+	/**
+	 * When this {@link CredentialRecord} was created.
+	 * @return When this {@link CredentialRecord} was created.
+	 */
 	Instant getCreated();
 
 }

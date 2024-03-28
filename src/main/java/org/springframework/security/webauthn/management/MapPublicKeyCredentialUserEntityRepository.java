@@ -22,6 +22,11 @@ import org.springframework.security.webauthn.api.PublicKeyCredentialUserEntity;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * A {@link Map} based implementation of {@link PublicKeyCredentialUserEntityRepository}.
+ * @since 6.3
+ * @author Rob Winch
+ */
 public class MapPublicKeyCredentialUserEntityRepository implements PublicKeyCredentialUserEntityRepository {
 
 	private final Map<String,PublicKeyCredentialUserEntity> usernameToUserEntity = new HashMap<>();

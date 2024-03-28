@@ -23,6 +23,11 @@ import org.springframework.security.webauthn.api.Base64Url;
 import org.springframework.security.webauthn.api.AuthenticatorTransport;
 import org.springframework.security.webauthn.api.PublicKeyCredentialType;
 
+/**
+ * An immutable {@link CredentialRecord}.
+ * @since 6.3
+ * @author Rob Winch
+ */
 public class ImmutableCredentialRecord implements CredentialRecord {
 
 	private final PublicKeyCredentialType credentialType;

@@ -30,18 +30,13 @@ import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.mock.web.MockServletContext;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.webauthn.api.TestPublicKeyCredentialRequestOptions;
 import org.springframework.security.webauthn.api.AuthenticatorAssertionResponse;
 import org.springframework.security.webauthn.api.PublicKeyCredentialRequestOptions;
 import org.springframework.security.webauthn.api.PublicKeyCredential;
-import org.springframework.security.webauthn.api.PublicKeyCredentialType;
 import org.springframework.security.webauthn.authentication.WebAuthnAuthenticationRequestToken;
-import org.springframework.security.webauthn.management.AuthenticationRequest;
-import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
+import org.springframework.security.webauthn.management.RelyingPartyAuthenticationRequest;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-
-import java.nio.charset.StandardCharsets;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
@@ -159,7 +154,7 @@ class WebAuthnAuthenticationFilterTests {
 		assertThat(this.response.getStatus()).isEqualTo(HttpStatus.OK.value());
 		WebAuthnAuthenticationRequestToken token = authenticationCaptor.getValue();
 		assertThat(token).isNotNull();
-		AuthenticationRequest authnRequest = token.getWebAuthnRequest();
+		RelyingPartyAuthenticationRequest authnRequest = token.getWebAuthnRequest();
 		PublicKeyCredential<AuthenticatorAssertionResponse> publicKey = authnRequest.getPublicKey();
 		AuthenticatorAssertionResponse assertionResponse = publicKey.getResponse();
 		assertThat(publicKey.getId()).isEqualTo("dYF7EGnRFFIXkpXi9XU2wg");

@@ -23,7 +23,6 @@ import org.springframework.core.ResolvableType;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.converter.GenericHttpMessageConverter;
-import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.http.server.ServletServerHttpRequest;
@@ -40,7 +39,7 @@ import org.springframework.security.webauthn.api.PublicKeyCredentialRequestOptio
 import org.springframework.security.webauthn.api.PublicKeyCredential;
 import org.springframework.security.webauthn.authentication.WebAuthnAuthenticationRequestToken;
 import org.springframework.security.webauthn.jackson.WebauthnJackson2Module;
-import org.springframework.security.webauthn.management.AuthenticationRequest;
+import org.springframework.security.webauthn.management.RelyingPartyAuthenticationRequest;
 import org.springframework.util.Assert;
 
 import java.io.IOException;
@@ -100,7 +99,7 @@ public class WebAuthnAuthenticationFilter extends AbstractAuthenticationProcessi
 			throw new BadCredentialsException("Unable to authenticate the PublicKeyCredential. No PublicKeyCredentialRequestOptions found.");
 		}
 		this.requestOptionsRepository.save(request, response, null);
-		AuthenticationRequest authenticationRequest = new AuthenticationRequest(requestOptions, publicKeyCredential);
+		RelyingPartyAuthenticationRequest authenticationRequest = new RelyingPartyAuthenticationRequest(requestOptions, publicKeyCredential);
 		WebAuthnAuthenticationRequestToken token = new WebAuthnAuthenticationRequestToken(authenticationRequest);
 		return getAuthenticationManager().authenticate(token);
 	}

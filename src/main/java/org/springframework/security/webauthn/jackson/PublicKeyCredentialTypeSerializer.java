@@ -30,6 +30,9 @@ import java.io.IOException;
  */
 class PublicKeyCredentialTypeSerializer extends StdSerializer<PublicKeyCredentialType> {
 
+	/**
+	 * Creates a new instance.
+	 */
 	PublicKeyCredentialTypeSerializer() {
 		super(PublicKeyCredentialType.class);
 	}

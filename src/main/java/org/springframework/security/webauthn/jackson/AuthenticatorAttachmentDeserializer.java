@@ -20,10 +20,16 @@ import com.fasterxml.jackson.core.JacksonException;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
+import org.springframework.security.webauthn.api.AttestationConveyancePreference;
 import org.springframework.security.webauthn.api.AuthenticatorAttachment;
 
 import java.io.IOException;
 
+/**
+ * Jackson deserializer for {@link AuthenticatorAttachment}
+ * @since 6.3
+ * @author Rob Winch
+ */
 class AuthenticatorAttachmentDeserializer extends StdDeserializer<AuthenticatorAttachment> {
 
 	AuthenticatorAttachmentDeserializer() {

@@ -18,7 +18,7 @@ package org.springframework.security.webauthn.authentication;
 
 import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.core.authority.AuthorityUtils;
-import org.springframework.security.webauthn.management.AuthenticationRequest;
+import org.springframework.security.webauthn.management.RelyingPartyAuthenticationRequest;
 import org.springframework.util.Assert;
 
 /**
@@ -29,23 +29,23 @@ import org.springframework.util.Assert;
  */
 public class WebAuthnAuthenticationRequestToken extends AbstractAuthenticationToken {
 
-	private final AuthenticationRequest webAuthnRequest;
+	private final RelyingPartyAuthenticationRequest webAuthnRequest;
 
 	/**
 	 * Creates a new instance.
-	 * @param webAuthnRequest the {@link AuthenticationRequest} to use for authentication. Cannot be null.
+	 * @param webAuthnRequest the {@link RelyingPartyAuthenticationRequest} to use for authentication. Cannot be null.
 	 */
-	public WebAuthnAuthenticationRequestToken(AuthenticationRequest webAuthnRequest) {
+	public WebAuthnAuthenticationRequestToken(RelyingPartyAuthenticationRequest webAuthnRequest) {
 		super(AuthorityUtils.NO_AUTHORITIES);
 		Assert.notNull(webAuthnRequest, "webAuthnRequest cannot be null");
 		this.webAuthnRequest = webAuthnRequest;
 	}
 
 	/**
-	 * Gets the {@link AuthenticationRequest}
-	 * @return the {@link AuthenticationRequest}
+	 * Gets the {@link RelyingPartyAuthenticationRequest}
+	 * @return the {@link RelyingPartyAuthenticationRequest}
 	 */
-	public AuthenticationRequest getWebAuthnRequest() {
+	public RelyingPartyAuthenticationRequest getWebAuthnRequest() {
 		return this.webAuthnRequest;
 	}
 

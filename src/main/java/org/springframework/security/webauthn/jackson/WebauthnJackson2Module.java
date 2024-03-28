@@ -26,7 +26,8 @@ import org.springframework.security.webauthn.api.*;
 import org.springframework.security.webauthn.management.RelyingPartyPublicKey;
 
 /**
- * Adds Jackson support for Spring Security WebAuthn.
+ * Adds Jackson support for Spring Security WebAuthn. It is automatically registered when using Jackson's
+ * SPI support.
  * @since 6.3
  * @author Rob Winch
  */

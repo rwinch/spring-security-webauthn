@@ -16,16 +16,28 @@
 
 package org.springframework.security.webauthn.management;
 
+import org.springframework.security.core.Authentication;
 import org.springframework.security.webauthn.api.PublicKeyCredentialCreationOptions;
 import org.springframework.util.Assert;
 
+/**
+ * Contains the information necessary to register a new Credential.
+ * @see Webauthn4JRelyingPartyOperations#registerCredential(RelyingPartyRegistrationRequest)
+ * @since 6.3
+ * @author Rob Winch
+ */
 public class RelyingPartyRegistrationRequest {
 
 	private final PublicKeyCredentialCreationOptions options;
 
 	private final RelyingPartyPublicKey publicKey;
 
-
+	/**
+	 * Creates a new instance.
+	 * @param options the {@link PublicKeyCredentialCreationOptions} that were saved when
+	 * {@link WebAuthnRelyingPartyOperations#createCredentialRequestOptions(Authentication)} was called.
+	 * @param publicKey this is submitted by the client and if validated stored.
+	 */
 	public RelyingPartyRegistrationRequest(PublicKeyCredentialCreationOptions options, RelyingPartyPublicKey publicKey) {
 		Assert.notNull(options, "options cannot be null");
 		Assert.notNull(publicKey, "publicKey cannot be null");

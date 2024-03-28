@@ -18,14 +18,27 @@ package org.springframework.security.webauthn.management;
 
 import org.springframework.security.webauthn.api.AuthenticatorAttestationResponse;
 import org.springframework.security.webauthn.api.PublicKeyCredential;
+import org.springframework.util.Assert;
 
+/**
+ * Submitted by a client to request registration of a new credential.
+ * @since 6.3
+ * @author Rob Winch
+ */
 public class RelyingPartyPublicKey {
 
 	private final PublicKeyCredential<AuthenticatorAttestationResponse> credential;
 
 	private final String label;
 
+	/**
+	 * Creates a new instance.
+	 * @param credential the credential
+	 * @param label a human readable label that will be associated to the credential
+	 */
 	public RelyingPartyPublicKey(PublicKeyCredential<AuthenticatorAttestationResponse> credential, String label) {
+		Assert.notNull(credential, "credential cannot be null");
+		Assert.notNull(label, "label cannot be null");
 		this.credential = credential;
 		this.label = label;
 	}
