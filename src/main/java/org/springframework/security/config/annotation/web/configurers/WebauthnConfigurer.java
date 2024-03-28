@@ -39,8 +39,14 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
-public class PasskeysConfigurer<B extends HttpSecurityBuilder<B>>
-		extends AbstractHttpConfigurer<PasskeysConfigurer<B>, B> {
+/**
+ * Configures WebAuthn for Spring Security applications
+ * @since 6.3
+ * @author Rob Winch
+ * @param <B> the type of builder
+ */
+public class WebauthnConfigurer<B extends HttpSecurityBuilder<B>>
+		extends AbstractHttpConfigurer<WebauthnConfigurer<B>, B> {
 
 	private String rpId;
 
@@ -48,22 +54,18 @@ public class PasskeysConfigurer<B extends HttpSecurityBuilder<B>>
 
 	private Set<String> allowedOrigins = new HashSet<>();
 
-	@Override
-	public void init(B builder) throws Exception {
-		super.init(builder);
-	}
 
-	public PasskeysConfigurer<B> rpId(String rpId) {
+	public WebauthnConfigurer<B> rpId(String rpId) {
 		this.rpId = rpId;
 		return this;
 	}
 
-	public PasskeysConfigurer<B> rpName(String rpName) {
+	public WebauthnConfigurer<B> rpName(String rpName) {
 		this.rpName = rpName;
 		return this;
 	}
 
-	public PasskeysConfigurer<B> allowedOrigins(String... allowedOrigins) {
+	public WebauthnConfigurer<B> allowedOrigins(String... allowedOrigins) {
 		this.allowedOrigins = Set.of(allowedOrigins);
 		return this;
 	}
@@ -125,6 +127,10 @@ public class PasskeysConfigurer<B extends HttpSecurityBuilder<B>>
 	}
 
 	private WebAuthnRelyingPartyOperations webAuthnRelyingPartyOperations(PublicKeyCredentialUserEntityRepository userEntities, UserCredentialRepository userCredentials) {
+		Optional<WebAuthnRelyingPartyOperations> webauthnOperationsBean = getBeanOrNull(WebAuthnRelyingPartyOperations.class);
+		if (webauthnOperationsBean.isPresent()) {
+			return webauthnOperationsBean.get();
+		}
 		Webauthn4JRelyingPartyOperations result =  new Webauthn4JRelyingPartyOperations(userEntities, userCredentials,
 				PublicKeyCredentialRpEntity.builder()
 				.id(this.rpId)
