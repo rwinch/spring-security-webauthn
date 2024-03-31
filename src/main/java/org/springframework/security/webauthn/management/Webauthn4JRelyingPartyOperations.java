@@ -34,26 +34,12 @@ import com.webauthn4j.data.client.challenge.Challenge;
 import com.webauthn4j.data.client.challenge.DefaultChallenge;
 import com.webauthn4j.data.extension.authenticator.RegistrationExtensionAuthenticatorOutput;
 import com.webauthn4j.server.ServerProperty;
+import org.springframework.security.authentication.AuthenticationTrustResolver;
+import org.springframework.security.authentication.AuthenticationTrustResolverImpl;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.webauthn.api.AttestationConveyancePreference;
-import org.springframework.security.webauthn.api.AuthenticatorAssertionResponse;
-import org.springframework.security.webauthn.api.AuthenticatorAttestationResponse;
-import org.springframework.security.webauthn.api.AuthenticatorSelectionCriteria;
-import org.springframework.security.webauthn.api.AuthenticatorTransport;
-import org.springframework.security.webauthn.api.Base64Url;
-import org.springframework.security.webauthn.api.ImmutableAuthenticationExtensionsClientInputs;
-import org.springframework.security.webauthn.api.ImmutableAuthenticationExtensionsClientInput;
-import org.springframework.security.webauthn.api.PublicKeyCredential;
-import org.springframework.security.webauthn.api.PublicKeyCredentialCreationOptions;
+import org.springframework.security.webauthn.api.*;
 import org.springframework.security.webauthn.api.PublicKeyCredentialCreationOptions.PublicKeyCredentialCreationOptionsBuilder;
-import org.springframework.security.webauthn.api.PublicKeyCredentialDescriptor;
-import org.springframework.security.webauthn.api.PublicKeyCredentialParameters;
-import org.springframework.security.webauthn.api.PublicKeyCredentialRequestOptions;
 import org.springframework.security.webauthn.api.PublicKeyCredentialRequestOptions.PublicKeyCredentialRequestOptionsBuilder;
-import org.springframework.security.webauthn.api.PublicKeyCredentialRpEntity;
-import org.springframework.security.webauthn.api.PublicKeyCredentialUserEntity;
-import org.springframework.security.webauthn.api.ResidentKeyRequirement;
-import org.springframework.security.webauthn.api.UserVerificationRequirement;
 import org.springframework.util.Assert;
 
 import java.time.Duration;
@@ -73,8 +59,6 @@ import java.util.stream.Collectors;
  */
 public class Webauthn4JRelyingPartyOperations implements WebAuthnRelyingPartyOperations {
 
-	private final ObjectConverter objectConverter = new ObjectConverter();
-
 	private final PublicKeyCredentialUserEntityRepository userEntities;
 
 	private final UserCredentialRepository userCredentials;
@@ -82,6 +66,10 @@ public class Webauthn4JRelyingPartyOperations implements WebAuthnRelyingPartyOpe
 	private final Set<String> allowedOrigins;
 
 	private final PublicKeyCredentialRpEntity rp;
+
+	private final ObjectConverter objectConverter = new ObjectConverter();
+
+	private final AuthenticationTrustResolver trustResolver = new AuthenticationTrustResolverImpl();
 
 	private WebAuthnManager webAuthnManager = WebAuthnManager.createNonStrictWebAuthnManager();
 
@@ -97,6 +85,10 @@ public class Webauthn4JRelyingPartyOperations implements WebAuthnRelyingPartyOpe
 	 * @param allowedOrigins the allowed origins.
 	 */
 	public Webauthn4JRelyingPartyOperations(PublicKeyCredentialUserEntityRepository userEntities, UserCredentialRepository userCredentials, PublicKeyCredentialRpEntity rpEntity, Set<String> allowedOrigins) {
+		Assert.notNull(userEntities, "userEntities cannot be null");
+		Assert.notNull(userCredentials, "userCredentials cannot be null");
+		Assert.notNull(rpEntity, "rpEntity cannot be null");
+		Assert.notNull(allowedOrigins, "allowedOrigins cannot be null");
 		this.userEntities = userEntities;
 		this.userCredentials = userCredentials;
 		this.rp = rpEntity;
@@ -138,6 +130,9 @@ public class Webauthn4JRelyingPartyOperations implements WebAuthnRelyingPartyOpe
 
 	@Override
 	public PublicKeyCredentialCreationOptions createPublicKeyCredentialCreationOptions(Authentication authentication) {
+		if (!this.trustResolver.isAuthenticated(authentication)) {
+			throw new IllegalArgumentException("Authentication must be authenticated");
+		}
 		AuthenticatorSelectionCriteria authenticatorSelection = AuthenticatorSelectionCriteria.builder()
 				.userVerification(UserVerificationRequirement.PREFERRED)
 				.residentKey(ResidentKeyRequirement.REQUIRED)
@@ -150,7 +145,7 @@ public class Webauthn4JRelyingPartyOperations implements WebAuthnRelyingPartyOpe
 
 		PublicKeyCredentialCreationOptions options = PublicKeyCredentialCreationOptions.builder()
 				.attestation(AttestationConveyancePreference.DIRECT)
-				.pubKeyCredParams(PublicKeyCredentialParameters.ES256, PublicKeyCredentialParameters.RS256)
+				.pubKeyCredParams(PublicKeyCredentialParameters.EdDSA, PublicKeyCredentialParameters.ES256, PublicKeyCredentialParameters.RS256)
 				.authenticatorSelection(authenticatorSelection)
 				.challenge(Base64Url.random())
 				.extensions(clientInputs)
@@ -193,7 +188,12 @@ public class Webauthn4JRelyingPartyOperations implements WebAuthnRelyingPartyOpe
 
 	@Override
 	public CredentialRecord registerCredential(RelyingPartyRegistrationRequest rpRegistrationRequest) {
-		// FIXME: validate that the credential is unique
+		Assert.notNull(rpRegistrationRequest, "rpRegistrationRequest cannot be null");
+		Base64Url credentialId = rpRegistrationRequest.getPublicKey().getCredential().getRawId();
+		CredentialRecord existingCredential = this.userCredentials.findByCredentialId(credentialId);
+		if (existingCredential != null) {
+			throw new IllegalArgumentException("Credential with id " + credentialId + " already exists");
+		}
 		PublicKeyCredentialCreationOptions creationOptions = rpRegistrationRequest.getCreationOptions();
 		String rpId = creationOptions.getRp().getId();
 		RelyingPartyPublicKey publicKey = rpRegistrationRequest.getPublicKey();

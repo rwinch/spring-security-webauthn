@@ -128,20 +128,24 @@ class PublicKeyCredentialCreationOptionsFilterTests {
 			"pubKeyCredParams": [
 				{
 					"type": "public-key",
-					"alg": -257
+					"alg": -8
 				},
 				{
 					"type": "public-key",
 					"alg": -7
+				},
+				{
+					"type": "public-key",
+					"alg": -257
 				}
 			],
-			"timeout": 60000,
+			"timeout": 300000,
 			"excludeCredentials": [],
 			"authenticatorSelection": {
-				"residentKey": "discouraged",
+				"residentKey": "required",
 				"userVerification": "preferred"
 			},
-			"attestation": "none",
+			"attestation": "direct",
 			"extensions": {
 				"credProps": true
 			}

@@ -44,7 +44,8 @@ public interface PublicKeyCredentialUserEntityRepository {
 	/**
 	 * Saves the {@link PublicKeyCredentialUserEntity} to the associated username.
 	 * @param username the username to associate to the provided {@link PublicKeyCredentialUserEntity}
-	 * @param userEntity the {@link PublicKeyCredentialUserEntity} to associate to the provided username.
+	 * @param userEntity the {@link PublicKeyCredentialUserEntity} to associate to the provided username. If null, any
+	 * existing entry is deleted.
 	 */
 	void save(String username, PublicKeyCredentialUserEntity userEntity);
 

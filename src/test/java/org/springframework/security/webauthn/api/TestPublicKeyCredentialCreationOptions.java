@@ -23,7 +23,7 @@ public class TestPublicKeyCredentialCreationOptions {
 
 		AuthenticatorSelectionCriteria authenticatorSelection = AuthenticatorSelectionCriteria.builder()
 				.userVerification(UserVerificationRequirement.PREFERRED)
-				.residentKey(ResidentKeyRequirement.DISCOURAGED)
+				.residentKey(ResidentKeyRequirement.REQUIRED)
 				.build();
 		Base64Url challenge = Base64Url.fromBase64("q7lCdd3SVQxdC-v8pnRAGEn1B2M-t7ZECWPwCAmhWvc");
 		PublicKeyCredentialRpEntity rp = PublicKeyCredentialRpEntity.builder()
@@ -38,13 +38,13 @@ public class TestPublicKeyCredentialCreationOptions {
 				.build();
 		ImmutableAuthenticationExtensionsClientInputs clientInputs = new ImmutableAuthenticationExtensionsClientInputs(ImmutableAuthenticationExtensionsClientInput.credProps);
 		return  PublicKeyCredentialCreationOptions.builder()
-				.attestation(AttestationConveyancePreference.NONE)
+				.attestation(AttestationConveyancePreference.DIRECT)
 				.user(userEntity)
-				.pubKeyCredParams(PublicKeyCredentialParameters.RS256, PublicKeyCredentialParameters.ES256)
+				.pubKeyCredParams(PublicKeyCredentialParameters.EdDSA, PublicKeyCredentialParameters.ES256, PublicKeyCredentialParameters.RS256)
 				.authenticatorSelection(authenticatorSelection)
 				.challenge(challenge)
 				.rp(rp)
 				.extensions(clientInputs)
-				.timeout(Duration.ofMillis(60000));
+				.timeout(Duration.ofMinutes(5));
 	}
 }

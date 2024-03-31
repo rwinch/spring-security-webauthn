@@ -60,6 +60,11 @@ class MapUserCredentialRepositoryTests {
 	}
 
 	@Test
+	void deleteWhenNullIdThenIllegalArgumentException() {
+		assertThatIllegalArgumentException().isThrownBy(() -> this.userCredentials.delete(null));
+	}
+
+	@Test
 	void saveThenFound() {
 		ImmutableCredentialRecord credentialRecord = TestCredentialRecord.userCredential().build();
 		this.userCredentials.save(credentialRecord);

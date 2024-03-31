@@ -35,6 +35,7 @@ public class MapUserCredentialRepository implements UserCredentialRepository {
 
 	@Override
 	public void delete(Base64Url credentialId) {
+		Assert.notNull(credentialId, "credentialId cannot be null");
 		CredentialRecord credentialRecord = this.credentialIdToUserCredential.remove(credentialId);
 		if (credentialRecord != null) {
 			Set<Base64Url> credentialIds = this.userEntityIdToUserCredentialIds.get(credentialRecord.getUserEntityUserId());

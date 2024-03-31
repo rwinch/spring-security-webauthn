@@ -197,6 +197,7 @@ public class DefaultWebAuthnRegistrationPageGeneratingFilter extends OncePerRequ
 							const credentialsContainer = await navigator.credentials.create({
 								publicKey: options,
 							});
+							// FIXME: Let response be credential.response. If response is not an instance of AuthenticatorAttestationResponse, abort the ceremony with a user-visible error. https://www.w3.org/TR/webauthn-3/#sctn-registering-a-new-credential
 							const { response } = credentialsContainer;
 							const credential = {
 								id: credentialsContainer.id,

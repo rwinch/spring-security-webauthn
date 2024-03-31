@@ -150,9 +150,9 @@ class JacksonTests {
 	void writePublicKeyCredentialCreationOptions() throws Exception {
 		String expected = """
 				{
-				    "attestation": "none",
+				    "attestation": "direct",
 				    "authenticatorSelection": {
-				        "residentKey": "discouraged"
+				        "residentKey": "required"
 				    },
 				    "challenge": "q7lCdd3SVQxdC-v8pnRAGEn1B2M-t7ZECWPwCAmhWvc",
 				    "excludeCredentials": [],
@@ -162,6 +162,9 @@ class JacksonTests {
 				    "pubKeyCredParams": [
 				        {
 				            "alg": -7,
+				            "type": "public-key"
+				        },{
+				            "alg": -8,
 				            "type": "public-key"
 				        },
 				        {
@@ -173,7 +176,7 @@ class JacksonTests {
 				        "id": "example.localhost",
 				        "name": "SimpleWebAuthn Example"
 				    },
-				    "timeout": 60000,
+				    "timeout": 300000,
 				    "user": {
 				        "displayName": "user@example.localhost",
 				        "id": "oWJtkJ6vJ_m5b84LB4_K7QKTCTEwLIjCh4tFMCGHO4w",

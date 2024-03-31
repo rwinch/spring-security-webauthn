@@ -29,7 +29,7 @@ public interface WebAuthnRelyingPartyOperations {
 
 	/**
 	 * Creates the {@link PublicKeyCredentialCreationOptions} used to register new credentials.
-	 * @param authentication the current {@link Authentication}
+	 * @param authentication the current {@link Authentication}. It must be authenticated to associate the credential to a user.
 	 * @return the {@link PublicKeyCredentialCreationOptions} for the {@link Authentication} passed in. Cannot be null.
 	 */
 	PublicKeyCredentialCreationOptions createPublicKeyCredentialCreationOptions(Authentication authentication);
