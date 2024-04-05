@@ -95,7 +95,7 @@ public class DefaultWebAuthnRegistrationPageGeneratingFilter extends OncePerRequ
 		List<CredentialRecord> credentials = userEntity == null ? Collections.emptyList() : this.userCredentials.findByUserId(userEntity.getId());
 		if (credentials.isEmpty()) {
 			return """
-				<tr><td colspan="4">No Passkeys</td></tr>
+				<tr><td colspan="5">No Passkeys</td></tr>
 				""";
 		}
 		String html = "";
