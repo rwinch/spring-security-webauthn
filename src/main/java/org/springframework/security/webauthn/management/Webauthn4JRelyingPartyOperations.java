@@ -29,6 +29,7 @@ import com.webauthn4j.data.RegistrationRequest;
 import com.webauthn4j.data.attestation.AttestationObject;
 import com.webauthn4j.data.attestation.authenticator.AttestedCredentialData;
 import com.webauthn4j.data.attestation.authenticator.AuthenticatorData;
+import com.webauthn4j.data.attestation.statement.COSEAlgorithmIdentifier;
 import com.webauthn4j.data.client.Origin;
 import com.webauthn4j.data.client.challenge.Challenge;
 import com.webauthn4j.data.client.challenge.DefaultChallenge;
@@ -209,11 +210,19 @@ public class Webauthn4JRelyingPartyOperations implements WebAuthnRelyingPartyOpe
 		byte[] tokenBindingId = null /* set tokenBindingId */; // FIXME: https://www.w3.org/TR/webauthn-1/#dom-collectedclientdata-tokenbinding
 		ServerProperty serverProperty = new ServerProperty(origins, rpId, challenge, tokenBindingId);
 		boolean userVerificationRequired = creationOptions.getAuthenticatorSelection().getUserVerification() == UserVerificationRequirement.REQUIRED;
+		// requireUserPresence The constant Boolean value true https://www.w3.org/TR/webauthn-3/#sctn-op-make-cred
+		boolean userPresenceRequired = true;
+		List<com.webauthn4j.data.PublicKeyCredentialParameters> pubKeyCredParams = convertCredentialParamsToWebauthn4j(creationOptions.getPubKeyCredParams());
 		RegistrationRequest webauthn4jRegistrationRequest = new RegistrationRequest(attestationObject, clientDataJSON);
-		RegistrationParameters registrationParameters = new RegistrationParameters(serverProperty, userVerificationRequired);
-
+		RegistrationParameters registrationParameters = new RegistrationParameters(serverProperty, pubKeyCredParams, userVerificationRequired, userPresenceRequired);
 		RegistrationData registrationData = this.webAuthnManager.validate(webauthn4jRegistrationRequest, registrationParameters);
 		AuthenticatorData<RegistrationExtensionAuthenticatorOutput> authData = registrationData.getAttestationObject().getAuthenticatorData();
+
+		// this check is not implemented in webauthn4j yet
+		// See https://github.com/webauthn4j/webauthn4j/issues/889
+		if (!authData.isFlagBE() && authData.isFlagBS()) {
+			throw new RuntimeException("Flag combination is invalid. See webauthn3: 16. If the BE bit of the flags in authData is not set, verify that the BS bit is not set.");
+		}
 
 		CborConverter cborConverter = this.objectConverter.getCborConverter();
 		byte[] coseKey = cborConverter.writeValueAsBytes(authData.getAttestedCredentialData().getCOSEKey());
@@ -235,6 +244,20 @@ public class Webauthn4JRelyingPartyOperations implements WebAuthnRelyingPartyOpe
 		return userCredential;
 	}
 
+	private List<com.webauthn4j.data.PublicKeyCredentialParameters> convertCredentialParamsToWebauthn4j(List<PublicKeyCredentialParameters> parameters) {
+		return parameters.stream()
+				.map(this::convertParamToWebauthn4j)
+				.collect(Collectors.toUnmodifiableList());
+	}
+
+	private com.webauthn4j.data.PublicKeyCredentialParameters convertParamToWebauthn4j(PublicKeyCredentialParameters parameter) {
+		if (parameter.getType() != PublicKeyCredentialType.PUBLIC_KEY) {
+			throw new IllegalArgumentException("Cannot convert unknown credential type " + parameter.getType() + " to webauthn4j");
+		}
+		long algValue = parameter.getAlg().getValue();
+		COSEAlgorithmIdentifier alg = COSEAlgorithmIdentifier.create(algValue);
+		return new com.webauthn4j.data.PublicKeyCredentialParameters(com.webauthn4j.data.PublicKeyCredentialType.PUBLIC_KEY, alg);
+	}
 	private Set<Origin> toOrigins() {
 		return this.allowedOrigins.stream().map(Origin::new).collect(Collectors.toSet());
 	}

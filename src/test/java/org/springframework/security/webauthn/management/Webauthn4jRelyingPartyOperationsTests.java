@@ -373,7 +373,7 @@ class Webauthn4jRelyingPartyOperationsTests {
 				.build();
 		RelyingPartyRegistrationRequest registrationRequest = new RelyingPartyRegistrationRequest(options, new RelyingPartyPublicKey(publicKey, this.label));
 
-		assertThatThrownBy(() -> this.rpOperations.registerCredential(registrationRequest)).hasMessageContaining("Unrequested credential key algorithm");
+		assertThatThrownBy(() -> this.rpOperations.registerCredential(registrationRequest)).hasMessageContaining("options.pubKeyCredParams");
 	}
 
 	/**
