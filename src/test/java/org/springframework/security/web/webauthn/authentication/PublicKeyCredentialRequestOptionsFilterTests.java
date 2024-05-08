@@ -95,7 +95,7 @@ class PublicKeyCredentialRequestOptionsFilterTests {
 
 	@Test
 	void doFilterWhenNoMatch() throws Exception {
-		this.mockMvc.perform(get("/nomatch"))
+		this.mockMvc.perform(post("/nomatch"))
 				.andExpect(status().isNotFound())
 				.andDo((result) ->
 						assertThat(result.getResponse().getContentAsString()).isEmpty()
@@ -104,8 +104,8 @@ class PublicKeyCredentialRequestOptionsFilterTests {
 	}
 
 	@Test
-	void doFilterWhenNotGet() throws Exception {
-		this.mockMvc.perform(post("/webauthn/authenticate/options"))
+	void doFilterWhenNotPost() throws Exception {
+		this.mockMvc.perform(get("/webauthn/authenticate/options"))
 				.andExpect(status().isNotFound())
 				.andDo((result) ->
 						assertThat(result.getResponse().getContentAsString()).isEmpty()
@@ -120,7 +120,7 @@ class PublicKeyCredentialRequestOptionsFilterTests {
 		when(this.relyingPartyOperations.createCredentialRequestOptions(any())).thenReturn(options);
 
 		PublicKeyCredentialCreationOptions mockResult = this.relyingPartyOperations.createPublicKeyCredentialCreationOptions(null);
-		this.mockMvc.perform(get("/webauthn/authenticate/options"))
+		this.mockMvc.perform(post("/webauthn/authenticate/options"))
 				.andExpect(status().isOk())
 				.andDo((result) ->
 						JSONAssert.assertEquals(result.getResponse().getContentAsString(), """
@@ -155,7 +155,7 @@ class PublicKeyCredentialRequestOptionsFilterTests {
 		when(this.relyingPartyOperations.createCredentialRequestOptions(any())).thenReturn(options);
 
 		PublicKeyCredentialCreationOptions mockResult = this.relyingPartyOperations.createPublicKeyCredentialCreationOptions(null);
-		this.mockMvc.perform(get("/webauthn/authenticate/options"))
+		this.mockMvc.perform(post("/webauthn/authenticate/options"))
 				.andExpect(status().isOk())
 				.andDo((result) ->
 						assertThat(result.getResponse().getContentAsString()).isEqualTo(body)

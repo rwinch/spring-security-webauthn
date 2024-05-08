@@ -50,7 +50,7 @@ import static org.springframework.security.web.util.matcher.AntPathRequestMatche
  */
 public class PublicKeyCredentialRequestOptionsFilter extends OncePerRequestFilter {
 
-	private RequestMatcher matcher = antMatcher(HttpMethod.GET,"/webauthn/authenticate/options");
+	private RequestMatcher matcher = antMatcher(HttpMethod.POST,"/webauthn/authenticate/options");
 
 	private SecurityContextHolderStrategy securityContextHolderStrategy = SecurityContextHolder
 			.getContextHolderStrategy();

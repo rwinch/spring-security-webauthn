@@ -368,12 +368,6 @@ public class DefaultLoginPageGeneratingFilter extends GenericFilterBean {
 					return bin.buffer;
 				}
 			}
-			
-			async function isConditionalMediationAvailable() {
-				return window.PublicKeyCredential &&
-						PublicKeyCredential.isConditionalMediationAvailable &&
-						await PublicKeyCredential.isConditionalMediationAvailable()
-			}
 			async function conditionalMediation() {
 				const available = await isConditionalMediationAvailable()
 				if (available) {
@@ -385,10 +379,22 @@ public class DefaultLoginPageGeneratingFilter extends GenericFilterBean {
 				return window.PublicKeyCredential &&
 					PublicKeyCredential.isConditionalMediationAvailable &&
 					await PublicKeyCredential.isConditionalMediationAvailable()
+			}
+			async function post(url, body) {
+				const options = {
+					method: 'POST',
+					headers: {
+						'Content-Type': 'application/json',
+						${headers}
+					},
+				}
+				if (body) {
+					options.body = JSON.stringify(body)
+				}	
+				return fetch(url,options)
 			}			
 			async function authenticate(useConditionalMediation) {
-				const optionsResponse = await fetch('/webauthn/authenticate/options');
-				const options = await optionsResponse.json();
+				const options = await post('/webauthn/authenticate/options').then(r => r.json());
 				// FIXME: Use https://www.w3.org/TR/webauthn-3/#sctn-parseRequestOptionsFromJSON
 				options.challenge = base64url.decode(options.challenge);
 
