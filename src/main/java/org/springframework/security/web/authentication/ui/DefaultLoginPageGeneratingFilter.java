@@ -394,6 +394,7 @@ public class DefaultLoginPageGeneratingFilter extends GenericFilterBean {
 				return fetch(url,options)
 			}			
 			async function authenticate(useConditionalMediation) {
+				const abortController = new AbortController()
 				const options = await post('/webauthn/authenticate/options').then(r => r.json());
 				// FIXME: Use https://www.w3.org/TR/webauthn-3/#sctn-parseRequestOptionsFromJSON
 				options.challenge = base64url.decode(options.challenge);
@@ -401,6 +402,7 @@ public class DefaultLoginPageGeneratingFilter extends GenericFilterBean {
 				// Invoke the WebAuthn get() method.
 				const credentialOptions = {
 					publicKey: options,
+					signal: abortController.signal,
 				}
 				if (useConditionalMediation) {
 					// Request a conditional UI
