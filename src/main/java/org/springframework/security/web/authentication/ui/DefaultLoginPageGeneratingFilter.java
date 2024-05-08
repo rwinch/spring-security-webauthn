@@ -368,71 +368,92 @@ public class DefaultLoginPageGeneratingFilter extends GenericFilterBean {
 					return bin.buffer;
 				}
 			}
+			
+			async function isConditionalMediationAvailable() {
+				return window.PublicKeyCredential &&
+						PublicKeyCredential.isConditionalMediationAvailable &&
+						await PublicKeyCredential.isConditionalMediationAvailable()
+			}
+			async function conditionalMediation() {
+				const available = await isConditionalMediationAvailable()
+				if (available) {
+					authenticate(true)
+				}
+				return available   
+			}
+			async function isConditionalMediationAvailable() {
+				return window.PublicKeyCredential &&
+					PublicKeyCredential.isConditionalMediationAvailable &&
+					await PublicKeyCredential.isConditionalMediationAvailable()
+			}			
+			async function authenticate(useConditionalMediation) {
+				const optionsResponse = await fetch('/webauthn/authenticate/options');
+				const options = await optionsResponse.json();
+				// FIXME: Use https://www.w3.org/TR/webauthn-3/#sctn-parseRequestOptionsFromJSON
+				options.challenge = base64url.decode(options.challenge);
 
-			function setup() {
+				// Invoke the WebAuthn get() method.
+				const credentialOptions = {
+					publicKey: options,
+				}
+				if (useConditionalMediation) {
+					// Request a conditional UI
+					credentialOptions.mediation = 'conditional'
+				}
+				const cred = await navigator.credentials.get(credentialOptions);
+				const { response, credType } = cred;
+				let userHandle = undefined;
+				if (response.userHandle) {
+					userHandle = base64url.encode(response.userHandle);
+				}
+				const body = {
+					id: cred.id,
+					rawId: base64url.encode(cred.rawId),
+					response: {
+						authenticatorData: base64url.encode(response.authenticatorData),
+						clientDataJSON: base64url.encode(response.clientDataJSON),
+						signature: base64url.encode(response.signature),
+						userHandle,
+					},
+					credType,
+					clientExtensionResults: cred.getClientExtensionResults(),
+					authenticatorAttachment: cred.authenticatorAttachment,
+				};
 
+				// POST the response to the endpoint that calls
+				const authenticationResponse = await fetch('/login/webauthn',
+					{
+						method: 'POST',
+						headers: {
+							'Content-Type': 'application/json',
+							${headers}
+						},
+						body: JSON.stringify(body),
+					}
+				)
+				.then(response => {
+					if (response.ok) {
+						return response.json()
+					} else {
+						return { 'errorUrl': '${loginPageUrl}?error' }
+					}
+				});
+
+				// Show UI appropriate for the `verified` status
+				if (authenticationResponse && authenticationResponse.authenticated) {
+					window.location.href = authenticationResponse.redirectUrl;
+				} else {
+					window.location.href = authenticationResponse.errorUrl
+				}
+			}
+
+			async function setup() {
+				await conditionalMediation();
 				// <button>
 				const passkeySignin = document.getElementById('passkey-signin');
 
 				// Start authentication when the user clicks a button
-				passkeySignin.addEventListener('click', async () => {
-
-					const optionsResponse = await fetch('/webauthn/authenticate/options');
-					const options = await optionsResponse.json();
-					// FIXME: Use https://www.w3.org/TR/webauthn-3/#sctn-parseRequestOptionsFromJSON
-					options.challenge = base64url.decode(options.challenge);
-
-					// Invoke the WebAuthn get() method.
-					const cred = await navigator.credentials.get({
-						publicKey: options,
-						// Request a conditional UI
-						mediation: 'conditional'
-					});
-					const { response, credType } = cred;
-					let userHandle = undefined;
-					if (response.userHandle) {
-						userHandle = base64url.encode(response.userHandle);
-					}
-					const body = {
-						id: cred.id,
-						rawId: base64url.encode(cred.rawId),
-						response: {
-							authenticatorData: base64url.encode(response.authenticatorData),
-							clientDataJSON: base64url.encode(response.clientDataJSON),
-							signature: base64url.encode(response.signature),
-							userHandle,
-						},
-						credType,
-						clientExtensionResults: cred.getClientExtensionResults(),
-						authenticatorAttachment: cred.authenticatorAttachment,
-					};
-
-					// POST the response to the endpoint that calls
-					const authenticationResponse = await fetch('/login/webauthn',
-						{
-							method: 'POST',
-							headers: {
-								'Content-Type': 'application/json',
-								${headers}
-							},
-							body: JSON.stringify(body),
-						}
-					)
-					.then(response => {
-						if (response.ok) {
-							return response.json()
-						} else {
-							return { 'errorUrl': '${loginPageUrl}?error' }
-						}
-					});
-
-					// Show UI appropriate for the `verified` status
-					if (authenticationResponse && authenticationResponse.authenticated) {
-						window.location.href = authenticationResponse.redirectUrl;
-					} else {
-						window.location.href = authenticationResponse.errorUrl
-					}
-				});
+				passkeySignin.addEventListener('click',() => authenticate(false));
 			}
 		//-->
 		</script>
