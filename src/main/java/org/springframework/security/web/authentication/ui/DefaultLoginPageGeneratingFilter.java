@@ -395,9 +395,23 @@ public class DefaultLoginPageGeneratingFilter extends GenericFilterBean {
 			}			
 			async function authenticate(useConditionalMediation) {
 				const abortController = new AbortController()
+				// FIXME: add contextRoot
 				const options = await post('/webauthn/authenticate/options').then(r => r.json());
 				// FIXME: Use https://www.w3.org/TR/webauthn-3/#sctn-parseRequestOptionsFromJSON
 				options.challenge = base64url.decode(options.challenge);
+
+			function setup() {
+
+				// <button>
+				const passkeySignin = document.getElementById('passkey-signin');
+
+				// Start authentication when the user clicks a button
+				passkeySignin.addEventListener('click', async () => {
+					// FIXME: add contextRoot
+					const optionsResponse = await fetch('/webauthn/authenticate/options');
+					const options = await optionsResponse.json();
+					// FIXME: Use https://www.w3.org/TR/webauthn-3/#sctn-parseRequestOptionsFromJSON
+					options.challenge = base64url.decode(options.challenge);
 
 				// Invoke the WebAuthn get() method.
 				const credentialOptions = {
@@ -428,6 +442,7 @@ public class DefaultLoginPageGeneratingFilter extends GenericFilterBean {
 					authenticatorAttachment: cred.authenticatorAttachment,
 				};
 
+				// FIXME: add contextRoot
 				// POST the response to the endpoint that calls
 				const authenticationResponse = await fetch('/login/webauthn',
 					{
