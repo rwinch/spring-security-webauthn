@@ -16,15 +16,16 @@
 
 package org.springframework.security.webauthn.management;
 
+import com.fasterxml.jackson.core.Base64Variants;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.fasterxml.jackson.dataformat.cbor.CBORFactory;
 import com.webauthn4j.converter.AttestationObjectConverter;
 import com.webauthn4j.converter.util.ObjectConverter;
 import com.webauthn4j.data.attestation.AttestationObject;
 import com.webauthn4j.data.attestation.authenticator.AuthenticatorData;
 import com.webauthn4j.data.extension.authenticator.RegistrationExtensionAuthenticatorOutput;
-import com.yubico.internal.util.JacksonCodecs;
 import org.assertj.core.api.recursive.comparison.RecursiveComparisonConfiguration;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -34,18 +35,34 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.AuthorityUtils;
-import org.springframework.security.crypto.codec.Utf8;
-import org.springframework.security.webauthn.api.*;
+import org.springframework.security.webauthn.api.AuthenticatorAttestationResponse;
 import org.springframework.security.webauthn.api.AuthenticatorAttestationResponse.AuthenticatorAttestationResponseBuilder;
+import org.springframework.security.webauthn.api.AuthenticatorSelectionCriteria;
+import org.springframework.security.webauthn.api.Base64Url;
+import org.springframework.security.webauthn.api.PublicKeyCredential;
+import org.springframework.security.webauthn.api.PublicKeyCredentialCreationOptions;
+import org.springframework.security.webauthn.api.PublicKeyCredentialDescriptor;
+import org.springframework.security.webauthn.api.PublicKeyCredentialParameters;
+import org.springframework.security.webauthn.api.PublicKeyCredentialRequestOptions;
+import org.springframework.security.webauthn.api.PublicKeyCredentialRpEntity;
+import org.springframework.security.webauthn.api.PublicKeyCredentialUserEntity;
+import org.springframework.security.webauthn.api.TestAuthenticatorAttestationResponse;
+import org.springframework.security.webauthn.api.TestCredentialRecord;
+import org.springframework.security.webauthn.api.TestPublicKeyCredential;
+import org.springframework.security.webauthn.api.TestPublicKeyCredentialCreationOptions;
+import org.springframework.security.webauthn.api.TestPublicKeyCredentialUserEntity;
+import org.springframework.security.webauthn.api.UserVerificationRequirement;
 
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.util.Arrays;
-import java.util.Base64;
 import java.util.Map;
 import java.util.Set;
 
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
+import static org.assertj.core.api.Assertions.assertThatRuntimeException;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.BDDMockito.given;
 
 @ExtendWith(MockitoExtension.class)
@@ -418,7 +435,7 @@ class Webauthn4jRelyingPartyOperationsTests {
 	private static AuthenticatorAttestationResponse setFlag(byte... flags) throws Exception {
 		AuthenticatorAttestationResponseBuilder authAttResponseBldr = TestAuthenticatorAttestationResponse.createAuthenticatorAttestationResponse();
 		byte[] originalAttestationObjBytes = authAttResponseBldr.build().getAttestationObject().getBytes();
-		ObjectMapper cbor = JacksonCodecs.cbor();
+		ObjectMapper cbor = cbor();
 		AttestationObjectConverter attestationObjectConverter = new AttestationObjectConverter(new ObjectConverter());
 		ObjectNode attObj = (ObjectNode) cbor.readTree(originalAttestationObjBytes);
 
@@ -442,7 +459,7 @@ class Webauthn4jRelyingPartyOperationsTests {
 	private static AuthenticatorAttestationResponse setFmt(String fmt) throws Exception {
 		AuthenticatorAttestationResponseBuilder authAttResponseBldr = TestAuthenticatorAttestationResponse.createAuthenticatorAttestationResponse();
 		byte[] originalAttestationObjBytes = authAttResponseBldr.build().getAttestationObject().getBytes();
-		ObjectMapper cbor = JacksonCodecs.cbor();
+		ObjectMapper cbor = cbor();
 		ObjectNode attObj = (ObjectNode) cbor.readTree(originalAttestationObjBytes);
 		JsonNodeFactory f = JsonNodeFactory.instance;
 		byte[] updatedAttObjBytes = cbor.writeValueAsBytes(attObj.setAll(Map.of("fmt", f.textNode(fmt))));
@@ -450,4 +467,7 @@ class Webauthn4jRelyingPartyOperationsTests {
 		return authAttResponseBldr.build();
 	}
 
+	private static ObjectMapper cbor() {
+		return new ObjectMapper(new CBORFactory()).setBase64Variant(Base64Variants.MODIFIED_FOR_URL);
+	}
 }
