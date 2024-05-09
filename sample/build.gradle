@@ -32,10 +32,8 @@ repositories {
 }
 
 dependencies {
-    implementation 'com.fasterxml.jackson.dataformat:jackson-dataformat-cbor'
-    implementation 'org.springframework.boot:spring-boot-starter'
+    implementation project(':spring-security-webauthn')
     implementation 'org.springframework.boot:spring-boot-starter-security'
-    implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation(libs.webauthn4j.core)
     testImplementation 'org.springframework.boot:spring-boot-starter-test'

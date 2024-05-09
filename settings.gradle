@@ -15,3 +15,6 @@
  */
 
 rootProject.name = 'spring-security-passkeys-sample'
+
+include ':spring-security-webauthn'
+include ':sample'

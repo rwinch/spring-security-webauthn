@@ -1,0 +1,11 @@
+<html xmlns:th="https://www.thymeleaf.org">
+<head>
+    <title>Welcome</title>
+</head>
+<body>
+<h1>Welcome</h1>
+<p>You are authenticated.</p>
+<p><a th:href="@{/webauthn/register}">register passkey</a></p>
+<a href="/webauthn/register">Register</a> | <a href="/login/webauthn">Authenticate</a> | <a href="/logout">Log Out</a>
+</body>
+</html>

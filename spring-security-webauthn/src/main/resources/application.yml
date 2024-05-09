@@ -1,0 +1,15 @@
+spring:
+  security:
+    user:
+      password: password
+  ssl:
+    bundle:
+      pem:
+        localhost:
+          keystore:
+            certificate: "classpath:example.localhost.pem"
+            private-key: "classpath:example.localhost-key.pem"
+server:
+  port: 8443
+  ssl:
+    bundle: localhost
