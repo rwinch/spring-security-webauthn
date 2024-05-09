@@ -408,6 +408,13 @@ class Webauthn4jRelyingPartyOperationsTests {
 //		assertThatThrownBy(() -> this.rpOperations.registerCredential(registrationRequest)).hasMessageContaining("Flag combination is invalid");
 	}
 
+	@Test
+	void createCredentialRequestOptionsThenUserVerificationSameAsCreation() {
+		PublicKeyCredentialCreationOptions creationOptions = this.rpOperations.createPublicKeyCredentialCreationOptions(this.user);
+		PublicKeyCredentialRequestOptions credentialRequestOptions = this.rpOperations.createCredentialRequestOptions(this.user);
+		assertThat(credentialRequestOptions.getUserVerification()).isEqualTo(creationOptions.getAuthenticatorSelection().getUserVerification());
+	}
+
 	private static AuthenticatorAttestationResponse setFlag(byte... flags) throws Exception {
 		AuthenticatorAttestationResponseBuilder authAttResponseBldr = TestAuthenticatorAttestationResponse.createAuthenticatorAttestationResponse();
 		byte[] originalAttestationObjBytes = authAttResponseBldr.build().getAttestationObject().getBytes();

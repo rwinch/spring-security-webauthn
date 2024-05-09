@@ -281,7 +281,7 @@ public class Webauthn4JRelyingPartyOperations implements WebAuthnRelyingPartyOpe
 				.challenge(Base64Url.random())
 				.rpId(this.rp.getId())
 				.timeout(Duration.ofMinutes(5))
-				.userVerification(UserVerificationRequirement.REQUIRED)
+				.userVerification(UserVerificationRequirement.PREFERRED)
 				.customize(this.customizeRequestOptions)
 				.build();
 	}
