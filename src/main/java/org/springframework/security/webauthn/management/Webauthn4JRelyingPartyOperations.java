@@ -218,12 +218,6 @@ public class Webauthn4JRelyingPartyOperations implements WebAuthnRelyingPartyOpe
 		RegistrationData registrationData = this.webAuthnManager.validate(webauthn4jRegistrationRequest, registrationParameters);
 		AuthenticatorData<RegistrationExtensionAuthenticatorOutput> authData = registrationData.getAttestationObject().getAuthenticatorData();
 
-		// this check is not implemented in webauthn4j yet
-		// See https://github.com/webauthn4j/webauthn4j/issues/889
-		if (!authData.isFlagBE() && authData.isFlagBS()) {
-			throw new RuntimeException("Flag combination is invalid. See webauthn3: 16. If the BE bit of the flags in authData is not set, verify that the BS bit is not set.");
-		}
-
 		CborConverter cborConverter = this.objectConverter.getCborConverter();
 		byte[] coseKey = cborConverter.writeValueAsBytes(authData.getAttestedCredentialData().getCOSEKey());
 		ImmutableCredentialRecord userCredential = ImmutableCredentialRecord.builder()
