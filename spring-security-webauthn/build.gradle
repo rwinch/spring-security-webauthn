@@ -70,12 +70,7 @@ publishing {
     }
     repositories {
         maven {
-            name = "GitHubPackages"
-            url = "https://maven.pkg.github.com/rwinch/spring-security-webauthn"
-            credentials {
-                username = System.getenv("GITHUB_ACTOR")
-                password = System.getenv("GITHUB_TOKEN")
-            }
+            url = rootProject.layout.buildDirectory.dir('repo')
         }
     }
 }
