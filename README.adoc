@@ -64,6 +64,13 @@ repositories {
 }
 ----
 
+Alternatively, you can publish to your Maven local cache:
+
+[source,bash]
+----
+./gradlew publishToMavenLocal
+----
+
 == https://example.localhost.example:8443
 
 Many Authenticators do will not work unless https is used & some will not work with localhost.
