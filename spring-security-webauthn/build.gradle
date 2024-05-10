@@ -45,7 +45,9 @@ dependencies {
     testImplementation platform(libs.mockito.bom)
     testImplementation libs.hamcrest
     testImplementation libs.jakarta.servlet
+    testImplementation libs.bundles.jetty
     testImplementation libs.jsonassert
+    testImplementation libs.selenium.chrome.driver
     testImplementation 'org.assertj:assertj-core'
     testImplementation 'org.junit.jupiter:junit-jupiter'
     testImplementation 'org.mockito:mockito-core'
