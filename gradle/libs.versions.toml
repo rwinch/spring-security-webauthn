@@ -9,7 +9,7 @@ junit-bom = 'org.junit:junit-bom:5.10.2'
 jsonassert = 'org.skyscreamer:jsonassert:1.5.1'
 mockito-bom = 'org.mockito:mockito-bom:5.11.0'
 selenium-chrome-driver = 'org.seleniumhq.selenium:selenium-chrome-driver:4.20.0'
-spring-framework-bom = 'org.springframework:spring-framework-bom:6.1.6'
+spring-framework-bom = 'org.springframework:spring-framework-bom:6.1.9'
 spring-security-bom = 'org.springframework.security:spring-security-bom:6.2.4'
 webauthn4j-core = 'com.webauthn4j:webauthn4j-core:0.24.0.RELEASE'
 
