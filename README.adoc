@@ -96,7 +96,12 @@ See https://github.com/w3c/webauthn/issues/1204[w3c/webauthn#1204] for details.
 
 === mkcert
 
+Use https://github.com/FiloSottile/mkcert[mkcert]
 
+[source,bash]
+----
+mkcert example.localhost
+----
 
 
 This repository is exploring multifactor authentication with webauthn. To follow along on the discussions see https://github.com/spring-projects/spring-security/pull/6842
