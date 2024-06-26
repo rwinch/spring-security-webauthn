@@ -40,8 +40,7 @@ public class SecurityConfig {
 			.with(new WebauthnConfigurer<>(), (passkeys) -> passkeys
 					.rpName("Spring Security Relying Party")
 					.rpId("example.localhost")
-//					.rpId("test-host")
-					.allowedOrigins("https://example.localhost:8443", "https://test-host:8443")
+					.allowedOrigins("https://example.localhost:8443")
 			);
 		return http.build();
 	}
