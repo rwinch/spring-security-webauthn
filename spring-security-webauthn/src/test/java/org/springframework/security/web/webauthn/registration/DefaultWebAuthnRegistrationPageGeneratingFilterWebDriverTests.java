@@ -29,6 +29,7 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.chrome.ChromeDriverService;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.remote.RemoteWebDriver;
+import org.openqa.selenium.virtualauthenticator.VirtualAuthenticator;
 import org.openqa.selenium.virtualauthenticator.VirtualAuthenticatorOptions;
 import org.springframework.security.web.csrf.CsrfFilter;
 import org.springframework.security.web.csrf.HttpSessionCsrfTokenRepository;
@@ -39,6 +40,10 @@ import java.util.EnumSet;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+/**
+ * https://www.selenium.dev/documentation/webdriver/interactions/virtual_authenticator/
+ * https://github.com/SeleniumHQ/seleniumhq.github.io/blob/trunk/examples/java/src/test/java/dev/selenium/interactions/VirtualAuthenticatorTest.java#L100-L103
+ */
 @ExtendWith(MockitoExtension.class)
 public class DefaultWebAuthnRegistrationPageGeneratingFilterWebDriverTests {
 
@@ -101,17 +106,32 @@ public class DefaultWebAuthnRegistrationPageGeneratingFilterWebDriverTests {
 
 	@Test
 	void registerWhenPasskeyLabelEmptyThenRequired() throws Exception {
-		VirtualAuthenticatorOptions virtualAuthenticator = new VirtualAuthenticatorOptions()
+		VirtualAuthenticatorOptions authenticatorOptions = createVirtualAuthenticatorOptions();
+		this.driver.addVirtualAuthenticator(authenticatorOptions);
+
+		this.driver.get(this.baseUrl + "/webauthn/register");
+		this.driver.findElement(By.id("register")).click();
+		assertThat(this.driver.findElement(By.id("error")).getText()).isEqualTo("Error: Passkey Label is required");
+	}
+
+	@Test
+	void registerWhenThenSuccess() throws Exception {
+		VirtualAuthenticatorOptions authenticatorOptions = createVirtualAuthenticatorOptions();
+		VirtualAuthenticator virtualAuthenticator = this.driver.addVirtualAuthenticator(authenticatorOptions);
+
+		this.driver.get(this.baseUrl + "/webauthn/register");
+		this.driver.findElement(By.id("label")).sendKeys("Android");
+		this.driver.findElement(By.id("register")).click();
+		assertThat(this.driver.findElement(By.id("error")).getText()).isEqualTo("Error: Passkey Label is required");
+	}
+
+	private static VirtualAuthenticatorOptions createVirtualAuthenticatorOptions() {
+		return new VirtualAuthenticatorOptions()
 				.setIsUserVerified(true)
 				.setHasUserVerification(true)
 				.setIsUserConsenting(true)
 				.setTransport(VirtualAuthenticatorOptions.Transport.INTERNAL)
 				.setProtocol(VirtualAuthenticatorOptions.Protocol.CTAP2)
 				.setHasResidentKey(false);
-		this.driver.addVirtualAuthenticator(virtualAuthenticator);
-
-		this.driver.get(this.baseUrl + "/webauthn/register");
-		this.driver.findElement(By.id("register")).click();
-		assertThat(this.driver.findElement(By.id("error")).getText()).isEqualTo("Error: Passkey Label is required");
 	}
 }
