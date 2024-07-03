@@ -31,6 +31,9 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.WebAttributes;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
@@ -38,6 +41,9 @@ import org.springframework.security.web.authentication.rememberme.AbstractRememb
 import org.springframework.util.Assert;
 import org.springframework.web.filter.GenericFilterBean;
 import org.springframework.web.util.HtmlUtils;
+
+import static org.springframework.http.HttpMethod.GET;
+import static org.springframework.security.web.util.matcher.AntPathRequestMatcher.antMatcher;
 
 /**
  * For internal use with namespace configuration in the case where a user doesn't
@@ -196,6 +202,12 @@ public class DefaultLoginPageGeneratingFilter extends GenericFilterBean {
 
 	private void doFilter(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
 			throws IOException, ServletException {
+		if (antMatcher(GET, "/login/webauthn.js").matches(request)) {
+			ClassPathResource webauthn = new ClassPathResource("webauthn.js", DefaultLoginPageGeneratingFilter.class);
+			response.addHeader(HttpHeaders.CONTENT_TYPE, "application/javascript");
+			response.getWriter().write(webauthn.getContentAsString(StandardCharsets.UTF_8));
+			return;
+		}
 		boolean loginError = isErrorPage(request);
 		boolean logoutSuccess = isLogoutSuccess(request);
 		if (isLoginUrlRequest(request) || loginError || logoutSuccess) {
@@ -226,9 +238,10 @@ public class DefaultLoginPageGeneratingFilter extends GenericFilterBean {
 		sb.append("    <link href=\"https://getbootstrap.com/docs/4.0/examples/signin/signin.css\" "
 				+ "rel=\"stylesheet\" integrity=\"sha384-oOE/3m0LUMPub4kaC09mrdEhIc+e3exm4xOGxAmuFXhBNF4hcg/6MiAXAf5p0P56\" crossorigin=\"anonymous\"/>\n");
 		if (this.passkeysEnabled) {
-			String headers = createHeaders(request);
-			Map<String, Object> passkeyPageContext = Map.of("headers", headers,
-					"loginPageUrl", loginPageUrl);
+			Map<String, Object> passkeyPageContext = Map.of(
+					"loginPageUrl", loginPageUrl,
+					"contextPath", request.getContextPath(),
+					"csrfHeaders", createHeaders(request));
 			sb.append(processTemplate(SCRIPT_TEMPLATE, passkeyPageContext));
 		}
 		sb.append("  </head>\n");
@@ -331,14 +344,13 @@ public class DefaultLoginPageGeneratingFilter extends GenericFilterBean {
 			Map<String, Object> headerContext = Map.of(
 				"headerName", header.getKey(),
 				"headerValue", header.getValue());
-			javascriptHeadersEntries += processTemplate(HEADER_ENTRY_TEMPLATE, headerContext);
+			javascriptHeadersEntries += processTemplate(CSRF_HEADERS, headerContext);
 		}
 		return javascriptHeadersEntries;
 	}
 
-	private static final String HEADER_ENTRY_TEMPLATE = """
-		"${headerName}" : "${headerValue}",
-	""";
+	private static final String CSRF_HEADERS = """
+		{"${headerName}" : "${headerValue}"}""";
 
 	private static String processTemplate(String template, Map<String,Object> context) {
 		for (Map.Entry<String, Object> entry : context.entrySet()) {
@@ -350,121 +362,11 @@ public class DefaultLoginPageGeneratingFilter extends GenericFilterBean {
 	}
 
 	private static final String SCRIPT_TEMPLATE = """
+		<script type="text/javascript" src="${contextPath}/login/webauthn.js"></script>
 		<script type="text/javascript">
 		<!--
-			document.addEventListener("DOMContentLoaded", setup);
-			const base64url = {
-				encode: function(buffer) {
-					const base64 = window.btoa(String.fromCharCode(...new Uint8Array(buffer)));
-					return base64.replace(/=/g, '').replace(/\\+/g, '-').replace(/\\//g, '_');
-				},
-				decode: function(base64url) {
-					const base64 = base64url.replace(/-/g, '+').replace(/_/g, '/');
-					const binStr = window.atob(base64);
-					const bin = new Uint8Array(binStr.length);
-					for (let i = 0; i < binStr.length; i++) {
-						bin[i] = binStr.charCodeAt(i);
-					}
-					return bin.buffer;
-				}
-			}
-			async function conditionalMediation() {
-				const available = await isConditionalMediationAvailable()
-				if (available) {
-					authenticate(true)
-				}
-				return available   
-			}
-			async function isConditionalMediationAvailable() {
-				return window.PublicKeyCredential &&
-					PublicKeyCredential.isConditionalMediationAvailable &&
-					await PublicKeyCredential.isConditionalMediationAvailable()
-			}
-			async function post(url, body) {
-				const options = {
-					method: 'POST',
-					headers: {
-						'Content-Type': 'application/json',
-						${headers}
-					},
-				}
-				if (body) {
-					options.body = JSON.stringify(body)
-				}	
-				return fetch(url,options)
-			}			
-			async function authenticate(useConditionalMediation) {
-				const abortController = new AbortController()
-				// FIXME: add contextRoot
-				const options = await post('/webauthn/authenticate/options').then(r => r.json());
-				// FIXME: Use https://www.w3.org/TR/webauthn-3/#sctn-parseRequestOptionsFromJSON
-				options.challenge = base64url.decode(options.challenge);
-
-				// Invoke the WebAuthn get() method.
-				const credentialOptions = {
-					publicKey: options,
-					signal: abortController.signal,
-				}
-				if (useConditionalMediation) {
-					// Request a conditional UI
-					credentialOptions.mediation = 'conditional'
-				}
-				const cred = await navigator.credentials.get(credentialOptions);
-				const { response, credType } = cred;
-				let userHandle = undefined;
-				if (response.userHandle) {
-					userHandle = base64url.encode(response.userHandle);
-				}
-				const body = {
-					id: cred.id,
-					rawId: base64url.encode(cred.rawId),
-					response: {
-						authenticatorData: base64url.encode(response.authenticatorData),
-						clientDataJSON: base64url.encode(response.clientDataJSON),
-						signature: base64url.encode(response.signature),
-						userHandle,
-					},
-					credType,
-					clientExtensionResults: cred.getClientExtensionResults(),
-					authenticatorAttachment: cred.authenticatorAttachment,
-				};
-
-				// FIXME: add contextRoot
-				// POST the response to the endpoint that calls
-				const authenticationResponse = await fetch('/login/webauthn',
-					{
-						method: 'POST',
-						headers: {
-							'Content-Type': 'application/json',
-							${headers}
-						},
-						body: JSON.stringify(body),
-					}
-				)
-				.then(response => {
-					if (response.ok) {
-						return response.json()
-					} else {
-						return { 'errorUrl': '${loginPageUrl}?error' }
-					}
-				});
-
-				// Show UI appropriate for the `verified` status
-				if (authenticationResponse && authenticationResponse.authenticated) {
-					window.location.href = authenticationResponse.redirectUrl;
-				} else {
-					window.location.href = authenticationResponse.errorUrl
-				}
-			}
-
-			async function setup() {
-				await conditionalMediation();
-				// <button>
-				const passkeySignin = document.getElementById('passkey-signin');
-
-				// Start authentication when the user clicks a button
-				passkeySignin.addEventListener('click',() => authenticate(false));
-			}
+			document.addEventListener("DOMContentLoaded",() => setup(${csrfHeaders}, "${contextPath}", document.getElementById('passkey-signin')));
+			
 		//-->
 		</script>
 	""";
