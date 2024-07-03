@@ -103,9 +103,39 @@ class JacksonTests {
 	}
 
 	@Test
+	void readAuthenticationExtensionsClientOutputsWhenAuthenticatorDisplayName() throws Exception {
+		String json = """
+			{
+				"credProps": {
+					"rk": false,
+					"authenticatorDisplayName": "1Password"
+				}
+			}
+			""";
+		ImmutableAuthenticationExtensionsClientOutputs clientExtensionResults = new ImmutableAuthenticationExtensionsClientOutputs(new CredentialPropertiesOutput(false));
+
+		AuthenticationExtensionsClientOutputs outputs = this.mapper.readValue(json, AuthenticationExtensionsClientOutputs.class);
+		assertThat(outputs).usingRecursiveComparison().isEqualTo(clientExtensionResults);
+	}
+
+	@Test
+	void readCredPropsWhenAuthenticatorDisplayName() throws Exception {
+		String json = """
+			{
+				"rk": false,
+				"authenticatorDisplayName": "1Password"
+			}
+			""";
+		CredentialPropertiesOutput credProps = new CredentialPropertiesOutput(false);
+
+		CredentialPropertiesOutput outputs = this.mapper.readValue(json, CredentialPropertiesOutput.class);
+		assertThat(outputs).usingRecursiveComparison().isEqualTo(credProps);
+	}
+
+	@Test
 	void readAuthenticationExtensionsClientOutputsWhenFieldAfter() throws Exception {
 		String json = """
-   			{
+			{
 				"clientOutputs": {
 					"credProps": {
 						"rk": false

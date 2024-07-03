@@ -21,6 +21,8 @@ import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonToken;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.security.webauthn.api.*;
 
 import java.io.IOException;
@@ -33,6 +35,9 @@ import java.util.List;
  * @author Rob Winch
  */
 class AuthenticationExtensionsClientOutputsDeserializer extends StdDeserializer<AuthenticationExtensionsClientOutputs> {
+
+	private static final Log logger = LogFactory.getLog(AuthenticationExtensionsClientOutputsDeserializer.class);
+
 	/**
 	 * Creates a new instance.
 	 */
@@ -46,18 +51,17 @@ class AuthenticationExtensionsClientOutputsDeserializer extends StdDeserializer<
 		for (String key = parser.nextFieldName(); key != null; key = parser.nextFieldName()) {
 			JsonToken startObject = parser.nextValue();
 			if (startObject != JsonToken.START_OBJECT) {
-				ctxt.handleUnexpectedToken(AuthenticationExtensionsClientOutputs.class, parser);
+				break;
 			}
 			if (CredentialPropertiesOutput.EXTENSION_ID.equals(key)) {
 				CredentialPropertiesOutput output = parser.readValueAs(CredentialPropertiesOutput.class);
 				outputs.add(output);
 			}
 			else {
-				throw new IllegalArgumentException("Cannot process extension with id " + key);
-			}
-			JsonToken endObject = parser.nextValue();
-			if (endObject != JsonToken.END_OBJECT) {
-				ctxt.handleUnexpectedToken(AuthenticationExtensionsClientOutputs.class, parser);
+				if (logger.isDebugEnabled()) {
+					logger.debug("Skipping unknown extension with id " + key);
+				}
+				parser.nextValue();
 			}
 		}
 
