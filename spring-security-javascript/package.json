@@ -1,0 +1,75 @@
+{
+  "name": "@springprojects/spring-security",
+  "version": "1.0.0-alpha.9",
+  "description": "Asciidoctor.js extensions that support the Spring documentation.",
+  "license": "ASL-2.0",
+  "author": "OpenDevise Inc. (https://opendevise.com)",
+  "contributors": [
+    "Rob Winch <rwinch@users.noreply.github.com>"
+  ],
+  "repository": "github:spring-projects/spring-security",
+  "bugs": {
+    "url": "https://github.com/spring-projects/spring-security/issues"
+  },
+  "engines": {
+    "node": ">=16.0.0"
+  },
+  "scripts": {
+    "coverage": "nyc _mocha",
+    "coverage-strict": "nyc --branches=100 --lines=100 _mocha",
+    "build": "npm test && npm run lint",
+    "format": "node npm/format.js lib,test,npm",
+    "lint": "eslint \"{lib,test,npm}/**/*.js\"",
+    "prepublishOnly": "npx -y downdoc --prepublish",
+    "postpublish": "npx -y downdoc --postpublish",
+    "test": "_mocha",
+    "version": "node npm/version.js"
+  },
+  "main": "lib/index.js",
+  "browser": {
+    "./source-toolbox": "./browser/js/source-toolbox.js"
+  },
+  "style": {
+    "./source-toolbox": "./browser/css/source-toolbox.css"
+  },
+  "exports": {
+    ".": "./lib/index.js",
+    "./webauthn-login": "./lib/webauthn-login.js"
+  },
+  "imports": {
+    "#package": "./package.json"
+  },
+  "files": [
+    "lib"
+  ],
+  "keywords": [
+    "Spring Security",
+    "WebAuthn",
+    "passkeys"
+  ],
+  "devDependencies": {
+    "chai": "~4.3",
+    "chai-fs": "~2.0",
+    "chai-spies": "~1.0",
+    "dirty-chai": "~2.0",
+    "eslint": "~8.30",
+    "eslint-config-standard": "~17.0",
+    "mocha": "~10.2",
+    "nyc": "~15.1",
+    "prettier-eslint": "~15.0"
+  },
+  "nyc": {
+    "all": true,
+    "cacheDir": "node_modules/.cache/nyc",
+    "checkCoverage": true,
+    "include": [
+      "lib/*.js"
+    ],
+    "reporter": [
+      "cobertura",
+      "lcov",
+      "text"
+    ],
+    "reportDir": "reports"
+  }
+}
