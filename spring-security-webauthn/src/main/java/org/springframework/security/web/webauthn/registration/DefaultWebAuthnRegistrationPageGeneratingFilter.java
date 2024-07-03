@@ -138,6 +138,10 @@ public class DefaultWebAuthnRegistrationPageGeneratingFilter extends OncePerRequ
 					function setVisibility(elmt, value) {
 						elmt.style.display = value ? 'block' : 'none'
 					}
+					function setError(msg) {
+						setVisibility(error, true)
+						error.innerHTML = msg
+					}
 					const base64url = {
 						encode: function(buffer) {
 							const base64 = window.btoa(String.fromCharCode(...new Uint8Array(buffer)));
@@ -154,6 +158,10 @@ public class DefaultWebAuthnRegistrationPageGeneratingFilter extends OncePerRequ
 						}
 					}
 					function setup() {
+						if (!window.PublicKeyCredential) {
+							setError('WebAuthn is not supported')
+							return
+						}
 						const config = document.getElementById('registration-script').dataset
 						const csrfToken = config.csrfToken
 						const csrfHeaderName = config.csrfHeaderName
