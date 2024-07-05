@@ -22,13 +22,6 @@
     "test": "mocha"
   },
   "main": "lib/index.js",
-  "exports": {
-    ".": "./lib/index.js",
-    "./webauthn-login": "./lib/webauthn-login.js"
-  },
-  "imports": {
-    "#package": "./package.json"
-  },
   "files": [
     "lib"
   ],
