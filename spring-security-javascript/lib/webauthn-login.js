@@ -16,7 +16,7 @@
 
 import base64url from './base64url.js'
 
-async function conditionalMediation(headers, contextPath) {
+async function conditionalMediation (headers, contextPath) {
   const available = await isConditionalMediationAvailable()
   if (available) {
     authenticate(headers, contextPath, true)
@@ -24,47 +24,47 @@ async function conditionalMediation(headers, contextPath) {
   return available
 }
 
-async function isConditionalMediationAvailable() {
+async function isConditionalMediationAvailable () {
   return window.PublicKeyCredential &&
-    PublicKeyCredential.isConditionalMediationAvailable &&
-    await PublicKeyCredential.isConditionalMediationAvailable()
+        document.PublicKeyCredential.isConditionalMediationAvailable &&
+        await document.PublicKeyCredential.isConditionalMediationAvailable()
 }
 
-async function post(headers, url, body) {
+async function post (headers, url, body) {
   const options = {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
       ...headers
-    },
+    }
   }
   if (body) {
     options.body = JSON.stringify(body)
   }
-  return fetch(url,options)
+  return fetch(url, options)
 }
 
-async function authenticate(headers, contextPath, useConditionalMediation) {
+async function authenticate (headers, contextPath, useConditionalMediation) {
   const abortController = new AbortController()
   // FIXME: add contextRoot
-  const options = await post(headers, `${contextPath}/webauthn/authenticate/options`).then(r => r.json());
+  const options = await post(headers, `${contextPath}/webauthn/authenticate/options`).then(r => r.json())
   // FIXME: Use https://www.w3.org/TR/webauthn-3/#sctn-parseRequestOptionsFromJSON
-  options.challenge = base64url.decode(options.challenge);
+  options.challenge = base64url.decode(options.challenge)
 
   // Invoke the WebAuthn get() method.
   const credentialOptions = {
     publicKey: options,
-    signal: abortController.signal,
+    signal: abortController.signal
   }
   if (useConditionalMediation) {
     // Request a conditional UI
     credentialOptions.mediation = 'conditional'
   }
-  const cred = await navigator.credentials.get(credentialOptions);
-  const { response, credType } = cred;
-  let userHandle = undefined;
+  const cred = await navigator.credentials.get(credentialOptions)
+  const { response, credType } = cred
+  let userHandle
   if (response.userHandle) {
-    userHandle = base64url.encode(response.userHandle);
+    userHandle = base64url.encode(response.userHandle)
   }
   const body = {
     id: cred.id,
@@ -73,12 +73,12 @@ async function authenticate(headers, contextPath, useConditionalMediation) {
       authenticatorData: base64url.encode(response.authenticatorData),
       clientDataJSON: base64url.encode(response.clientDataJSON),
       signature: base64url.encode(response.signature),
-      userHandle,
+      userHandle
     },
     credType,
     clientExtensionResults: cred.getClientExtensionResults(),
-    authenticatorAttachment: cred.authenticatorAttachment,
-  };
+    authenticatorAttachment: cred.authenticatorAttachment
+  }
 
   // FIXME: add contextRoot
   // POST the response to the endpoint that calls
@@ -89,30 +89,28 @@ async function authenticate(headers, contextPath, useConditionalMediation) {
         'Content-Type': 'application/json',
         ...headers
       },
-      body: JSON.stringify(body),
+      body: JSON.stringify(body)
     }
   )
     .then(response => {
       if (response.ok) {
         return response.json()
       } else {
-        return { 'errorUrl': '/login?error' }
+        return { errorUrl: '/login?error' }
       }
-    });
+    })
 
   // Show UI appropriate for the `verified` status
   if (authenticationResponse && authenticationResponse.authenticated) {
-    window.location.href = authenticationResponse.redirectUrl;
+    window.location.href = authenticationResponse.redirectUrl
   } else {
     window.location.href = authenticationResponse.errorUrl
   }
 }
 
-async function setup(headers, contextPath, signinButton) {
-  await conditionalMediation(headers, contextPath);
+export async function setup (headers, contextPath, signinButton) {
+  await conditionalMediation(headers, contextPath)
 
   // Start authentication when the user clicks a button
-  signinButton.addEventListener('click',() => authenticate(headers, contextPath, false));
+  signinButton.addEventListener('click', () => authenticate(headers, contextPath, false))
 }
-
-module.exports = { setup }
