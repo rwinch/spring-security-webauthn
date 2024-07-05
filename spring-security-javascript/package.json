@@ -16,8 +16,9 @@
     "node": ">=16.0.0"
   },
   "scripts": {
-    "build": "npm test && npm run lint",
     "test": "mocha",
+    "assemble": "esbuild lib/index.js --bundle --outfile=dist/spring-security.js",
+    "build": "npm test && npm run lint && npm run assemble",
     "lint": "eslint",
     "format": "npm run lint -- --fix"
   },
@@ -33,6 +34,7 @@
   "devDependencies": {
     "@eslint/js": "^9.6.0",
     "chai": "~4.3",
+    "esbuild": "^0.23.0",
     "eslint": "^9.6.0",
     "eslint-config-prettier": "^9.1.0",
     "eslint-plugin-prettier": "^5.1.3",
