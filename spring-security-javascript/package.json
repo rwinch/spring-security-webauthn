@@ -35,7 +35,6 @@
     "eslint": "~8.30",
     "eslint-config-standard": "~17.0",
     "mocha": "~10.2",
-    "nyc": "~15.1",
     "prettier-eslint": "~15.0"
   },
   "type": "module"
