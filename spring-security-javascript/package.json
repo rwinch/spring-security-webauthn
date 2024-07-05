@@ -44,5 +44,6 @@
     "mocha": "~10.2",
     "nyc": "~15.1",
     "prettier-eslint": "~15.0"
-  }
+  },
+  "type": "module"
 }
