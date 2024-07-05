@@ -15,15 +15,15 @@
  */
 
 /* eslint-env mocha */
-'use strict'
+"use strict";
 
-import { expect } from 'chai'
-import { setup } from '../lib/webauthn-login.js'
+import { expect } from "chai";
+import { setup } from "../lib/webauthn-login.js";
 
-describe('webauthn-login', () => {
-  describe('bootstrap', () => {
-    it('should be able to require extension', () => {
-      expect(setup).to.be.instanceOf(Function)
-    })
-  })
-})
+describe("webauthn-login", () => {
+  describe("bootstrap", () => {
+    it("should be able to require extension", () => {
+      expect(setup).to.be.instanceOf(Function);
+    });
+  });
+});

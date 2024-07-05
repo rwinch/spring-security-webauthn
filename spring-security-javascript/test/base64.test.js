@@ -15,57 +15,59 @@
  */
 
 /* eslint-env mocha */
-'use strict'
+"use strict";
 
-import { expect } from 'chai'
-import base64url from '../lib/base64url.js'
+import { expect } from "chai";
+import base64url from "../lib/base64url.js";
 
-describe('base64url', () => {
+describe("base64url", () => {
   before(() => {
     // Emulate the atob / btoa base64 encoding/decoding from the browser
     global.window = {
-      btoa: (str) => Buffer.from(str).toString('base64'),
-      atob: (b64) => Buffer.from(b64, 'base64').toString()
-    }
-  })
+      btoa: (str) => Buffer.from(str).toString("base64"),
+      atob: (b64) => Buffer.from(b64, "base64").toString(),
+    };
+  });
 
   after(() => {
     // Reset window object
-    global.window = {}
-  })
+    global.window = {};
+  });
 
-  it('decodes', () => {
+  it("decodes", () => {
     // "Zm9vYmFy" is "foobar" in base 64, i.e. f:102 o:111 o:111 b:98 a:97 r:114
-    const decoded = base64url.decode('Zm9vYmFy')
+    const decoded = base64url.decode("Zm9vYmFy");
 
-    expect(new Uint8Array(decoded)).to.be.deep.equal(new Uint8Array([102, 111, 111, 98, 97, 114]))
-  })
+    expect(new Uint8Array(decoded)).to.be.deep.equal(
+      new Uint8Array([102, 111, 111, 98, 97, 114]),
+    );
+  });
 
-  it('decodes special characters', () => {
+  it("decodes special characters", () => {
     // Wrap the decode function for easy testing
     const decode = (str) => {
-      const decoded = new Uint8Array(base64url.decode(str))
-      return Array.from(decoded)
-    }
+      const decoded = new Uint8Array(base64url.decode(str));
+      return Array.from(decoded);
+    };
 
     // "Pz8/" is "???" in base64, i.e. ?:63 three times
-    expect(decode('Pz8/')).to.be.deep.equal(decode('Pz8_'))
-    expect(decode('Pz8_')).to.be.deep.equal([63, 63, 63])
+    expect(decode("Pz8/")).to.be.deep.equal(decode("Pz8_"));
+    expect(decode("Pz8_")).to.be.deep.equal([63, 63, 63]);
     // "Pj4+" is ">>>" in base64, ie >:62 three times
-    expect(decode('Pj4+')).to.be.deep.equal(decode('Pj4-'))
-    expect(decode('Pj4-')).to.be.deep.equal([62, 62, 62])
-  })
+    expect(decode("Pj4+")).to.be.deep.equal(decode("Pj4-"));
+    expect(decode("Pj4-")).to.be.deep.equal([62, 62, 62]);
+  });
 
-  it('encodes', () => {
-    const encoded = base64url.encode(Buffer.from('foobar'))
+  it("encodes", () => {
+    const encoded = base64url.encode(Buffer.from("foobar"));
 
-    expect(encoded).to.be.equal('Zm9vYmFy')
-  })
+    expect(encoded).to.be.equal("Zm9vYmFy");
+  });
 
-  it('encodes special +/ characters', () => {
-    const encode = (str) => base64url.encode(Buffer.from(str))
+  it("encodes special +/ characters", () => {
+    const encode = (str) => base64url.encode(Buffer.from(str));
 
-    expect(encode('???')).to.be.equal('Pz8_')
-    expect(encode('>>>')).to.be.equal('Pj4-')
-  })
-})
+    expect(encode("???")).to.be.equal("Pz8_");
+    expect(encode(">>>")).to.be.equal("Pj4-");
+  });
+});
