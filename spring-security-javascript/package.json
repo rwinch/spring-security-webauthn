@@ -17,9 +17,9 @@
   },
   "scripts": {
     "build": "npm test && npm run lint",
-    "format": "node npm/format.js lib,test",
+    "test": "mocha",
     "lint": "eslint \"{lib,test}/**/*.js\"",
-    "test": "mocha"
+    "format": "npm run lint -- --fix"
   },
   "main": "lib/index.js",
   "files": [
