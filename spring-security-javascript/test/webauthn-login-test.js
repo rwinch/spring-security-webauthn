@@ -48,20 +48,6 @@ describe("webauthn-login", () => {
       expect(signinButton.addEventListener.firstCall.lastArg).to.be.a("Function");
     });
 
-    it("calls authenticate when the signin button is clicked", async () => {
-      isConditionalMediationAvailableStub.resolves(false);
-      const headers = { "x-header": "value" };
-      const contextPath = "/some/path";
-
-      await setup(headers, contextPath, signinButton);
-
-      // Call the event listener
-      await signinButton.addEventListener.firstCall.lastArg();
-
-      expect(authenticateStub.calledOnce).to.be.true;
-      expect(authenticateStub.firstCall.args).to.have.same.members([headers, contextPath, false]);
-    });
-
     it("uses conditional mediation when available", async () => {
       isConditionalMediationAvailableStub.resolves(true);
 
@@ -80,6 +66,20 @@ describe("webauthn-login", () => {
       await setup({}, "/", signinButton);
 
       expect(authenticateStub.callCount).to.equal(0);
+    });
+
+    it("calls authenticate when the signin button is clicked", async () => {
+      isConditionalMediationAvailableStub.resolves(false);
+      const headers = { "x-header": "value" };
+      const contextPath = "/some/path";
+
+      await setup(headers, contextPath, signinButton);
+
+      // Call the event listener
+      await signinButton.addEventListener.firstCall.lastArg();
+
+      expect(authenticateStub.calledOnce).to.be.true;
+      expect(authenticateStub.firstCall.args).to.have.same.members([headers, contextPath, false]);
     });
   });
 });
