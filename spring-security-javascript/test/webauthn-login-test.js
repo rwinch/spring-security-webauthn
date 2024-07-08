@@ -25,6 +25,7 @@ describe("webauthn-login", () => {
   describe("bootstrap", () => {
     let authenticateStub;
     let isConditionalMediationAvailableStub;
+    let signinButton;
 
     beforeEach(() => {
       isConditionalMediationAvailableStub = stub(
@@ -32,6 +33,9 @@ describe("webauthn-login", () => {
         "isConditionalMediationAvailable",
       ).resolves(false);
       authenticateStub = stub(webauthn, "authenticate").resolves(undefined);
+      signinButton = {
+        addEventListener: fake(),
+      };
     });
 
     afterEach(() => {
@@ -40,10 +44,6 @@ describe("webauthn-login", () => {
     });
 
     it("sets up a click event listener on the signin button", async () => {
-      const signinButton = {
-        addEventListener: fake(),
-      };
-
       await setup({}, "/some/path", signinButton);
 
       expect(signinButton.addEventListener.calledOnce).to.be.true;
@@ -56,9 +56,7 @@ describe("webauthn-login", () => {
     });
 
     it("calls authenticate when the signin button is clicked", async () => {
-      const signinButton = {
-        addEventListener: fake(),
-      };
+      isConditionalMediationAvailableStub.resolves(false);
       const headers = { "x-header": "value" };
       const contextPath = "/some/path";
 
@@ -80,9 +78,6 @@ describe("webauthn-login", () => {
 
       const headers = { "x-header": "value" };
       const contextPath = "/some/path";
-      const signinButton = {
-        addEventListener: fake(),
-      };
 
       await setup(headers, contextPath, signinButton);
 
@@ -92,6 +87,14 @@ describe("webauthn-login", () => {
         contextPath,
         true,
       ]);
+    });
+
+    it("does not call authenticate when conditional mediation is not available", async () => {
+      isConditionalMediationAvailableStub.resolves(false);
+
+      await setup({}, "/", signinButton);
+
+      expect(authenticateStub.callCount).to.equal(0);
     });
   });
 });
