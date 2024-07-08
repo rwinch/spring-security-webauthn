@@ -28,10 +28,7 @@ describe("webauthn-login", () => {
     let signinButton;
 
     beforeEach(() => {
-      isConditionalMediationAvailableStub = stub(
-        webauthn,
-        "isConditionalMediationAvailable",
-      ).resolves(false);
+      isConditionalMediationAvailableStub = stub(webauthn, "isConditionalMediationAvailable").resolves(false);
       authenticateStub = stub(webauthn, "authenticate").resolves(undefined);
       signinButton = {
         addEventListener: fake(),
@@ -47,12 +44,8 @@ describe("webauthn-login", () => {
       await setup({}, "/some/path", signinButton);
 
       expect(signinButton.addEventListener.calledOnce).to.be.true;
-      expect(signinButton.addEventListener.firstCall.firstArg).to.equal(
-        "click",
-      );
-      expect(signinButton.addEventListener.firstCall.lastArg).to.be.a(
-        "Function",
-      );
+      expect(signinButton.addEventListener.firstCall.firstArg).to.equal("click");
+      expect(signinButton.addEventListener.firstCall.lastArg).to.be.a("Function");
     });
 
     it("calls authenticate when the signin button is clicked", async () => {
@@ -66,11 +59,7 @@ describe("webauthn-login", () => {
       await signinButton.addEventListener.firstCall.lastArg();
 
       expect(authenticateStub.calledOnce).to.be.true;
-      expect(authenticateStub.firstCall.args).to.have.same.members([
-        headers,
-        contextPath,
-        false,
-      ]);
+      expect(authenticateStub.firstCall.args).to.have.same.members([headers, contextPath, false]);
     });
 
     it("uses conditional mediation when available", async () => {
@@ -82,11 +71,7 @@ describe("webauthn-login", () => {
       await setup(headers, contextPath, signinButton);
 
       expect(authenticateStub.calledOnce).to.be.true;
-      expect(authenticateStub.firstCall.args).to.have.same.members([
-        headers,
-        contextPath,
-        true,
-      ]);
+      expect(authenticateStub.firstCall.args).to.have.same.members([headers, contextPath, true]);
     });
 
     it("does not call authenticate when conditional mediation is not available", async () => {

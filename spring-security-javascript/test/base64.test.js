@@ -37,9 +37,7 @@ describe("base64url", () => {
     // "Zm9vYmFy" is "foobar" in base 64, i.e. f:102 o:111 o:111 b:98 a:97 r:114
     const decoded = base64url.decode("Zm9vYmFy");
 
-    expect(new Uint8Array(decoded)).to.be.deep.equal(
-      new Uint8Array([102, 111, 111, 98, 97, 114]),
-    );
+    expect(new Uint8Array(decoded)).to.be.deep.equal(new Uint8Array([102, 111, 111, 98, 97, 114]));
   });
 
   it("decodes special characters", () => {

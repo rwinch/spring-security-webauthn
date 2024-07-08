@@ -41,10 +41,7 @@ async function isConditionalMediationAvailable() {
 async function authenticate(headers, contextPath, useConditionalMediation) {
   const abortController = new AbortController();
   // FIXME: add contextRoot
-  const options = await post(
-    headers,
-    `${contextPath}/webauthn/authenticate/options`,
-  ).then((r) => r.json());
+  const options = await post(headers, `${contextPath}/webauthn/authenticate/options`).then((r) => r.json());
   // FIXME: Use https://www.w3.org/TR/webauthn-3/#sctn-parseRequestOptionsFromJSON
   options.challenge = base64url.decode(options.challenge);
 
