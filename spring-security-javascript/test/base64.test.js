@@ -23,8 +23,8 @@ describe("base64url", () => {
   before(() => {
     // Emulate the atob / btoa base64 encoding/decoding from the browser
     global.window = {
-      btoa: (str) => Buffer.from(str).toString("base64"),
-      atob: (b64) => Buffer.from(b64, "base64").toString(),
+      btoa: (str) => Buffer.from(str, "binary").toString("base64"),
+      atob: (b64) => Buffer.from(b64, "base64").toString("binary"),
     };
   });
 
@@ -66,5 +66,11 @@ describe("base64url", () => {
 
     expect(encode("???")).to.be.equal("Pz8_");
     expect(encode(">>>")).to.be.equal("Pj4-");
+  });
+
+  it("is stable", () => {
+    const base = "tyRDnKxdj7uWOT5jrchXu54lo6nf3bWOUvMQnGOXk7g";
+
+    expect(base64url.encode(base64url.decode(base))).to.be.equal(base);
   });
 });
