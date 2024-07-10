@@ -30,11 +30,11 @@ async function authenticate(headers, contextPath, useConditionalMediation) {
   // FIXME: add contextRoot
   const options = await http.post(`${contextPath}/webauthn/authenticate/options`, headers).then((r) => r.json());
   // FIXME: Use https://www.w3.org/TR/webauthn-3/#sctn-parseRequestOptionsFromJSON
-  options.challenge = base64url.decode(options.challenge);
+  const decodedOptions = { ...options, challenge: base64url.decode(options.challenge) };
 
   // Invoke the WebAuthn get() method.
   const credentialOptions = {
-    publicKey: options,
+    publicKey: decodedOptions,
     signal: abortController.signal,
   };
   if (useConditionalMediation) {
@@ -42,7 +42,7 @@ async function authenticate(headers, contextPath, useConditionalMediation) {
     credentialOptions.mediation = "conditional";
   }
   const cred = await navigator.credentials.get(credentialOptions);
-  const { response, credType } = cred;
+  const { response, type: credType } = cred;
   let userHandle;
   if (response.userHandle) {
     userHandle = base64url.encode(response.userHandle);
