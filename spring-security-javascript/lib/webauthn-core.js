@@ -18,7 +18,7 @@ import base64url from "./base64url.js";
 import http from "./http.js";
 
 async function isConditionalMediationAvailable() {
-  return (
+  return !!(
     document.PublicKeyCredential &&
     document.PublicKeyCredential.isConditionalMediationAvailable &&
     (await document.PublicKeyCredential.isConditionalMediationAvailable())
