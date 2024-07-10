@@ -16,10 +16,9 @@
 
 "use strict";
 
-import { expect } from "chai";
 import { setup } from "../lib/webauthn-login.js";
 import webauthn from "../lib/webauthn-core.js";
-import { fake, stub } from "sinon";
+import { assert, fake, match, stub } from "sinon";
 
 describe("webauthn-login", () => {
   describe("bootstrap", () => {
@@ -43,9 +42,7 @@ describe("webauthn-login", () => {
     it("sets up a click event listener on the signin button", async () => {
       await setup({}, "/some/path", signinButton);
 
-      expect(signinButton.addEventListener.calledOnce).to.be.true;
-      expect(signinButton.addEventListener.firstCall.firstArg).to.equal("click");
-      expect(signinButton.addEventListener.firstCall.lastArg).to.be.a("Function");
+      assert.calledOnceWithMatch(signinButton.addEventListener, "click", match.typeOf("function"));
     });
 
     it("uses conditional mediation when available", async () => {
@@ -56,8 +53,7 @@ describe("webauthn-login", () => {
 
       await setup(headers, contextPath, signinButton);
 
-      expect(authenticateStub.calledOnce).to.be.true;
-      expect(authenticateStub.firstCall.args).to.have.same.members([headers, contextPath, true]);
+      assert.calledOnceWithExactly(authenticateStub, headers, contextPath, true);
     });
 
     it("does not call authenticate when conditional mediation is not available", async () => {
@@ -65,7 +61,7 @@ describe("webauthn-login", () => {
 
       await setup({}, "/", signinButton);
 
-      expect(authenticateStub.callCount).to.equal(0);
+      assert.notCalled(authenticateStub);
     });
 
     it("calls authenticate when the signin button is clicked", async () => {
@@ -78,8 +74,7 @@ describe("webauthn-login", () => {
       // Call the event listener
       await signinButton.addEventListener.firstCall.lastArg();
 
-      expect(authenticateStub.calledOnce).to.be.true;
-      expect(authenticateStub.firstCall.args).to.have.same.members([headers, contextPath, false]);
+      assert.calledOnceWithExactly(authenticateStub, headers, contextPath, false);
     });
   });
 });
