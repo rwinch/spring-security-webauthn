@@ -1,3 +1,4 @@
+
 /*
  * Copyright 2002-2024 the original author or authors.
  *
@@ -14,8 +15,17 @@
  * limitations under the License.
  */
 
-rootProject.name = 'spring-security-passkeys-sample'
+plugins {
+    id 'base'
+    id 'com.github.node-gradle.node' version '3.1.0'
+}
 
-include ':spring-security-javascript'
-include ':spring-security-webauthn'
-include ':sample'
+tasks.named('check') {
+    dependsOn 'npm_run_test'
+}
+
+tasks.register('dist', Zip) {
+    dependsOn 'npm_run_assemble'
+    from 'build/dist/spring-security.js'
+    into 'build'
+}
