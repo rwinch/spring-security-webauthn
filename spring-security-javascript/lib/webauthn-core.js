@@ -15,20 +15,7 @@
  */
 
 import base64url from "./base64url.js";
-
-async function post(headers, url, body) {
-  const options = {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      ...headers,
-    },
-  };
-  if (body) {
-    options.body = JSON.stringify(body);
-  }
-  return fetch(url, options);
-}
+import http from "./http.js";
 
 async function isConditionalMediationAvailable() {
   return (
@@ -41,7 +28,7 @@ async function isConditionalMediationAvailable() {
 async function authenticate(headers, contextPath, useConditionalMediation) {
   const abortController = new AbortController();
   // FIXME: add contextRoot
-  const options = await post(headers, `${contextPath}/webauthn/authenticate/options`).then((r) => r.json());
+  const options = await http.post(`${contextPath}/webauthn/authenticate/options`, headers).then((r) => r.json());
   // FIXME: Use https://www.w3.org/TR/webauthn-3/#sctn-parseRequestOptionsFromJSON
   options.challenge = base64url.decode(options.challenge);
 
@@ -76,14 +63,7 @@ async function authenticate(headers, contextPath, useConditionalMediation) {
 
   // FIXME: add contextRoot
   // POST the response to the endpoint that calls
-  const authenticationResponse = await fetch(`${contextPath}/login/webauthn`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      ...headers,
-    },
-    body: JSON.stringify(body),
-  }).then((response) => {
+  const authenticationResponse = await http.post(`${contextPath}/login/webauthn`, headers, body).then((response) => {
     if (response.ok) {
       return response.json();
     } else {
