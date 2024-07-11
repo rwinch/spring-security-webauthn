@@ -30,7 +30,14 @@ repositories {
     mavenCentral()
 }
 
+configurations {
+    javascript {
+        canBeConsumed = false
+    }
+}
+
 dependencies {
+    javascript project(path: ':spring-security-javascript', configuration: 'javascript')
     implementation platform(libs.jackson.bom)
     implementation platform(libs.spring.framework.bom)
     implementation platform(libs.spring.security.bom)
@@ -62,8 +69,6 @@ tasks.named('test') {
     useJUnitPlatform()
 }
 
-
-
 publishing {
     publications {
         mavenJava(MavenPublication) {
@@ -76,3 +81,22 @@ publishing {
         }
     }
 }
+
+def syncJavascript = tasks.register('syncJavascript', Sync) {
+    group = 'Build'
+    description = 'Syncs the Javascript from the javascript configuration'
+    into project.layout.buildDirectory.dir('spring-security-javascript')
+    from(configurations.javascript) {
+        into 'org/springframework/security'
+    }
+}
+
+
+sourceSets {
+    main {
+        resources {
+            srcDirs(syncJavascript)
+        }
+    }
+}
+

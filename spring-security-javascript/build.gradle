@@ -27,5 +27,18 @@ tasks.named('check') {
 tasks.register('dist', Zip) {
     dependsOn 'npm_run_assemble'
     from 'build/dist/spring-security.js'
-    into 'build'
+    into 'org/springframework/security'
+}
+
+configurations {
+    javascript {
+        canBeConsumed = true
+        canBeResolved = false
+    }
+}
+
+artifacts {
+    javascript(project.layout.buildDirectory.dir('dist')) {
+        builtBy(npm_run_test)
+    }
 }
