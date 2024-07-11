@@ -81,7 +81,12 @@ async function authenticate(headers, contextPath, useConditionalMediation) {
   }
 }
 
+async function register(headers, contextPath, label) {
+  // TODO
+}
+
 export default {
   authenticate,
+  register,
   isConditionalMediationAvailable,
 };
