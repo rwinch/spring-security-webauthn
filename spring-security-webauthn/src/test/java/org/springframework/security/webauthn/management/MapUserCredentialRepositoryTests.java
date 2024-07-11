@@ -26,7 +26,7 @@ import static org.assertj.core.api.Assertions.*;
 
 /**
  * Tests for {@link MapUserCredentialRepository}
- * @since 6.3
+ * @since 6.4
  * @author Rob Winch
  */
 class MapUserCredentialRepositoryTests {

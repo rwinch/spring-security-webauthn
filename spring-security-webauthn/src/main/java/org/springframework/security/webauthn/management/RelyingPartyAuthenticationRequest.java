@@ -25,7 +25,7 @@ import org.springframework.util.Assert;
  * The data object used to provide the information necessary to authenticate a user with WebAuthn.
  *
  * @see WebAuthnRelyingPartyOperations#authenticate(RelyingPartyAuthenticationRequest)
- * @since 6.3
+ * @since 6.4
  * @author Rob Winch
  */
 public class RelyingPartyAuthenticationRequest {

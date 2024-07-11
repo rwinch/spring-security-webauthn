@@ -26,7 +26,7 @@ import java.io.IOException;
 
 /**
  * Jackson serializer for {@link AuthenticatorAttachment}
- * @since 6.3
+ * @since 6.4
  * @author Rob Winch
  */
 class AuthenticatorAttachmentSerializer extends StdSerializer<AuthenticatorAttachment> {

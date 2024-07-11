@@ -23,7 +23,7 @@ import java.time.Duration;
 
 /**
  * Jackson mixin for {@link org.springframework.security.webauthn.api.PublicKeyCredentialRequestOptions}
- * @since 6.3
+ * @since 6.4
  * @author Rob Winch
  */
 @JsonInclude(content = JsonInclude.Include.NON_NULL)

@@ -25,7 +25,7 @@ import java.util.Map;
 
 /**
  * A {@link Map} based implementation of {@link PublicKeyCredentialUserEntityRepository}.
- * @since 6.3
+ * @since 6.4
  * @author Rob Winch
  */
 public class MapPublicKeyCredentialUserEntityRepository implements PublicKeyCredentialUserEntityRepository {

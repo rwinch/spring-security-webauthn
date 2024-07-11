@@ -22,7 +22,7 @@ package org.springframework.security.webauthn.api;
  * as to how clients might communicate with a particular authenticator in order to obtain an assertion for a specific
  * credential.
  *
- * @since 6.3
+ * @since 6.4
  * @author Rob Winch
  */
 public enum AuthenticatorTransport {

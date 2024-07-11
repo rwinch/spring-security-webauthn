@@ -26,7 +26,7 @@ import java.io.IOException;
 
 /**
  * Jackson deserializer for {@link PublicKeyCredentialType}
- * @since 6.3
+ * @since 6.4
  * @author Rob Winch
  */
 class PublicKeyCredentialTypeDeserializer extends StdDeserializer<PublicKeyCredentialType> {

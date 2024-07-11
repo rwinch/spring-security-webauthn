@@ -25,7 +25,7 @@ import java.io.IOException;
 
 /**
  * Jackson serializer for {@link UserVerificationRequirement}
- * @since 6.3
+ * @since 6.4
  * @author Rob Winch
  */
 class UserVerificationRequirementSerializer extends StdSerializer<UserVerificationRequirement> {

@@ -20,7 +20,7 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 /**
  * Jackson mixin for {@link org.springframework.security.webauthn.api.AttestationConveyancePreference}
- * @since 6.3
+ * @since 6.4
  * @author Rob Winch
  */
 @JsonSerialize(using = AttestationConveyancePreferenceSerializer.class)

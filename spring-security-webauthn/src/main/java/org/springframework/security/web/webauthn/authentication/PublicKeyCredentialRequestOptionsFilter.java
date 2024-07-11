@@ -45,7 +45,7 @@ import static org.springframework.security.web.util.matcher.AntPathRequestMatche
  *  A {@link jakarta.servlet.Filter} that renders the {@link PublicKeyCredentialRequestOptions} in order to
  *  <a href="https://w3c.github.io/webappsec-credential-management/#dom-credentialscontainer-get">get</a> a
  *  credential.
- * @since 6.3
+ * @since 6.4
  * @author Rob Winch
  */
 public class PublicKeyCredentialRequestOptionsFilter extends OncePerRequestFilter {

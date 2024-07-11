@@ -33,7 +33,7 @@ import org.springframework.util.Assert;
  * {@link WebAuthnRelyingPartyOperations#authenticate(RelyingPartyAuthenticationRequest)} is invoked. The result is a username
  * passed into {@link UserDetailsService}. The {@link UserDetails} is used to create an {@link Authentication}.
  *
- * @since 6.3
+ * @since 6.4
  * @author Rob Winch
  */
 public class WebAuthnAuthenticationProvider implements AuthenticationProvider {

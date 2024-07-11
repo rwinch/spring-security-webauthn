@@ -26,7 +26,7 @@ import java.util.List;
 
 /**
  * Jackson mixin for {@link org.springframework.security.webauthn.api.AuthenticatorAttestationResponse}
- * @since 6.3
+ * @since 6.4
  * @author Rob Winch
  */
 @JsonDeserialize(builder = AuthenticatorAttestationResponse.AuthenticatorAttestationResponseBuilder.class) // FIXME: Externalize @JsonDeserialize

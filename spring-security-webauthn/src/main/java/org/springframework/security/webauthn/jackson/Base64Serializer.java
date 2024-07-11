@@ -25,7 +25,7 @@ import java.io.IOException;
 
 /**
  * Jackson serializer for {@link Base64Url}
- * @since 6.3
+ * @since 6.4
  * @author Rob Winch
  */
 class Base64Serializer extends StdSerializer<Base64Url> {

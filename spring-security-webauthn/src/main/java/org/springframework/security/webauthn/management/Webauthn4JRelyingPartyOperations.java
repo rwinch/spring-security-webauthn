@@ -55,7 +55,7 @@ import java.util.stream.Collectors;
 /**
  * A <a href="https://webauthn4j.github.io/webauthn4j/en/">WebAuthn4j</a> implementation of
  * {@link WebAuthnRelyingPartyOperations}.
- * @since 6.3
+ * @since 6.4
  * @author Rob Winch
  */
 public class Webauthn4JRelyingPartyOperations implements WebAuthnRelyingPartyOperations {

@@ -25,7 +25,7 @@ import java.util.List;
  * request for the creation of a new <a href="https://www.w3.org/TR/webauthn-3/#public-key-credential">public key
  * credential</a>.
  *
- * @since 6.3
+ * @since 6.4
  * @author Rob Winch
  */
 public class AuthenticatorAttestationResponse extends AuthenticatorResponse {
@@ -111,7 +111,7 @@ public class AuthenticatorAttestationResponse extends AuthenticatorResponse {
 	/**
 	 * Builds {@link AuthenticatorAssertionResponse}.
 	 *
-	 * @since 6.3
+	 * @since 6.4
 	 * @author Rob Winch
 	 */
 	public static final class AuthenticatorAttestationResponseBuilder {

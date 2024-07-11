@@ -19,7 +19,7 @@ package org.springframework.security.webauthn.api;
 /**
  * The <a href="https://www.w3.org/TR/webauthn-3/#dictdef-publickeycredentialrpentity">PublicKeyCredentialRpEntity</a>
  * dictionary is used to supply additional Relying Party attributes when creating a new credential.
- * @since 6.3
+ * @since 6.4
  * @author Rob Winch
  */
 public class PublicKeyCredentialRpEntity {
@@ -62,7 +62,7 @@ public class PublicKeyCredentialRpEntity {
 
 	/**
 	 * Used to create a {@link PublicKeyCredentialRpEntity}.
-	 * @since 6.3
+	 * @since 6.4
 	 * @author Rob Winch
 	 */
 	public static final class PublicKeyCredentialRpEntityBuilder {

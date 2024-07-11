@@ -25,7 +25,7 @@ import static org.assertj.core.api.Assertions.assertThatNoException;
 
 /**
  * Tests for {@link MapPublicKeyCredentialUserEntityRepository}.
- * @since 6.3
+ * @since 6.4
  * @author Rob Winch
  */
 class MapPublicKeyCredentialUserEntityRepositoryTests {

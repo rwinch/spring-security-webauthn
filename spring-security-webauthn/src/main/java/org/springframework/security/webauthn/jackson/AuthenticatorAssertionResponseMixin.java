@@ -22,7 +22,7 @@ import org.springframework.security.webauthn.api.AuthenticatorAssertionResponse;
 
 /**
  * Jackson mixin for {@link org.springframework.security.webauthn.api.AuthenticatorAssertionResponse}
- * @since 6.3
+ * @since 6.4
  * @author Rob Winch
  */
 @JsonDeserialize(builder = AuthenticatorAssertionResponse.AuthenticatorAssertionResponseBuilder.class)

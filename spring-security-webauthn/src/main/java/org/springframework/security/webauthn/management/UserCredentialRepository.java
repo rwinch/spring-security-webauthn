@@ -23,7 +23,7 @@ import java.util.List;
 
 /**
  * A repository for managing {@link CredentialRecord}s associated to a user.
- * @since 6.3
+ * @since 6.4
  * @author Rob Winch
  */
 public interface UserCredentialRepository {

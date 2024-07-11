@@ -21,7 +21,7 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 /**
  * Jackson mixin for {@link org.springframework.security.webauthn.api.AuthenticatorAttachment}
- * @since 6.3
+ * @since 6.4
  * @author Rob Winch
  */
 @JsonDeserialize(using = AuthenticatorAttachmentDeserializer.class)

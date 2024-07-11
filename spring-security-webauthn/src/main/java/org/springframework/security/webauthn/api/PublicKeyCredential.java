@@ -20,7 +20,7 @@ package org.springframework.security.webauthn.api;
  * <a href="https://www.w3.org/TR/webauthn-3/#iface-pkcredential">PublicKeyCredential</a> contains the attributes that
  * are returned to the caller when a new credential is created, or a new assertion is requested.
  *
- * @since 6.3
+ * @since 6.4
  * @author Rob Winch
  */
 public class PublicKeyCredential<R extends AuthenticatorResponse> {
@@ -117,7 +117,7 @@ public class PublicKeyCredential<R extends AuthenticatorResponse> {
 	/**
 	 * The {@link PublicKeyCredentialBuilder}
 	 * @param <R> the response type
-	 * @since 6.3
+	 * @since 6.4
 	 * @author Rob Winch
 	 */
 	public static final class PublicKeyCredentialBuilder<R extends AuthenticatorResponse> {

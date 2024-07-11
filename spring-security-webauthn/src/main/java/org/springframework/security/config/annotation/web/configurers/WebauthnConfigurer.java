@@ -41,7 +41,7 @@ import java.util.Set;
 
 /**
  * Configures WebAuthn for Spring Security applications
- * @since 6.3
+ * @since 6.4
  * @author Rob Winch
  * @param <B> the type of builder
  */

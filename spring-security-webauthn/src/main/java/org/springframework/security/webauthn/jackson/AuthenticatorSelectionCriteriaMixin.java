@@ -20,7 +20,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 
 /**
  * Jackson mixin for {@link org.springframework.security.webauthn.api.AuthenticatorSelectionCriteria}
- * @since 6.3
+ * @since 6.4
  * @author Rob Winch
  */
 @JsonInclude(JsonInclude.Include.NON_NULL)

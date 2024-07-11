@@ -23,7 +23,7 @@ import org.springframework.util.Assert;
 /**
  * Contains the information necessary to register a new Credential.
  * @see Webauthn4JRelyingPartyOperations#registerCredential(RelyingPartyRegistrationRequest)
- * @since 6.3
+ * @since 6.4
  * @author Rob Winch
  */
 public class RelyingPartyRegistrationRequest {

@@ -25,7 +25,7 @@ import java.util.List;
  * same authenticator, and in get() to determine if and how the credential can currently be reached by the client. It
  * mirrors some fields of the PublicKeyCredential object returned by create() and get().
  *
- * @since 6.3
+ * @since 6.4
  * @author Rob Winch
  */
 public class PublicKeyCredentialDescriptor {
@@ -80,7 +80,7 @@ public class PublicKeyCredentialDescriptor {
 
 	/**
 	 * Used to create {@link PublicKeyCredentialDescriptor}
-	 * @since 6.3
+	 * @since 6.4
 	 * @author Rob Winch
 	 */
 	public static final class PublicKeyCredentialDescriptorBuilder {

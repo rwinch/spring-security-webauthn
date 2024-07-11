@@ -25,7 +25,7 @@ import java.io.IOException;
 
 /**
  * Jackson serializer for {@link PublicKeyCredentialType}
- * @since 6.3
+ * @since 6.4
  * @author Rob Winch
  */
 class PublicKeyCredentialTypeSerializer extends StdSerializer<PublicKeyCredentialType> {

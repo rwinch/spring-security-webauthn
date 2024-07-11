@@ -24,7 +24,7 @@ import java.util.stream.Collectors;
 
 /**
  * A {@link Map} based implementation of {@link UserCredentialRepository}.
- * @since 6.3
+ * @since 6.4
  * @author Rob Winch
  */
 public class MapUserCredentialRepository implements UserCredentialRepository {

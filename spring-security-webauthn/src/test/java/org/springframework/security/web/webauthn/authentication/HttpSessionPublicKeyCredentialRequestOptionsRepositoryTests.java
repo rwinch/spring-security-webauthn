@@ -28,7 +28,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Tests for {@link HttpSessionPublicKeyCredentialRequestOptionsRepository}.
  *
  * @author Rob Winch
- * @since 6.3
+ * @since 6.4
  */
 class HttpSessionPublicKeyCredentialRequestOptionsRepositoryTests {
 

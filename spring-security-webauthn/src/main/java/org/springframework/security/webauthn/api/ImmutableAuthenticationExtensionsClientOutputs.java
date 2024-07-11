@@ -22,7 +22,7 @@ import java.util.List;
 /**
  * An immutable implementation of {@link AuthenticationExtensionsClientOutputs}.
  *
- * @since 6.3
+ * @since 6.4
  * @author Rob Winch
  */
 public class ImmutableAuthenticationExtensionsClientOutputs implements AuthenticationExtensionsClientOutputs {

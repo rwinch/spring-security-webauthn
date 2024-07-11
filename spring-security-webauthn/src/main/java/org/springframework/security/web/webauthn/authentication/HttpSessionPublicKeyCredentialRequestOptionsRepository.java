@@ -25,7 +25,7 @@ import org.springframework.util.Assert;
 /**
  * A {@link PublicKeyCredentialRequestOptionsRepository} that stores the {@link PublicKeyCredentialRequestOptions} in
  * the {@link jakarta.servlet.http.HttpSession}.
- * @since 6.3
+ * @since 6.4
  * @author Rob Winch
  */
 public class HttpSessionPublicKeyCredentialRequestOptionsRepository implements PublicKeyCredentialRequestOptionsRepository {

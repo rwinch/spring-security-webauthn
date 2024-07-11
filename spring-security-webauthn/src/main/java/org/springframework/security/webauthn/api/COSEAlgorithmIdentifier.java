@@ -20,7 +20,7 @@ package org.springframework.security.webauthn.api;
  * <a href="https://www.w3.org/TR/webauthn-3/#sctn-alg-identifier">COSEAlgorithmIdentifier</a> is used to identify a
  * cryptographic algorithm.
  *
- * @since 6.3
+ * @since 6.4
  * @author Rob Winch
  */
 public enum COSEAlgorithmIdentifier {

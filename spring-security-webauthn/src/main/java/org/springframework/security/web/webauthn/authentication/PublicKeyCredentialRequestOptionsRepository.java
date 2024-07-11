@@ -24,7 +24,7 @@ import org.springframework.security.webauthn.api.PublicKeyCredentialRequestOptio
  * Saves {@link PublicKeyCredentialRequestOptions} between a request to generate an assertion and the validation of the
  * assertion.
  *
- * @since 6.3
+ * @since 6.4
  * @author Rob Winch
  */
 public interface PublicKeyCredentialRequestOptionsRepository {

@@ -22,7 +22,7 @@ package org.springframework.security.webauthn.api;
  * <a href="https://www.w3.org/TR/webauthn-3/#enumdef-attestationconveyancepreference">AttestationConveyancePreference</a>
  * to specify their preference regarding attestation conveyance during credential generation.
  *
- * @since 6.3
+ * @since 6.4
  * @author Rob Winch
  */
 public enum AttestationConveyancePreference {

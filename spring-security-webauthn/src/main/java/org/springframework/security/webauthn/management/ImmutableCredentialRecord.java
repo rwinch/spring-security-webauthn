@@ -25,7 +25,7 @@ import org.springframework.security.webauthn.api.PublicKeyCredentialType;
 
 /**
  * An immutable {@link CredentialRecord}.
- * @since 6.3
+ * @since 6.4
  * @author Rob Winch
  */
 public class ImmutableCredentialRecord implements CredentialRecord {

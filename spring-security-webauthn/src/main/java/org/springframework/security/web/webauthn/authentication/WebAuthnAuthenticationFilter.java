@@ -65,7 +65,7 @@ import static org.springframework.security.web.util.matcher.AntPathRequestMatche
  * 	"authenticatorAttachment": "platform"
  * }
  * </pre>
- * @since 6.3
+ * @since 6.4
  * @author Rob Winch
  */
 public class WebAuthnAuthenticationFilter extends AbstractAuthenticationProcessingFilter  {

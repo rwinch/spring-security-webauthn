@@ -20,7 +20,7 @@ package org.springframework.security.webauthn.api;
 /**
  * The <a href="https://www.w3.org/TR/webauthn-3/#enumdef-authenticatorattachment">AuthenticatorAttachment</a>.
  *
- * @since 6.3
+ * @since 6.4
  * @author Rob Winch
  */
 public enum AuthenticatorAttachment {

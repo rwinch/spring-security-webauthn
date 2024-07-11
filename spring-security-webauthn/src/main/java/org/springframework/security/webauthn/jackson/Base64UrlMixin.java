@@ -22,7 +22,7 @@ import org.springframework.security.webauthn.api.Base64Url;
 
 /**
  * Jackson mixin for {@link org.springframework.security.webauthn.api.Base64Url}
- * @since 6.3
+ * @since 6.4
  * @author Rob Winch
  */
 @JsonSerialize(using = Base64Serializer.class)

@@ -27,7 +27,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 /**
  * Tests for {@link org.springframework.security.web.webauthn.authentication.HttpSessionPublicKeyCredentialRequestOptionsRepository}.
  *
- * @since 6.3
+ * @since 6.4
  * @author Rob Winch
  */
 class HttpSessionPublicKeyCredentialCreationOptionsRepositoryTests {

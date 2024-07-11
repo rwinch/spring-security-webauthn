@@ -21,7 +21,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
  * Jackson mixin for {@link org.springframework.security.webauthn.api.CredentialPropertiesOutput}
- * @since 6.3
+ * @since 6.4
  * @author Rob Winch
  */
 @JsonIgnoreProperties(ignoreUnknown = true)

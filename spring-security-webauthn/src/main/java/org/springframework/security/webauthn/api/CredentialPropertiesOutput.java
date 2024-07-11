@@ -19,7 +19,7 @@ package org.springframework.security.webauthn.api;
 /**
  * <a href="https://www.w3.org/TR/webauthn-3/#dictdef-credentialpropertiesoutput">CredentialPropertiesOutput</a> is the
  * Client extension output.
- * @since 6.3
+ * @since 6.4
  * @author Rob Winch
  */
 public class CredentialPropertiesOutput implements AuthenticationExtensionsClientOutput<CredentialPropertiesOutput.ExtensionOutput> {
@@ -52,7 +52,7 @@ public class CredentialPropertiesOutput implements AuthenticationExtensionsClien
 	/**
 	 * The output for {@link CredentialPropertiesOutput}
 	 * @see #getOutput()
-	 * @since 6.3
+	 * @since 6.4
 	 * @author Rob Winch
 	 */
 	public static final class ExtensionOutput {

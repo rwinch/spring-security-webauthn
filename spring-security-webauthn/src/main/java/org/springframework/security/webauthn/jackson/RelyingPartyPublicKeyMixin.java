@@ -22,7 +22,7 @@ import org.springframework.security.webauthn.api.PublicKeyCredential;
 
 /**
  * Jackson mixin for {@link org.springframework.security.webauthn.management.RelyingPartyPublicKey}
- * @since 6.3
+ * @since 6.4
  * @author Rob Winch
  */
 abstract class RelyingPartyPublicKeyMixin {

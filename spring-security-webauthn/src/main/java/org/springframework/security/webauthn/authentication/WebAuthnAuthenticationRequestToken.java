@@ -24,7 +24,7 @@ import org.springframework.util.Assert;
 /**
  * An {@link org.springframework.security.core.Authentication} used in {@link WebAuthnAuthenticationProvider} for
  * authenticating via WebAuthn.
- * @since 6.3
+ * @since 6.4
  * @author Rob Winch
  */
 public class WebAuthnAuthenticationRequestToken extends AbstractAuthenticationToken {

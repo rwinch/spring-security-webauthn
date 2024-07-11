@@ -74,7 +74,7 @@ import static org.springframework.security.web.util.matcher.AntPathRequestMatche
  * }
  * </pre>
  *
- * @since 6.3
+ * @since 6.4
  * @author Rob Winch
  */
 public class WebAuthnRegistrationFilter extends OncePerRequestFilter {

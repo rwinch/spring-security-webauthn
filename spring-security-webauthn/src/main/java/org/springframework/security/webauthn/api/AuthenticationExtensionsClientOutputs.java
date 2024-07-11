@@ -24,7 +24,7 @@ import java.util.List;
  * output</a> values for zero or more <a href="https://www.w3.org/TR/webauthn-3/#webauthn-extensions">WebAuthn
  * Extensions</a>.
  *
- * @since 6.3
+ * @since 6.4
  * @see PublicKeyCredential#getClientExtensionResults()
  * @author Rob Winch
  */

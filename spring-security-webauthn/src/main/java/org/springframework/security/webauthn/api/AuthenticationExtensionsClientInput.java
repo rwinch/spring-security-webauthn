@@ -19,7 +19,7 @@ package org.springframework.security.webauthn.api;
 /**
  * An entry in the {@link AuthenticationExtensionsClientInputs}
  *
- * @since 6.3
+ * @since 6.4
  * @see ImmutableAuthenticationExtensionsClientInput
  * @param <T>
  * @author Rob Winch

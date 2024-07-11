@@ -22,7 +22,7 @@ package org.springframework.security.webauthn.api;
  * used by <a href="https://www.w3.org/TR/webauthn-3/#webauthn-relying-party">WebAuthn Relying Parties</a> to specify
  * their requirements regarding authenticator attributes.
  *
- * @since 6.3
+ * @since 6.4
  * @author Rob Winch
  */
 public class AuthenticatorSelectionCriteria {
@@ -93,7 +93,7 @@ public class AuthenticatorSelectionCriteria {
 
 	/**
 	 * Creates a {@link AuthenticatorSelectionCriteria}
-	 * @since 6.3
+	 * @since 6.4
 	 * @author Rob Winch
 	 */
 	public static final class AuthenticatorSelectionCriteriaBuilder {

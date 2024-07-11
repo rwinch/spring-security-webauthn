@@ -26,7 +26,7 @@ package org.springframework.security.webauthn.api;
  * the <a href="https://www.w3.org/TR/webauthn-3/#credential-private-key">credential private key</a>, and optionally
  * evidence of <a href="https://www.w3.org/TR/webauthn-3/#user-consent">user consent</a> to a specific transaction.
  *
- * @since 6.3
+ * @since 6.4
  * @author Rob Winch
  */
 public class AuthenticatorAssertionResponse extends AuthenticatorResponse  {
@@ -105,7 +105,7 @@ public class AuthenticatorAssertionResponse extends AuthenticatorResponse  {
 	/**
 	 * Builds a {@link AuthenticatorAssertionResponse}.
 	 *
-	 * @since 6.3
+	 * @since 6.4
 	 * @author Rob Winch
 	 */
 	public static final class AuthenticatorAssertionResponseBuilder {

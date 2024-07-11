@@ -29,7 +29,7 @@ import org.springframework.security.webauthn.api.PublicKeyCredentialUserEntity;
  * Represents a <a href="https://www.w3.org/TR/webauthn-3/#credential-record">Credential Record</a> that is stored by
  * the Relying Party <a href="https://www.w3.org/TR/webauthn-3/#reg-ceremony-store-credential-record">after successful
  * registration</a>.
- * @since 6.3
+ * @since 6.4
  * @author Rob Winch
  */
 public interface CredentialRecord {

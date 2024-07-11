@@ -31,7 +31,7 @@ import java.util.List;
 
 /**
  * Provides Jackson deserialization of {@link AuthenticationExtensionsClientOutputs}.
- * @since 6.3
+ * @since 6.4
  * @author Rob Winch
  */
 class AuthenticationExtensionsClientOutputsDeserializer extends StdDeserializer<AuthenticationExtensionsClientOutputs> {

@@ -20,7 +20,7 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
 /**
  * Jackson mixin for {@link org.springframework.security.webauthn.api.AuthenticationExtensionsClientOutputs}
- * @since 6.3
+ * @since 6.4
  * @author Rob Winch
  */
 @JsonDeserialize(using = AuthenticationExtensionsClientOutputsDeserializer.class )

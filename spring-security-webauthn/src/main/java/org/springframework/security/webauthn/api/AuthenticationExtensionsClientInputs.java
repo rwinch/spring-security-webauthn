@@ -25,7 +25,7 @@ import java.util.List;
  * input</a> values for zero or more <a href="https://www.w3.org/TR/webauthn-3/#webauthn-extensions">WebAuthn
  * Extensions</a>.
  *
- * @since 6.3
+ * @since 6.4
  * @see PublicKeyCredentialCreationOptions#getExtensions()
  * @author Rob Winch
  */

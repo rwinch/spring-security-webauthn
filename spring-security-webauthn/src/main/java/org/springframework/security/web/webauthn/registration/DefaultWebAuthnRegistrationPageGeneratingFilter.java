@@ -45,7 +45,7 @@ import java.util.regex.Pattern;
  * A {@link jakarta.servlet.Filter} that renders a default WebAuthn registration page.
  *
  * @author Rob Winch
- * @since 6.3
+ * @since 6.4
  */
 public class DefaultWebAuthnRegistrationPageGeneratingFilter extends OncePerRequestFilter {
 

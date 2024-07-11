@@ -30,7 +30,7 @@ import java.io.IOException;
 
 /**
  * Jackson deserializer for {@link AuthenticatorTransport}
- * @since 6.3
+ * @since 6.4
  * @author Rob Winch
  */
 class AuthenticatorTransportDeserializer extends StdDeserializer<AuthenticatorTransport> {

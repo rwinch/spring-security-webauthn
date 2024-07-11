@@ -27,7 +27,7 @@ import java.util.function.Consumer;
 /**
  * <a href="https://www.w3.org/TR/webauthn-3/#dictdef-publickeycredentialrequestoptions">PublicKeyCredentialRequestOptions</a>
  * contains the information to create an assertion used for authentication.
- * @since 6.3
+ * @since 6.4
  * @author Rob Winch
  */
 public class PublicKeyCredentialRequestOptions {
@@ -124,7 +124,7 @@ public class PublicKeyCredentialRequestOptions {
 
 	/**
 	 * Used to build a {@link PublicKeyCredentialCreationOptions}.
-	 * @since 6.3
+	 * @since 6.4
 	 * @author Rob Winch
 	 */
 	public static final class PublicKeyCredentialRequestOptionsBuilder {

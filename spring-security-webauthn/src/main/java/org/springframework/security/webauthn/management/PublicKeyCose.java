@@ -18,7 +18,7 @@ package org.springframework.security.webauthn.management;
 
 /**
  * A <a href="https://www.w3.org/TR/webauthn-3/#sctn-encoded-credPubKey-examples">COSE encoded public key</a>.
- * @since 6.3
+ * @since 6.4
  * @author Rob Winch
  */
 public interface PublicKeyCose {

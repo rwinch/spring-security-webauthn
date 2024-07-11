@@ -26,7 +26,7 @@ import java.io.IOException;
 
 /**
  * Provides Jackson serialization of {@link AuthenticationExtensionsClientInputs}.
- * @since 6.3
+ * @since 6.4
  * @author Rob Winch
  */
 class AuthenticationExtensionsClientInputsSerializer extends StdSerializer<AuthenticationExtensionsClientInputs> {

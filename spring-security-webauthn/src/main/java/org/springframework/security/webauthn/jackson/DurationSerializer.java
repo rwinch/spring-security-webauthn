@@ -25,7 +25,7 @@ import java.time.Duration;
 
 /**
  * Jackson serializer for {@link Duration}
- * @since 6.3
+ * @since 6.4
  * @author Rob Winch
  */
 class DurationSerializer extends StdSerializer<Duration> {

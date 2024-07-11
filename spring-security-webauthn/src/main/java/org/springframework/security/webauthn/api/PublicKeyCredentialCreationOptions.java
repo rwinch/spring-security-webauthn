@@ -29,7 +29,7 @@ import java.util.function.Consumer;
  * <a href="https://w3c.github.io/webappsec-credential-management/#dom-credentialscontainer-create">creating</a> a
  * new credential.
  *
- * @since 6.3
+ * @since 6.4
  * @author Rob Winch
  */
 public class PublicKeyCredentialCreationOptions {
@@ -160,7 +160,7 @@ public class PublicKeyCredentialCreationOptions {
 
 	/**
 	 * Used to build {@link PublicKeyCredentialCreationOptions}.
-	 * @since 6.3
+	 * @since 6.4
 	 * @author Rob Winch
 	 */
 	public static final class PublicKeyCredentialCreationOptionsBuilder {

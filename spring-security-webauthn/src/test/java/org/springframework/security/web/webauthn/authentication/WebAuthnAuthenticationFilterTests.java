@@ -49,7 +49,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 /**
  * Tests for {@link WebAuthnAuthenticationFilter}.
  *
- * @since 6.3
+ * @since 6.4
  * @author Rob Winch
  */
 @ExtendWith(MockitoExtension.class)
