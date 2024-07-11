@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+"use strict";
+
 async function post(url, headers, body) {
   const options = {
     method: "POST",

@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+"use strict";
+
 import base64url from "./base64url.js";
 import http from "./http.js";
 

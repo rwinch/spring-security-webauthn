@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+"use strict";
+
 export default {
   encode: function (buffer) {
     const base64 = window.btoa(String.fromCharCode(...new Uint8Array(buffer)));

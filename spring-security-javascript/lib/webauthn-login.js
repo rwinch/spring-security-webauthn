@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+"use strict";
+
 import webauthn from "./webauthn-core.js";
 
 async function conditionalMediation(headers, contextPath) {
