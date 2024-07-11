@@ -17,7 +17,7 @@
 "use strict";
 
 import { expect } from "chai";
-import { fake, match, stub, assert } from "sinon";
+import { assert, fake, match, stub } from "sinon";
 import http from "../lib/http.js";
 import webauthn from "../lib/webauthn-core.js";
 import base64url from "../lib/base64url.js";
@@ -138,6 +138,7 @@ describe("webauthn-core", () => {
 
       await webauthn.authenticate({ "x-custom": "some-value" }, contextPath, false);
 
+      // TODO: assert options
       expect(global.window.location.href).to.equal("/success");
       assert.calledWith(
         httpPostStub.lastCall,
@@ -169,6 +170,192 @@ describe("webauthn-core", () => {
       await webauthn.authenticate({}, contextPath, false);
 
       expect(global.window.location.href).to.equal("/login?error");
+    });
+  });
+
+  describe("register", () => {
+    let httpPostStub;
+    const contextPath = "/some/path";
+
+    beforeEach(() => {
+      const credentialsCreateOptions = {
+        rp: { name: "Spring Security Relying Party", id: "example.localhost" },
+        user: { name: "user", id: "eatPy60xmXG_58JrIiIBa5wq8Y76c7MD6mnY5vW8yP8", displayName: "user" },
+        challenge: "s0hBOfkSaVLXdsbyD8jii6t2IjUd-eiTP1Cmeuo1qUo",
+        pubKeyCredParams: [
+          { type: "public-key", alg: -8 },
+          { type: "public-key", alg: -7 },
+          { type: "public-key", alg: -257 },
+        ],
+        timeout: 300000,
+        excludeCredentials: [
+          {
+            id: "nOsjw8eaaqSwVdTBBYE1FqfGdHs",
+            type: "public-key",
+            transports: [],
+          },
+        ],
+        authenticatorSelection: { residentKey: "required", userVerification: "preferred" },
+        attestation: "direct",
+        extensions: { credProps: true },
+      };
+      const validAuthenticatorResponse = {
+        authenticatorAttachment: "platform",
+        id: "9wAuex_025BgEQrs7fOypo5SGBA",
+        rawId: base64url.decode("9wAuex_025BgEQrs7fOypo5SGBA"),
+        response: {
+          attestationObject: base64url.decode(
+            "o2NmbXRkbm9uZWdhdHRTdG10oGhhdXRoRGF0YViYy9GqwTRaMpzVDbXq1dyEAXVOxrou08k22ggRC45MKNhdAAAAAPv8MAcVTk7MjAtuAgVX170AFPcALnsf9NuQYBEK7O3zsqaOUhgQpQECAyYgASFYIMB9pM2BeSeEG83fAKFVSLKIfvDBBVoyGgMoiGxE-6WgIlggazAojM5sduQy2M7rz1do55nVaNLGXh8k4xBHz-Oy91E",
+          ),
+          getAuthenticatorData: () =>
+            base64url.decode(
+              "y9GqwTRaMpzVDbXq1dyEAXVOxrou08k22ggRC45MKNhdAAAAAPv8MAcVTk7MjAtuAgVX170AFPcALnsf9NuQYBEK7O3zsqaOUhgQpQECAyYgASFYIMB9pM2BeSeEG83fAKFVSLKIfvDBBVoyGgMoiGxE-6WgIlggazAojM5sduQy2M7rz1do55nVaNLGXh8k4xBHz-Oy91E",
+            ),
+          clientDataJSON: base64url.decode(
+            "eyJ0eXBlIjoid2ViYXV0aG4uY3JlYXRlIiwiY2hhbGxlbmdlIjoiUVdwd3lUcXJpYVlqbVdnOWFvZ0FxUlRKNVFYMFBGV2JWR2xNeGNsVjZhcyIsIm9yaWdpbiI6Imh0dHBzOi8vZXhhbXBsZS5sb2NhbGhvc3Q6ODQ0MyJ9",
+          ),
+          getPublicKey: () =>
+            base64url.decode(
+              "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEwH2kzYF5J4Qbzd8AoVVIsoh-8MEFWjIaAyiIbET7paBrMCiMzmx25DLYzuvPV2jnmdVo0sZeHyTjEEfP47L3UQ",
+            ),
+          getPublicKeyAlgorithm: () => -7,
+          getTransports: () => ["internal"],
+        },
+        type: "public-key",
+        getClientExtensionResults: () => ({}),
+      };
+      global.navigator = {
+        credentials: {
+          create: fake.resolves(validAuthenticatorResponse),
+        },
+      };
+      httpPostStub = stub(http, "post");
+      httpPostStub.withArgs(contextPath + "/webauthn/register/options", match.any).resolves({
+        json: fake.resolves(credentialsCreateOptions),
+      });
+
+      global.window = {
+        ...global.window,
+        location: {},
+      };
+    });
+
+    afterEach(() => {
+      httpPostStub.restore();
+      delete global.navigator;
+      delete global.window.location;
+    });
+
+    it("succeeds", async () => {
+      const contextPath = "/some/path";
+      const headers = { _csrf: "csrf-value" };
+
+      httpPostStub.withArgs(`${contextPath}/webauthn/register`, match.any, match.any).resolves({
+        ok: true,
+        json: fake.resolves({
+          success: true,
+        }),
+      });
+
+      await webauthn.register(headers, contextPath, "my passkey");
+      expect(global.window.location.href).to.equal(`${contextPath}/webauthn/register?success`);
+      assert.calledWithExactly(
+        httpPostStub.lastCall,
+        `${contextPath}/webauthn/register`,
+        headers,
+        match({
+          publicKey: {
+            credential: {
+              id: "9wAuex_025BgEQrs7fOypo5SGBA",
+              rawId: "9wAuex_025BgEQrs7fOypo5SGBA",
+              response: {
+                attestationObject:
+                  "o2NmbXRkbm9uZWdhdHRTdG10oGhhdXRoRGF0YViYy9GqwTRaMpzVDbXq1dyEAXVOxrou08k22ggRC45MKNhdAAAAAPv8MAcVTk7MjAtuAgVX170AFPcALnsf9NuQYBEK7O3zsqaOUhgQpQECAyYgASFYIMB9pM2BeSeEG83fAKFVSLKIfvDBBVoyGgMoiGxE-6WgIlggazAojM5sduQy2M7rz1do55nVaNLGXh8k4xBHz-Oy91E",
+                clientDataJSON:
+                  "eyJ0eXBlIjoid2ViYXV0aG4uY3JlYXRlIiwiY2hhbGxlbmdlIjoiUVdwd3lUcXJpYVlqbVdnOWFvZ0FxUlRKNVFYMFBGV2JWR2xNeGNsVjZhcyIsIm9yaWdpbiI6Imh0dHBzOi8vZXhhbXBsZS5sb2NhbGhvc3Q6ODQ0MyJ9",
+                transports: ["internal"],
+                publicKeyAlgorithm: -7,
+                publicKey:
+                  "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEwH2kzYF5J4Qbzd8AoVVIsoh-8MEFWjIaAyiIbET7paBrMCiMzmx25DLYzuvPV2jnmdVo0sZeHyTjEEfP47L3UQ",
+                authenticatorData:
+                  "y9GqwTRaMpzVDbXq1dyEAXVOxrou08k22ggRC45MKNhdAAAAAPv8MAcVTk7MjAtuAgVX170AFPcALnsf9NuQYBEK7O3zsqaOUhgQpQECAyYgASFYIMB9pM2BeSeEG83fAKFVSLKIfvDBBVoyGgMoiGxE-6WgIlggazAojM5sduQy2M7rz1do55nVaNLGXh8k4xBHz-Oy91E",
+              },
+              type: "public-key",
+              clientExtensionResults: {},
+              authenticatorAttachment: "platform",
+            },
+            label: "my passkey",
+          },
+        }),
+      );
+    });
+
+    it("throws when label is missing", async () => {
+      try {
+        await webauthn.register({}, "/", "");
+        expect.fail("register should throw");
+      } catch (err) {
+        expect(err).to.be.an("error");
+      }
+    });
+
+    it("calls the authenticator with the correct options", async () => {
+      try {
+        await webauthn.register({}, contextPath, "my passkey");
+      } catch {
+        // ignored
+      }
+
+      assert.calledOnceWithExactly(global.navigator.credentials.create, {
+        publicKey: {
+          rp: {
+            name: "Spring Security Relying Party",
+            id: "example.localhost",
+          },
+          user: {
+            name: "user",
+            id: base64url.decode("eatPy60xmXG_58JrIiIBa5wq8Y76c7MD6mnY5vW8yP8"),
+            displayName: "user",
+          },
+          challenge: base64url.decode("s0hBOfkSaVLXdsbyD8jii6t2IjUd-eiTP1Cmeuo1qUo"),
+          pubKeyCredParams: [
+            {
+              type: "public-key",
+              alg: -8,
+            },
+            {
+              type: "public-key",
+              alg: -7,
+            },
+            {
+              type: "public-key",
+              alg: -257,
+            },
+          ],
+          timeout: 300000,
+          excludeCredentials: [
+            {
+              id: base64url.decode("nOsjw8eaaqSwVdTBBYE1FqfGdHs"),
+              type: "public-key",
+              transports: [],
+            },
+          ],
+          authenticatorSelection: {
+            residentKey: "required",
+            userVerification: "preferred",
+          },
+          attestation: "direct",
+          extensions: { credProps: true },
+        },
+      });
+    });
+
+    it("throws when the registration fails", () => {
+      // TODO
+    });
+
+    it("throws when the authenticator fails", () => {
+      // TODO
     });
   });
 });
