@@ -16,6 +16,7 @@
 
 "use strict";
 
-import { setup as setupLogin } from "./webauthn-login.js";
+import { setupLogin } from "./webauthn-login.js";
+
 // Make "setup" available in the window domain, so it can be run with "setupLogin()"
 window.setupLogin = setupLogin;
