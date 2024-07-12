@@ -23,24 +23,24 @@ import webauthn from "../lib/webauthn-core.js";
 import base64url from "../lib/base64url.js";
 
 describe("webauthn-core", () => {
-  before(() => {
+  beforeEach(() => {
     global.window = {
       btoa: (str) => Buffer.from(str, "binary").toString("base64"),
       atob: (b64) => Buffer.from(b64, "base64").toString("binary"),
     };
   });
 
-  after(() => {
+  afterEach(() => {
     delete global.window;
   });
 
   describe("isConditionalMediationAvailable", () => {
     afterEach(() => {
-      delete global.document;
+      delete global.window.PublicKeyCredential;
     });
 
     it("is available", async () => {
-      global.document = {
+      global.window = {
         PublicKeyCredential: {
           isConditionalMediationAvailable: fake.resolves(true),
         },
@@ -51,24 +51,28 @@ describe("webauthn-core", () => {
       expect(result).to.be.true;
     });
 
-    it("is not available", async () => {
-      global.document = {};
-      let result = await webauthn.isConditionalMediationAvailable();
-      expect(result).to.be.false;
-
-      global.document = {
-        PublicKeyCredential: {},
-      };
-      result = await webauthn.isConditionalMediationAvailable();
-      expect(result).to.be.false;
-
-      global.document = {
-        PublicKeyCredential: {
-          isConditionalMediationAvailable: fake.resolves(false),
-        },
-      };
-      result = await webauthn.isConditionalMediationAvailable();
-      expect(result).to.be.false;
+    describe("is not available", async () => {
+      it("PublicKeyCredential does not exist", async () => {
+        global.window = {};
+        const result = await webauthn.isConditionalMediationAvailable();
+        expect(result).to.be.false;
+      })
+      it("PublicKeyCredential.isConditionalMediationAvailable undefined", async () => {
+        global.window = {
+          PublicKeyCredential: {},
+        };
+        const result = await webauthn.isConditionalMediationAvailable();
+        expect(result).to.be.false;
+      })
+      it("PublicKeyCredential.isConditionalMediationAvailable false", async () => {
+        global.window = {
+          PublicKeyCredential: {
+            isConditionalMediationAvailable: fake.resolves(false),
+          },
+        };
+        const result = await webauthn.isConditionalMediationAvailable();
+        expect(result).to.be.false;
+      })
     });
   });
 

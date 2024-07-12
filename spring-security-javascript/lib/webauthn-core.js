@@ -21,9 +21,9 @@ import http from "./http.js";
 
 async function isConditionalMediationAvailable() {
   return !!(
-    document.PublicKeyCredential &&
-    document.PublicKeyCredential.isConditionalMediationAvailable &&
-    (await document.PublicKeyCredential.isConditionalMediationAvailable())
+    window.PublicKeyCredential &&
+    window.PublicKeyCredential.isConditionalMediationAvailable &&
+    (await window.PublicKeyCredential.isConditionalMediationAvailable())
   );
 }
 
