@@ -17,7 +17,7 @@
 "use strict";
 
 import { expect, util, Assertion } from "chai";
-import { setup } from "../lib/webauthn-registration.js";
+import { setupRegistration } from "../lib/webauthn-registration.js";
 import webauthn from "../lib/webauthn-core.js";
 import { assert, fake, match, stub } from "sinon";
 
@@ -81,13 +81,13 @@ describe("webauthn-registration", () => {
       });
 
       it("does not set up a click event listener", async () => {
-        await setup({}, "/", registerButton);
+        await setupRegistration({}, "/", registerButton);
 
         assert.notCalled(registerButton.addEventListener);
       });
 
       it("shows an error popup", async () => {
-        await setup({}, "/", registerButton);
+        await setupRegistration({}, "/", registerButton);
 
         expect(errorPopup).to.be.visible;
         expect(errorPopup.textContent).to.equal("WebAuthn is not supported");
@@ -101,14 +101,14 @@ describe("webauthn-registration", () => {
       });
 
       it("hides the popups", async () => {
-        await setup({}, "/", registerButton);
+        await setupRegistration({}, "/", registerButton);
 
         expect(successPopup).to.be.hidden;
         expect(errorPopup).to.be.hidden;
       });
 
       it("sets up a click event listener on the register button", async () => {
-        await setup({}, "/some/path", registerButton);
+        await setupRegistration({}, "/some/path", registerButton);
 
         assert.calledOnceWithMatch(registerButton.addEventListener, "click", match.typeOf("function"));
       });
@@ -118,7 +118,7 @@ describe("webauthn-registration", () => {
         const contextPath = "/some/path";
 
         beforeEach(async () => {
-          await setup(headers, contextPath, registerButton);
+          await setupRegistration(headers, contextPath, registerButton);
         });
 
         it("clears the messages", async () => {

@@ -46,7 +46,8 @@ function resetPopups() {
   }
 }
 
-export async function setup(headers, contextPath, registerButton) {
+export async function setupRegistration(headers, contextPath, registerButton) {
+  // TODO: show success
   resetPopups();
 
   if (!window.PublicKeyCredential) {

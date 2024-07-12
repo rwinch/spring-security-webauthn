@@ -350,11 +350,11 @@ describe("webauthn-core", () => {
       });
     });
 
-    it("throws when the registration fails", () => {
+    it("throws when the navigator.credentials.create fails", () => {
       // TODO
     });
 
-    it("throws when the authenticator fails", () => {
+    it("throws when the registration fails", () => {
       // TODO
     });
   });
