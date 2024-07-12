@@ -365,7 +365,7 @@ public class DefaultLoginPageGeneratingFilter extends GenericFilterBean {
 		<script type="text/javascript" src="${contextPath}/login/webauthn.js"></script>
 		<script type="text/javascript">
 		<!--
-			document.addEventListener("DOMContentLoaded",() => setup(${csrfHeaders}, "${contextPath}", document.getElementById('passkey-signin')));
+			document.addEventListener("DOMContentLoaded",() => setupLogin(${csrfHeaders}, "${contextPath}", document.getElementById('passkey-signin')));
 			
 		//-->
 		</script>
