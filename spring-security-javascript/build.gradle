@@ -39,6 +39,6 @@ configurations {
 
 artifacts {
     javascript(project.layout.buildDirectory.dir('dist')) {
-        builtBy(npm_run_test)
+        builtBy(npm_run_assemble)
     }
 }
