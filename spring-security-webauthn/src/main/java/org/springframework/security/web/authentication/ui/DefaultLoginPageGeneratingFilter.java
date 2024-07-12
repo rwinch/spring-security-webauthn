@@ -203,7 +203,7 @@ public class DefaultLoginPageGeneratingFilter extends GenericFilterBean {
 	private void doFilter(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
 			throws IOException, ServletException {
 		if (antMatcher(GET, "/login/webauthn.js").matches(request)) {
-			ClassPathResource webauthn = new ClassPathResource("org/springframework/security/spring-security.js");
+			ClassPathResource webauthn = new ClassPathResource("org/springframework/security/spring-security-webauthn.js");
 			response.addHeader(HttpHeaders.CONTENT_TYPE, "application/javascript");
 			response.getWriter().write(webauthn.getContentAsString(StandardCharsets.UTF_8));
 			return;

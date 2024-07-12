@@ -18,7 +18,7 @@
   "scripts": {
     "test": "mocha",
     "test:watch": "mocha --watch --parallel",
-    "assemble": "esbuild lib/index.js --bundle --outfile=build/dist/spring-security.js",
+    "assemble": "esbuild lib/index.js --bundle --outfile=build/dist/spring-security-webauthn.js",
     "build": "npm test && npm run lint && npm run assemble",
     "lint": "eslint",
     "format": "npm run lint -- --fix"
