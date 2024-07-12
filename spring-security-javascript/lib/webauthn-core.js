@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+"use strict";
+
 import base64url from "./base64url.js";
 import http from "./http.js";
 
@@ -79,7 +81,80 @@ async function authenticate(headers, contextPath, useConditionalMediation) {
   }
 }
 
+async function register(headers, contextPath, label) {
+  if (!label) {
+    throw new Error("Error: Passkey Label is required");
+  }
+
+  const optionsResponse = await http.post(`${contextPath}/webauthn/register/options`, headers);
+  const options = await optionsResponse.json();
+  // FIXME: Use https://www.w3.org/TR/webauthn-3/#sctn-parseCreationOptionsFromJSON
+  let decodedExcludeCredentials = !options.excludeCredentials
+    ? []
+    : options.excludeCredentials.map((cred) => ({
+        ...cred,
+        id: base64url.decode(cred.id),
+      }));
+
+  const decodedOptions = {
+    ...options,
+    user: {
+      ...options.user,
+      id: base64url.decode(options.user.id),
+    },
+    challenge: base64url.decode(options.challenge),
+    excludeCredentials: decodedExcludeCredentials,
+  };
+
+  const credentialsContainer = await navigator.credentials
+    .create({
+      publicKey: decodedOptions,
+    })
+    .catch((e) => {
+      throw new Error("Registration failed: " + e.message, { cause: e });
+    });
+  // FIXME: Let response be credential.response. If response is not an instance of AuthenticatorAttestationResponse, abort the ceremony with a user-visible error. https://www.w3.org/TR/webauthn-3/#sctn-registering-a-new-credential
+  const { response } = credentialsContainer;
+  const credential = {
+    id: credentialsContainer.id,
+    rawId: base64url.encode(credentialsContainer.rawId),
+    response: {
+      attestationObject: base64url.encode(response.attestationObject),
+      clientDataJSON: base64url.encode(response.clientDataJSON),
+      transports: response.getTransports ? response.getTransports() : [],
+      publicKeyAlgorithm: response.getPublicKeyAlgorithm(),
+      publicKey: base64url.encode(response.getPublicKey()),
+      authenticatorData: base64url.encode(response.getAuthenticatorData()),
+    },
+    type: credentialsContainer.type,
+    clientExtensionResults: credentialsContainer.getClientExtensionResults(),
+    authenticatorAttachment: credentialsContainer.authenticatorAttachment,
+  };
+
+  const registrationRequest = {
+    publicKey: {
+      credential: credential,
+      label: label,
+    },
+  };
+
+  // POST the response to the endpoint that calls
+  const verificationResp = await http.post(`${contextPath}/webauthn/register`, headers, registrationRequest);
+
+  // Wait for the results of verification
+  const verificationJSON = await verificationResp.json();
+
+  // Show UI appropriate for the `success` status & reload to display the new registration
+  if (verificationJSON && verificationJSON.success) {
+    window.location.href = `${contextPath}/webauthn/register?success`;
+  } else {
+    // TODO: handle <pre>
+    throw new Error(`Registration failed! Response: <pre>${JSON.stringify(verificationJSON, null, 2)}</pre>`);
+  }
+}
+
 export default {
   authenticate,
+  register,
   isConditionalMediationAvailable,
 };

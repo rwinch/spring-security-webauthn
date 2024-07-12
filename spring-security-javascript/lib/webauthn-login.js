@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+"use strict";
+
 import webauthn from "./webauthn-core.js";
 
 async function conditionalMediation(headers, contextPath) {
@@ -24,7 +26,7 @@ async function conditionalMediation(headers, contextPath) {
   return available;
 }
 
-export async function setup(headers, contextPath, signinButton) {
+export async function setupLogin(headers, contextPath, signinButton) {
   await conditionalMediation(headers, contextPath);
 
   signinButton.addEventListener("click", async () => {

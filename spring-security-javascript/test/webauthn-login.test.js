@@ -16,7 +16,7 @@
 
 "use strict";
 
-import { setup } from "../lib/webauthn-login.js";
+import { setupLogin } from "../lib/webauthn-login.js";
 import webauthn from "../lib/webauthn-core.js";
 import { assert, fake, match, stub } from "sinon";
 
@@ -40,7 +40,7 @@ describe("webauthn-login", () => {
     });
 
     it("sets up a click event listener on the signin button", async () => {
-      await setup({}, "/some/path", signinButton);
+      await setupLogin({}, "/some/path", signinButton);
 
       assert.calledOnceWithMatch(signinButton.addEventListener, "click", match.typeOf("function"));
     });
@@ -51,7 +51,7 @@ describe("webauthn-login", () => {
       const headers = { "x-header": "value" };
       const contextPath = "/some/path";
 
-      await setup(headers, contextPath, signinButton);
+      await setupLogin(headers, contextPath, signinButton);
 
       assert.calledOnceWithExactly(authenticateStub, headers, contextPath, true);
     });
@@ -59,7 +59,7 @@ describe("webauthn-login", () => {
     it("does not call authenticate when conditional mediation is not available", async () => {
       isConditionalMediationAvailableStub.resolves(false);
 
-      await setup({}, "/", signinButton);
+      await setupLogin({}, "/", signinButton);
 
       assert.notCalled(authenticateStub);
     });
@@ -69,7 +69,7 @@ describe("webauthn-login", () => {
       const headers = { "x-header": "value" };
       const contextPath = "/some/path";
 
-      await setup(headers, contextPath, signinButton);
+      await setupLogin(headers, contextPath, signinButton);
 
       // Call the event listener
       await signinButton.addEventListener.firstCall.lastArg();
