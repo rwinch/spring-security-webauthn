@@ -90,9 +90,13 @@ class DefaultWebAuthnRegistrationPageGeneratingFilterTests {
 		when(this.userEntities.findByUsername(any())).thenReturn(userEntity);
 		when(this.userCredentials.findByUserId(userEntity.getId())).thenReturn(Arrays.asList(TestCredentialRecord.userCredential().build()));
 		String body = bodyAsString(matchingRequest());
-		assertThat(body).contains("data-csrf-token=\"CSRF_TOKEN\"");
-		assertThat(body).contains("data-csrf-header-name=\"X-CSRF-TOKEN\"");
-		assertThat(body).contains("<input type=\"hidden\" name=\"_csrf\" value=\"CSRF_TOKEN\">");
+		assertThat(body).contains("setupRegistration({\"X-CSRF-TOKEN\" : \"CSRF_TOKEN\"}");
+		assertThat(body.replaceAll("\\s", "")).contains("""
+			<form method="post" action="/webauthn/register/NauGCN7bZ5jEBwThcde51g">
+				<input type="hidden" name="method" value="delete">
+				<input type="hidden" name="_csrf" value="CSRF_TOKEN">
+				<button class="btn btn-sm btn-primary btn-block" type="submit">Delete</button>
+			</form>""".replaceAll("\\s", ""));
 	}
 
 	@Test
@@ -177,10 +181,8 @@ class DefaultWebAuthnRegistrationPageGeneratingFilterTests {
 		when(this.userEntities.findByUsername(any())).thenReturn(userEntity);
 		when(this.userCredentials.findByUserId(userEntity.getId())).thenReturn(Arrays.asList(credential));
 		String body = bodyAsString(matchingRequest());
-		assertThat(body).contains("await fetch('/webauthn/register', {");
-		assertThat(body).contains("await fetch('/webauthn/register/options', {");
-		assertThat(body).contains("window.location.href = '/webauthn/register?success'");
-		assertThat(body).contains(String.format("action=\"/webauthn/register/%s\"", credential.getCredentialId().getBytesAsBase64()));
+		assertThat(body).contains("<script type=\"text/javascript\" src=\"/login/webauthn.js\"></script>");
+		assertThat(body).contains("document.addEventListener(\"DOMContentLoaded\",() => setupRegistration({\"X-CSRF-TOKEN\" : \"CSRF_TOKEN\"}, \"\",");
 	}
 
 	@Test
@@ -194,10 +196,8 @@ class DefaultWebAuthnRegistrationPageGeneratingFilterTests {
 		when(this.userEntities.findByUsername(any())).thenReturn(userEntity);
 		when(this.userCredentials.findByUserId(userEntity.getId())).thenReturn(Arrays.asList(credential));
 		String body = bodyAsString(matchingRequest("/foo"));
-		assertThat(body).contains("await fetch('/foo/webauthn/register', {");
-		assertThat(body).contains("await fetch('/foo/webauthn/register/options', {");
-		assertThat(body).contains("window.location.href = '/foo/webauthn/register?success'");
-		assertThat(body).contains(String.format("action=\"/foo/webauthn/register/%s\"", credential.getCredentialId().getBytesAsBase64()));
+		assertThat(body).contains("<script type=\"text/javascript\" src=\"/foo/login/webauthn.js\"></script>");
+		assertThat(body).contains("setupRegistration({\"X-CSRF-TOKEN\" : \"CSRF_TOKEN\"}, \"/foo\",");
 	}
 
 	private String bodyAsString(RequestBuilder request) throws Exception {
