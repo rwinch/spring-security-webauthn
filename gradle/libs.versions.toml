@@ -12,4 +12,4 @@ webauthn4j-core = 'com.webauthn4j:webauthn4j-core:0.25.0.RELEASE'
 
 [plugins]
 org-springframework-boot = 'org.springframework.boot:3.2.5'
-io-spring-dependency-management = 'io.spring.dependency-management:1.1.5'
+io-spring-dependency-management = 'io.spring.dependency-management:1.1.6'
