@@ -140,7 +140,21 @@ public class DefaultWebAuthnRegistrationPageGeneratingFilter extends OncePerRequ
 				<script type="text/javascript" src="${contextPath}/login/webauthn.js"></script>
 				<script type="text/javascript">
 				<!--
-					document.addEventListener("DOMContentLoaded",() => setupRegistration(${csrfHeaders}, "${contextPath}", document.getElementById('register')));
+					const ui = {
+						getRegisterButton: function() {
+							return document.getElementById('register')
+					  	},
+						getSuccess: function() {
+							return document.getElementById('success')
+					  	},
+						getError: function() {
+							return document.getElementById('error')
+					  	},
+						getLabelInput: function() {
+							return document.getElementById('label')
+					  	},						
+					}
+					document.addEventListener("DOMContentLoaded",() => setupRegistration(${csrfHeaders}, "${contextPath}", ui));
 				//-->
 				</script>
 			</head>

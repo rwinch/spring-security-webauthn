@@ -208,6 +208,7 @@ public class DefaultLoginPageGeneratingFilter extends GenericFilterBean {
 			response.getWriter().write(webauthn.getContentAsString(StandardCharsets.UTF_8));
 			return;
 		}
+		;
 		boolean loginError = isErrorPage(request);
 		boolean logoutSuccess = isLogoutSuccess(request);
 		if (isLoginUrlRequest(request) || loginError || logoutSuccess) {

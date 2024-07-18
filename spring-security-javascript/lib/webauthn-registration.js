@@ -24,8 +24,8 @@ function setVisibility(element, value) {
   }
   element.style.display = value ? "block" : "none";
 }
-function setError(msg) {
-  const error = document.getElementById("error");
+function setError(ui, msg) {
+  const error = ui.getError();
   if (!error) {
     return;
   }
@@ -33,9 +33,9 @@ function setError(msg) {
   error.textContent = msg;
 }
 
-function resetPopups() {
-  const success = document.getElementById("success");
-  const error = document.getElementById("error");
+function resetPopups(ui) {
+  const success = ui.getSuccess();
+  const error = ui.getError();
   setVisibility(success, false);
   setVisibility(error, false);
   if (!!success) {
@@ -46,22 +46,29 @@ function resetPopups() {
   }
 }
 
-export async function setupRegistration(headers, contextPath, registerButton) {
+/**
+ *
+ * @param headers
+ * @param contextPath
+ * @param ui contains getRegisterButton(), getSuccess(), getError(), & getLabelInput()
+ * @returns {Promise<void>}
+ */
+export async function setupRegistration(headers, contextPath, ui) {
   // TODO: show success
-  resetPopups();
+  resetPopups(ui);
 
   if (!window.PublicKeyCredential) {
-    setError("WebAuthn is not supported");
+    setError(ui, "WebAuthn is not supported");
     return;
   }
 
-  registerButton.addEventListener("click", async () => {
-    resetPopups();
-    const label = document.getElementById("label").value;
+  ui.getRegisterButton().addEventListener("click", async () => {
+    resetPopups(ui);
+    const label = ui.getLabelInput().value;
     try {
       await webauthn.register(headers, contextPath, label);
     } catch (err) {
-      setError(err.message);
+      setError(ui, err.message);
     }
   });
 }

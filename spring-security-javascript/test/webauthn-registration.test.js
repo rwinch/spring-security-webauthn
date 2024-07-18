@@ -39,6 +39,7 @@ describe("webauthn-registration", () => {
     let labelField;
     let errorPopup;
     let successPopup;
+    let ui;
 
     beforeEach(() => {
       registerStub = stub(webauthn, "register").resolves(undefined);
@@ -60,18 +61,25 @@ describe("webauthn-registration", () => {
       labelField = {
         value: undefined,
       };
-      global.document = {
-        getElementById: stub(),
+      ui = {
+        getSuccess: function() {
+          return successPopup
+        },
+        getError: function() {
+          return errorPopup
+        },
+        getRegisterButton: function() {
+          return registerButton
+        },
+        getLabelInput: function() {
+          return labelField
+        }
       };
       global.window = {};
-      global.document.getElementById.withArgs("success").returns(successPopup);
-      global.document.getElementById.withArgs("error").returns(errorPopup);
-      global.document.getElementById.withArgs("label").returns(labelField);
     });
 
     afterEach(() => {
       registerStub.restore();
-      delete global.document;
       delete global.window;
     });
 
@@ -81,13 +89,13 @@ describe("webauthn-registration", () => {
       });
 
       it("does not set up a click event listener", async () => {
-        await setupRegistration({}, "/", registerButton);
+        await setupRegistration({}, "/", ui);
 
         assert.notCalled(registerButton.addEventListener);
       });
 
       it("shows an error popup", async () => {
-        await setupRegistration({}, "/", registerButton);
+        await setupRegistration({}, "/", ui);
 
         expect(errorPopup).to.be.visible;
         expect(errorPopup.textContent).to.equal("WebAuthn is not supported");
@@ -101,14 +109,14 @@ describe("webauthn-registration", () => {
       });
 
       it("hides the popups", async () => {
-        await setupRegistration({}, "/", registerButton);
+        await setupRegistration({}, "/", ui);
 
         expect(successPopup).to.be.hidden;
         expect(errorPopup).to.be.hidden;
       });
 
       it("sets up a click event listener on the register button", async () => {
-        await setupRegistration({}, "/some/path", registerButton);
+        await setupRegistration({}, "/some/path", ui);
 
         assert.calledOnceWithMatch(registerButton.addEventListener, "click", match.typeOf("function"));
       });
@@ -118,7 +126,7 @@ describe("webauthn-registration", () => {
         const contextPath = "/some/path";
 
         beforeEach(async () => {
-          await setupRegistration(headers, contextPath, registerButton);
+          await setupRegistration(headers, contextPath, ui);
         });
 
         it("clears the messages", async () => {
