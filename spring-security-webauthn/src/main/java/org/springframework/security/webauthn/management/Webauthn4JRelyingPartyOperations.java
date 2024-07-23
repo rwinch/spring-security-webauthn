@@ -130,7 +130,8 @@ public class Webauthn4JRelyingPartyOperations implements WebAuthnRelyingPartyOpe
 	}
 
 	@Override
-	public PublicKeyCredentialCreationOptions createPublicKeyCredentialCreationOptions(Authentication authentication) {
+	public PublicKeyCredentialCreationOptions createPublicKeyCredentialCreationOptions(CreatePublicKeyCredentialCreationOptions request) {
+		Authentication authentication = request.getAuthentication();
 		if (!this.trustResolver.isAuthenticated(authentication)) {
 			throw new IllegalArgumentException("Authentication must be authenticated");
 		}

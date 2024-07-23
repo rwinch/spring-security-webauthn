@@ -16,10 +16,19 @@
 
 package org.springframework.security.webauthn.management;
 
-import org.springframework.security.webauthn.api.PublicKeyCredentialCreationOptions;
+import org.springframework.security.core.Authentication;
 
-public interface RelyingPartyRegistrationRequest {
-    PublicKeyCredentialCreationOptions getCreationOptions();
+/**
+ * A request to create a new {@link org.springframework.security.webauthn.api.PublicKeyCredentialCreationOptions}.
+ * @since 6.4
+ * @see WebAuthnRelyingPartyOperations#createPublicKeyCredentialCreationOptions(CreatePublicKeyCredentialCreationOptions)
+ * @author Rob Winch
+ */
+public interface CreatePublicKeyCredentialCreationOptions {
 
-    RelyingPartyPublicKey getPublicKey();
+	/**
+	 * The current {@link Authentication}. It must be authenticated to associate the credential to a user.
+	 * @return
+	 */
+	Authentication getAuthentication();
 }

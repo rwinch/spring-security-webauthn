@@ -16,10 +16,26 @@
 
 package org.springframework.security.webauthn.management;
 
-import org.springframework.security.webauthn.api.PublicKeyCredentialCreationOptions;
+import org.springframework.security.core.Authentication;
+import org.springframework.util.Assert;
 
-public interface RelyingPartyRegistrationRequest {
-    PublicKeyCredentialCreationOptions getCreationOptions();
+/**
+ * An immutable implementation of {@link CreatePublicKeyCredentialCreationOptions}.
+ * @since 6.4
+ * @author Rob Winch
+ */
+public class ImmutableCreatePublicKeyCredentialCreationOptions implements CreatePublicKeyCredentialCreationOptions {
 
-    RelyingPartyPublicKey getPublicKey();
+	private final Authentication authentication;
+
+	public ImmutableCreatePublicKeyCredentialCreationOptions(Authentication authentication) {
+		Assert.notNull(authentication, "authentication cannot be null");
+		this.authentication = authentication;
+	}
+
+	@Override
+	public Authentication getAuthentication() {
+		return this.authentication;
+	}
+
 }

@@ -33,7 +33,7 @@ import org.springframework.security.web.util.matcher.RequestMatcher;
 import org.springframework.security.webauthn.api.Base64Url;
 import org.springframework.security.webauthn.api.PublicKeyCredentialCreationOptions;
 import org.springframework.security.webauthn.management.RelyingPartyPublicKey;
-import org.springframework.security.webauthn.management.RelyingPartyRegistrationRequest;
+import org.springframework.security.webauthn.management.ImmutableRelyingPartyRegistrationRequest;
 import org.springframework.security.webauthn.management.CredentialRecord;
 import org.springframework.security.webauthn.management.UserCredentialRepository;
 import org.springframework.security.webauthn.management.WebAuthnRelyingPartyOperations;
@@ -147,7 +147,7 @@ public class WebAuthnRegistrationFilter extends OncePerRequestFilter {
 			return;
 		}
 		this.creationOptionsRepository.save(request, response, null);
-		CredentialRecord credentialRecord = this.rpOptions.registerCredential(new RelyingPartyRegistrationRequest(options, registrationRequest.getPublicKey()));
+		CredentialRecord credentialRecord = this.rpOptions.registerCredential(new ImmutableRelyingPartyRegistrationRequest(options, registrationRequest.getPublicKey()));
 		SuccessfulUserRegistrationResponse registrationResponse = new SuccessfulUserRegistrationResponse(credentialRecord);
 		ServletServerHttpResponse outputMessage = new ServletServerHttpResponse(response);
 		this.converter.write(registrationResponse, MediaType.APPLICATION_JSON, outputMessage);

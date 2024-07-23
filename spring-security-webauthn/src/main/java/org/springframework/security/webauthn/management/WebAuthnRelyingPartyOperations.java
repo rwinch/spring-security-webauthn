@@ -29,16 +29,16 @@ public interface WebAuthnRelyingPartyOperations {
 
 	/**
 	 * Creates the {@link PublicKeyCredentialCreationOptions} used to register new credentials.
-	 * @param authentication the current {@link Authentication}. It must be authenticated to associate the credential to a user.
+	 * @param request the {@link CreatePublicKeyCredentialCreationOptions} to create the {@link PublicKeyCredentialCreationOptions}
 	 * @return the {@link PublicKeyCredentialCreationOptions} for the {@link Authentication} passed in. Cannot be null.
 	 */
-	PublicKeyCredentialCreationOptions createPublicKeyCredentialCreationOptions(Authentication authentication);
+	PublicKeyCredentialCreationOptions createPublicKeyCredentialCreationOptions(CreatePublicKeyCredentialCreationOptions request);
 
 	/**
-	 * If {@link RelyingPartyRegistrationRequest} is valid, will register and return a new {@link CredentialRecord}.
-	 * @param relyingPartyRegistrationRequest the {@link RelyingPartyRegistrationRequest} to process.
+	 * If {@link ImmutableRelyingPartyRegistrationRequest} is valid, will register and return a new {@link CredentialRecord}.
+	 * @param relyingPartyRegistrationRequest the {@link ImmutableRelyingPartyRegistrationRequest} to process.
 	 * @return a new {@link CredentialRecord}
-	 * @throws RuntimeException if the {@link RelyingPartyRegistrationRequest} is not valid.
+	 * @throws RuntimeException if the {@link ImmutableRelyingPartyRegistrationRequest} is not valid.
 	 */
 	// FIXME: Think about the name RelyingPartyRegistrationRequest (does it align with rfc)
 	// FIXME: think about the method name (does it align with rfc)

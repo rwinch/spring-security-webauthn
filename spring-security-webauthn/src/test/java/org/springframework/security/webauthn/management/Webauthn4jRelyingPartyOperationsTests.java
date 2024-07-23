@@ -123,13 +123,13 @@ class Webauthn4jRelyingPartyOperationsTests {
 	@Test
 	void createPublicKeyCredentialCreationOptionsWhenAnonymousThenIllegalArgumentException() {
 		AnonymousAuthenticationToken anonymous = new AnonymousAuthenticationToken("key", "notAuthenticated", Set.of(() -> "ROLE_ANOYMOUS"));
-		assertThatIllegalArgumentException().isThrownBy(() -> this.rpOperations.createPublicKeyCredentialCreationOptions(anonymous));
+		assertThatIllegalArgumentException().isThrownBy(() -> this.rpOperations.createPublicKeyCredentialCreationOptions(new ImmutableCreatePublicKeyCredentialCreationOptions(anonymous)));
 	}
 
 	@Test
 	void createPublicKeyCredentialCreationOptionsWhenNotIsAuthenticatedThenIllegalArgumentException() {
 		UsernamePasswordAuthenticationToken notAuthenticated = new UsernamePasswordAuthenticationToken("user", "password");
-		assertThatIllegalArgumentException().isThrownBy(() -> this.rpOperations.createPublicKeyCredentialCreationOptions(notAuthenticated));
+		assertThatIllegalArgumentException().isThrownBy(() -> this.rpOperations.createPublicKeyCredentialCreationOptions(new ImmutableCreatePublicKeyCredentialCreationOptions(notAuthenticated)));
 	}
 
 	@Test
@@ -138,7 +138,7 @@ class Webauthn4jRelyingPartyOperationsTests {
 				.rp(this.rpEntity)
 				.user(TestPublicKeyCredentialUserEntity.userEntity().build())
 				.build();
-		PublicKeyCredentialCreationOptions creationOptions = this.rpOperations.createPublicKeyCredentialCreationOptions(this.user);
+		PublicKeyCredentialCreationOptions creationOptions = this.rpOperations.createPublicKeyCredentialCreationOptions(new ImmutableCreatePublicKeyCredentialCreationOptions(this.user));
 		assertThat(creationOptions)
 				.usingRecursiveComparison()
 				.ignoringFields("challenge", "user.id")
@@ -180,7 +180,7 @@ class Webauthn4jRelyingPartyOperationsTests {
 	void createPublicKeyCredentialCreationOptionsWhenCustomizeThenCustomized() {
 		Duration overriddenTimeout = Duration.ofMinutes(10);
 		this.rpOperations.setCustomizeCreationOptions((options) -> options.timeout(overriddenTimeout));
-		PublicKeyCredentialCreationOptions creationOptions = this.rpOperations.createPublicKeyCredentialCreationOptions(this.user);
+		PublicKeyCredentialCreationOptions creationOptions = this.rpOperations.createPublicKeyCredentialCreationOptions(new ImmutableCreatePublicKeyCredentialCreationOptions(this.user));
 		assertThat(creationOptions.getTimeout()).isEqualTo(overriddenTimeout);
 	}
 
@@ -194,7 +194,7 @@ class Webauthn4jRelyingPartyOperationsTests {
 				.build();
 		given(this.userEntities.findByUsername(this.user.getName())).willReturn(userEntity);
 		given(this.userCredentials.findByUserId(userEntity.getId())).willReturn(Arrays.asList(credentialRecord));
-		PublicKeyCredentialCreationOptions creationOptions = this.rpOperations.createPublicKeyCredentialCreationOptions(this.user);
+		PublicKeyCredentialCreationOptions creationOptions = this.rpOperations.createPublicKeyCredentialCreationOptions(new ImmutableCreatePublicKeyCredentialCreationOptions(this.user));
 
 		RecursiveComparisonConfiguration configuration = RecursiveComparisonConfiguration.builder()
 				.build();
@@ -220,7 +220,7 @@ class Webauthn4jRelyingPartyOperationsTests {
 				.build();
 		RelyingPartyPublicKey rpPublicKey = new RelyingPartyPublicKey(publicKeyCredential, this.label);
 
-		RelyingPartyRegistrationRequest rpRegistrationRequest = new RelyingPartyRegistrationRequest(creationOptions, rpPublicKey);
+		ImmutableRelyingPartyRegistrationRequest rpRegistrationRequest = new ImmutableRelyingPartyRegistrationRequest(creationOptions, rpPublicKey);
 		given(this.userCredentials.findByCredentialId(publicKeyCredential.getRawId())).willReturn(TestCredentialRecord.userCredential().build());
 		assertThatRuntimeException().isThrownBy(() -> this.rpOperations.registerCredential(rpRegistrationRequest));
 	}
@@ -240,7 +240,7 @@ class Webauthn4jRelyingPartyOperationsTests {
 				.clientDataJSON(new Base64Url(invalidTypeClientDataJSON.getBytes(StandardCharsets.UTF_8)));
 		PublicKeyCredential publicKey = TestPublicKeyCredential.createPublicKeyCredential(responseBldr.build())
 				.build();
-		RelyingPartyRegistrationRequest registrationRequest = new RelyingPartyRegistrationRequest(options, new RelyingPartyPublicKey(publicKey, this.label));
+		ImmutableRelyingPartyRegistrationRequest registrationRequest = new ImmutableRelyingPartyRegistrationRequest(options, new RelyingPartyPublicKey(publicKey, this.label));
 		assertThatRuntimeException()
 			.isThrownBy(() -> this.rpOperations.registerCredential(registrationRequest))
 			.withMessageContaining("ClientData.type");
@@ -260,7 +260,7 @@ class Webauthn4jRelyingPartyOperationsTests {
 		AuthenticatorAttestationResponseBuilder responseBldr = TestAuthenticatorAttestationResponse.createAuthenticatorAttestationResponse();
 		PublicKeyCredential publicKey = TestPublicKeyCredential.createPublicKeyCredential(responseBldr.build())
 				.build();
-		RelyingPartyRegistrationRequest registrationRequest = new RelyingPartyRegistrationRequest(options, new RelyingPartyPublicKey(publicKey, this.label));
+		ImmutableRelyingPartyRegistrationRequest registrationRequest = new ImmutableRelyingPartyRegistrationRequest(options, new RelyingPartyPublicKey(publicKey, this.label));
 
 		assertThatThrownBy(() -> this.rpOperations.registerCredential(registrationRequest))
 				.hasMessageContaining("challenge");
@@ -279,7 +279,7 @@ class Webauthn4jRelyingPartyOperationsTests {
 		AuthenticatorAttestationResponseBuilder responseBldr = TestAuthenticatorAttestationResponse.createAuthenticatorAttestationResponse();
 		PublicKeyCredential publicKey = TestPublicKeyCredential.createPublicKeyCredential(responseBldr.build())
 				.build();
-		RelyingPartyRegistrationRequest registrationRequest = new RelyingPartyRegistrationRequest(options, new RelyingPartyPublicKey(publicKey, this.label));
+		ImmutableRelyingPartyRegistrationRequest registrationRequest = new ImmutableRelyingPartyRegistrationRequest(options, new RelyingPartyPublicKey(publicKey, this.label));
 
 		assertThatThrownBy(() -> this.rpOperations.registerCredential(registrationRequest)).hasMessageContaining("origin");
 	}
@@ -299,7 +299,7 @@ class Webauthn4jRelyingPartyOperationsTests {
 		AuthenticatorAttestationResponseBuilder responseBldr = TestAuthenticatorAttestationResponse.createAuthenticatorAttestationResponse();
 		PublicKeyCredential publicKey = TestPublicKeyCredential.createPublicKeyCredential(responseBldr.build())
 				.build();
-		RelyingPartyRegistrationRequest registrationRequest = new RelyingPartyRegistrationRequest(options, new RelyingPartyPublicKey(publicKey, this.label));
+		ImmutableRelyingPartyRegistrationRequest registrationRequest = new ImmutableRelyingPartyRegistrationRequest(options, new RelyingPartyPublicKey(publicKey, this.label));
 
 		assertThatThrownBy(() -> this.rpOperations.registerCredential(registrationRequest)).hasMessageContaining("hash");
 	}
@@ -316,7 +316,7 @@ class Webauthn4jRelyingPartyOperationsTests {
 
 		PublicKeyCredential publicKey = TestPublicKeyCredential.createPublicKeyCredential(setFlag(UP))
 				.build();
-		RelyingPartyRegistrationRequest registrationRequest = new RelyingPartyRegistrationRequest(options, new RelyingPartyPublicKey(publicKey, this.label));
+		ImmutableRelyingPartyRegistrationRequest registrationRequest = new ImmutableRelyingPartyRegistrationRequest(options, new RelyingPartyPublicKey(publicKey, this.label));
 
 		assertThatThrownBy(() -> this.rpOperations.registerCredential(registrationRequest)).hasMessageContaining("UP flag");
 	}
@@ -335,7 +335,7 @@ class Webauthn4jRelyingPartyOperationsTests {
 				.build();
 		PublicKeyCredential publicKey = TestPublicKeyCredential.createPublicKeyCredential(setFlag(UV))
 				.build();
-		RelyingPartyRegistrationRequest registrationRequest = new RelyingPartyRegistrationRequest(options, new RelyingPartyPublicKey(publicKey, this.label));
+		ImmutableRelyingPartyRegistrationRequest registrationRequest = new ImmutableRelyingPartyRegistrationRequest(options, new RelyingPartyPublicKey(publicKey, this.label));
 
 		assertThatThrownBy(() -> this.rpOperations.registerCredential(registrationRequest)).hasMessageContaining("UV flag");
 	}
@@ -351,7 +351,7 @@ class Webauthn4jRelyingPartyOperationsTests {
 				.build();
 		PublicKeyCredential publicKey = TestPublicKeyCredential.createPublicKeyCredential(setFlag(BE))
 				.build();
-		RelyingPartyRegistrationRequest registrationRequest = new RelyingPartyRegistrationRequest(options, new RelyingPartyPublicKey(publicKey, this.label));
+		ImmutableRelyingPartyRegistrationRequest registrationRequest = new ImmutableRelyingPartyRegistrationRequest(options, new RelyingPartyPublicKey(publicKey, this.label));
 
 		assertThatThrownBy(() -> this.rpOperations.registerCredential(registrationRequest)).hasMessageContaining("Backup state bit");
 	}
@@ -388,7 +388,7 @@ class Webauthn4jRelyingPartyOperationsTests {
 				.build();
 		PublicKeyCredential<AuthenticatorAttestationResponse> publicKey = TestPublicKeyCredential.createPublicKeyCredential()
 				.build();
-		RelyingPartyRegistrationRequest registrationRequest = new RelyingPartyRegistrationRequest(options, new RelyingPartyPublicKey(publicKey, this.label));
+		ImmutableRelyingPartyRegistrationRequest registrationRequest = new ImmutableRelyingPartyRegistrationRequest(options, new RelyingPartyPublicKey(publicKey, this.label));
 
 		assertThatThrownBy(() -> this.rpOperations.registerCredential(registrationRequest)).hasMessageContaining("options.pubKeyCredParams");
 	}
@@ -419,7 +419,7 @@ class Webauthn4jRelyingPartyOperationsTests {
 				.build();
 		PublicKeyCredential publicKey = TestPublicKeyCredential.createPublicKeyCredential() //setFmt("packed")
 				.build();
-		RelyingPartyRegistrationRequest registrationRequest = new RelyingPartyRegistrationRequest(options, new RelyingPartyPublicKey(publicKey, this.label));
+		ImmutableRelyingPartyRegistrationRequest registrationRequest = new ImmutableRelyingPartyRegistrationRequest(options, new RelyingPartyPublicKey(publicKey, this.label));
 
 		// FIXME: Implement this test
 //		assertThatThrownBy(() -> this.rpOperations.registerCredential(registrationRequest)).hasMessageContaining("Flag combination is invalid");
@@ -427,7 +427,7 @@ class Webauthn4jRelyingPartyOperationsTests {
 
 	@Test
 	void createCredentialRequestOptionsThenUserVerificationSameAsCreation() {
-		PublicKeyCredentialCreationOptions creationOptions = this.rpOperations.createPublicKeyCredentialCreationOptions(this.user);
+		PublicKeyCredentialCreationOptions creationOptions = this.rpOperations.createPublicKeyCredentialCreationOptions(new ImmutableCreatePublicKeyCredentialCreationOptions(this.user));
 		PublicKeyCredentialRequestOptions credentialRequestOptions = this.rpOperations.createCredentialRequestOptions(this.user);
 		assertThat(credentialRequestOptions.getUserVerification()).isEqualTo(creationOptions.getAuthenticatorSelection().getUserVerification());
 	}
