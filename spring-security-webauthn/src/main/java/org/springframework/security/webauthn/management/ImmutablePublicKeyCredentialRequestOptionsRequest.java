@@ -16,15 +16,17 @@
 
 package org.springframework.security.webauthn.management;
 
-import org.springframework.security.webauthn.api.PublicKeyCredentialCreationOptions;
+import org.springframework.security.core.Authentication;
 
-/**
- *
- * @see WebAuthnRelyingPartyOperations#registerCredential(RelyingPartyRegistrationRequest)
- * @author Rob Winch
- */
-public interface RelyingPartyRegistrationRequest {
-	PublicKeyCredentialCreationOptions getCreationOptions();
+public class ImmutablePublicKeyCredentialRequestOptionsRequest implements PublicKeyCredentialRequestOptionsRequest {
+    private final Authentication authentication;
 
-	RelyingPartyPublicKey getPublicKey();
+    public ImmutablePublicKeyCredentialRequestOptionsRequest(Authentication authentication) {
+        this.authentication = authentication;
+    }
+
+    @Override
+    public Authentication getAuthentication() {
+        return this.authentication;
+    }
 }

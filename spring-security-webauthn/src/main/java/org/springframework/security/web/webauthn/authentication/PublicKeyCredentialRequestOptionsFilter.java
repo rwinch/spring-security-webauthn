@@ -33,6 +33,7 @@ import org.springframework.security.core.context.SecurityContextHolderStrategy;
 import org.springframework.security.web.util.matcher.RequestMatcher;
 import org.springframework.security.webauthn.api.PublicKeyCredentialRequestOptions;
 import org.springframework.security.webauthn.jackson.WebauthnJackson2Module;
+import org.springframework.security.webauthn.management.ImmutablePublicKeyCredentialRequestOptionsRequest;
 import org.springframework.security.webauthn.management.WebAuthnRelyingPartyOperations;
 import org.springframework.util.Assert;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -78,7 +79,8 @@ public class PublicKeyCredentialRequestOptionsFilter extends OncePerRequestFilte
 		}
 
 		SecurityContext context = this.securityContextHolderStrategy.getContext();
-		PublicKeyCredentialRequestOptions credentialRequestOptions = this.rpOptions.createCredentialRequestOptions(context.getAuthentication());
+		ImmutablePublicKeyCredentialRequestOptionsRequest optionsRequest = new ImmutablePublicKeyCredentialRequestOptionsRequest(context.getAuthentication());
+		PublicKeyCredentialRequestOptions credentialRequestOptions = this.rpOptions.createCredentialRequestOptions(optionsRequest);
 		this.requestOptionsRepository.save(request, response, credentialRequestOptions);
 		response.setHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE);
 		this.converter.write(credentialRequestOptions, MediaType.APPLICATION_JSON, new ServletServerHttpResponse(response));

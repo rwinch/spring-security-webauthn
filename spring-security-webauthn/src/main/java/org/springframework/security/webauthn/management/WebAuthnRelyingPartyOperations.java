@@ -29,27 +29,27 @@ public interface WebAuthnRelyingPartyOperations {
 
 	/**
 	 * Creates the {@link PublicKeyCredentialCreationOptions} used to register new credentials.
-	 * @param request the {@link CreatePublicKeyCredentialCreationOptions} to create the {@link PublicKeyCredentialCreationOptions}
+	 * @param request the {@link PublicKeyCredentialCreationOptionsRequest} to create the {@link PublicKeyCredentialCreationOptions}
 	 * @return the {@link PublicKeyCredentialCreationOptions} for the {@link Authentication} passed in. Cannot be null.
 	 */
-	PublicKeyCredentialCreationOptions createPublicKeyCredentialCreationOptions(CreatePublicKeyCredentialCreationOptions request);
+	PublicKeyCredentialCreationOptions createPublicKeyCredentialCreationOptions(PublicKeyCredentialCreationOptionsRequest request);
 
 	/**
-	 * If {@link ImmutableRelyingPartyRegistrationRequest} is valid, will register and return a new {@link CredentialRecord}.
-	 * @param relyingPartyRegistrationRequest the {@link ImmutableRelyingPartyRegistrationRequest} to process.
+	 * If {@link RelyingPartyRegistrationRequest} is valid, will
+	 * <a href="https://www.w3.org/TR/webauthn-3/#sctn-registering-a-new-credential">register</a> and return a new
+	 * {@link CredentialRecord}.
+	 * @param relyingPartyRegistrationRequest the {@link RelyingPartyRegistrationRequest} to process.
 	 * @return a new {@link CredentialRecord}
-	 * @throws RuntimeException if the {@link ImmutableRelyingPartyRegistrationRequest} is not valid.
+	 * @throws RuntimeException if the {@link RelyingPartyRegistrationRequest} is not valid.
 	 */
-	// FIXME: Think about the name RelyingPartyRegistrationRequest (does it align with rfc)
-	// FIXME: think about the method name (does it align with rfc)
 	CredentialRecord registerCredential(RelyingPartyRegistrationRequest relyingPartyRegistrationRequest);
 
 	/**
 	 * Creates the {@link PublicKeyCredentialRequestOptions} used to authenticate a user.
-	 * @param authentication the current {@link Authentication}. Possibly null or an anonymous.
+	 * @param request the {@link PublicKeyCredentialRequestOptionsRequest}.
 	 * @return the {@link PublicKeyCredentialRequestOptions} used to authenticate a user.
 	 */
-	PublicKeyCredentialRequestOptions createCredentialRequestOptions(Authentication authentication);
+	PublicKeyCredentialRequestOptions createCredentialRequestOptions(PublicKeyCredentialRequestOptionsRequest request);
 
 	/**
 	 * Authenticates the {@link RelyingPartyAuthenticationRequest} passed in

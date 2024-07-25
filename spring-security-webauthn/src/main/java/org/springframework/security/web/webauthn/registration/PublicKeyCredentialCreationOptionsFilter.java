@@ -37,7 +37,7 @@ import org.springframework.security.web.util.matcher.RequestMatcher;
 import org.springframework.security.web.util.matcher.RequestMatchers;
 import org.springframework.security.webauthn.api.PublicKeyCredentialCreationOptions;
 import org.springframework.security.webauthn.jackson.WebauthnJackson2Module;
-import org.springframework.security.webauthn.management.ImmutableCreatePublicKeyCredentialCreationOptions;
+import org.springframework.security.webauthn.management.ImmutablePublicKeyCredentialCreationOptionsRequest;
 import org.springframework.security.webauthn.management.WebAuthnRelyingPartyOperations;
 import org.springframework.util.Assert;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -81,7 +81,7 @@ public class PublicKeyCredentialCreationOptionsFilter extends OncePerRequestFilt
 		}
 
 		SecurityContext context = this.securityContextHolderStrategy.getContext();
-		PublicKeyCredentialCreationOptions options = this.rpOperations.createPublicKeyCredentialCreationOptions(new ImmutableCreatePublicKeyCredentialCreationOptions(context.getAuthentication()));
+		PublicKeyCredentialCreationOptions options = this.rpOperations.createPublicKeyCredentialCreationOptions(new ImmutablePublicKeyCredentialCreationOptionsRequest(context.getAuthentication()));
 		this.repository.save(request, response, options);
 		response.setStatus(HttpServletResponse.SC_OK);
 		response.setHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE);

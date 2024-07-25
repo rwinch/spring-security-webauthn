@@ -130,7 +130,10 @@ public class Webauthn4JRelyingPartyOperations implements WebAuthnRelyingPartyOpe
 	}
 
 	@Override
-	public PublicKeyCredentialCreationOptions createPublicKeyCredentialCreationOptions(CreatePublicKeyCredentialCreationOptions request) {
+	public PublicKeyCredentialCreationOptions createPublicKeyCredentialCreationOptions(PublicKeyCredentialCreationOptionsRequest request) {
+		if (request == null) {
+			throw new IllegalArgumentException("request cannot be null");
+		}
 		Authentication authentication = request.getAuthentication();
 		if (!this.trustResolver.isAuthenticated(authentication)) {
 			throw new IllegalArgumentException("Authentication must be authenticated");
@@ -267,7 +270,8 @@ public class Webauthn4JRelyingPartyOperations implements WebAuthnRelyingPartyOpe
 	}
 
 	@Override
-	public PublicKeyCredentialRequestOptions createCredentialRequestOptions(Authentication authentication) {
+	public PublicKeyCredentialRequestOptions createCredentialRequestOptions(PublicKeyCredentialRequestOptionsRequest request) {
+		Authentication authentication = request.getAuthentication();
 		// FIXME: do not load credentialRecords if anonymous
 		PublicKeyCredentialUserEntity userEntity = findUserEntityOrCreateAndSave(authentication.getName());
 		List<CredentialRecord> credentialRecords = this.userCredentials.findByUserId(userEntity.getId());

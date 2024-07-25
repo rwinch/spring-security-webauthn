@@ -116,20 +116,20 @@ class Webauthn4jRelyingPartyOperationsTests {
 	}
 
 	@Test
-	void createPublicKeyCredentialCreationOptionsWhenAuthenticationNullThenIllegalArgumentException() {
+	void createPublicKeyCredentialCreationOptionsWhenRequestNullThenIllegalArgumentException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> this.rpOperations.createPublicKeyCredentialCreationOptions(null));
 	}
 
 	@Test
 	void createPublicKeyCredentialCreationOptionsWhenAnonymousThenIllegalArgumentException() {
 		AnonymousAuthenticationToken anonymous = new AnonymousAuthenticationToken("key", "notAuthenticated", Set.of(() -> "ROLE_ANOYMOUS"));
-		assertThatIllegalArgumentException().isThrownBy(() -> this.rpOperations.createPublicKeyCredentialCreationOptions(new ImmutableCreatePublicKeyCredentialCreationOptions(anonymous)));
+		assertThatIllegalArgumentException().isThrownBy(() -> this.rpOperations.createPublicKeyCredentialCreationOptions(new ImmutablePublicKeyCredentialCreationOptionsRequest(anonymous)));
 	}
 
 	@Test
 	void createPublicKeyCredentialCreationOptionsWhenNotIsAuthenticatedThenIllegalArgumentException() {
 		UsernamePasswordAuthenticationToken notAuthenticated = new UsernamePasswordAuthenticationToken("user", "password");
-		assertThatIllegalArgumentException().isThrownBy(() -> this.rpOperations.createPublicKeyCredentialCreationOptions(new ImmutableCreatePublicKeyCredentialCreationOptions(notAuthenticated)));
+		assertThatIllegalArgumentException().isThrownBy(() -> this.rpOperations.createPublicKeyCredentialCreationOptions(new ImmutablePublicKeyCredentialCreationOptionsRequest(notAuthenticated)));
 	}
 
 	@Test
@@ -138,7 +138,7 @@ class Webauthn4jRelyingPartyOperationsTests {
 				.rp(this.rpEntity)
 				.user(TestPublicKeyCredentialUserEntity.userEntity().build())
 				.build();
-		PublicKeyCredentialCreationOptions creationOptions = this.rpOperations.createPublicKeyCredentialCreationOptions(new ImmutableCreatePublicKeyCredentialCreationOptions(this.user));
+		PublicKeyCredentialCreationOptions creationOptions = this.rpOperations.createPublicKeyCredentialCreationOptions(new ImmutablePublicKeyCredentialCreationOptionsRequest(this.user));
 		assertThat(creationOptions)
 				.usingRecursiveComparison()
 				.ignoringFields("challenge", "user.id")
@@ -180,7 +180,7 @@ class Webauthn4jRelyingPartyOperationsTests {
 	void createPublicKeyCredentialCreationOptionsWhenCustomizeThenCustomized() {
 		Duration overriddenTimeout = Duration.ofMinutes(10);
 		this.rpOperations.setCustomizeCreationOptions((options) -> options.timeout(overriddenTimeout));
-		PublicKeyCredentialCreationOptions creationOptions = this.rpOperations.createPublicKeyCredentialCreationOptions(new ImmutableCreatePublicKeyCredentialCreationOptions(this.user));
+		PublicKeyCredentialCreationOptions creationOptions = this.rpOperations.createPublicKeyCredentialCreationOptions(new ImmutablePublicKeyCredentialCreationOptionsRequest(this.user));
 		assertThat(creationOptions.getTimeout()).isEqualTo(overriddenTimeout);
 	}
 
@@ -194,7 +194,7 @@ class Webauthn4jRelyingPartyOperationsTests {
 				.build();
 		given(this.userEntities.findByUsername(this.user.getName())).willReturn(userEntity);
 		given(this.userCredentials.findByUserId(userEntity.getId())).willReturn(Arrays.asList(credentialRecord));
-		PublicKeyCredentialCreationOptions creationOptions = this.rpOperations.createPublicKeyCredentialCreationOptions(new ImmutableCreatePublicKeyCredentialCreationOptions(this.user));
+		PublicKeyCredentialCreationOptions creationOptions = this.rpOperations.createPublicKeyCredentialCreationOptions(new ImmutablePublicKeyCredentialCreationOptionsRequest(this.user));
 
 		RecursiveComparisonConfiguration configuration = RecursiveComparisonConfiguration.builder()
 				.build();
@@ -427,8 +427,9 @@ class Webauthn4jRelyingPartyOperationsTests {
 
 	@Test
 	void createCredentialRequestOptionsThenUserVerificationSameAsCreation() {
-		PublicKeyCredentialCreationOptions creationOptions = this.rpOperations.createPublicKeyCredentialCreationOptions(new ImmutableCreatePublicKeyCredentialCreationOptions(this.user));
-		PublicKeyCredentialRequestOptions credentialRequestOptions = this.rpOperations.createCredentialRequestOptions(this.user);
+		PublicKeyCredentialCreationOptions creationOptions = this.rpOperations.createPublicKeyCredentialCreationOptions(new ImmutablePublicKeyCredentialCreationOptionsRequest(this.user));
+		PublicKeyCredentialRequestOptionsRequest createRequest = new ImmutablePublicKeyCredentialRequestOptionsRequest(this.user);
+		PublicKeyCredentialRequestOptions credentialRequestOptions = this.rpOperations.createCredentialRequestOptions(createRequest);
 		assertThat(credentialRequestOptions.getUserVerification()).isEqualTo(creationOptions.getAuthenticatorSelection().getUserVerification());
 	}
 

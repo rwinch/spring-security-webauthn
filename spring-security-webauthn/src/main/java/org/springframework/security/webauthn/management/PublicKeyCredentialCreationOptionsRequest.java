@@ -21,10 +21,10 @@ import org.springframework.security.core.Authentication;
 /**
  * A request to create a new {@link org.springframework.security.webauthn.api.PublicKeyCredentialCreationOptions}.
  * @since 6.4
- * @see WebAuthnRelyingPartyOperations#createPublicKeyCredentialCreationOptions(CreatePublicKeyCredentialCreationOptions)
+ * @see WebAuthnRelyingPartyOperations#createPublicKeyCredentialCreationOptions(PublicKeyCredentialCreationOptionsRequest)
  * @author Rob Winch
  */
-public interface CreatePublicKeyCredentialCreationOptions {
+public interface PublicKeyCredentialCreationOptionsRequest {
 
 	/**
 	 * The current {@link Authentication}. It must be authenticated to associate the credential to a user.
