@@ -31,25 +31,25 @@ import static org.assertj.core.api.Assertions.assertThatNoException;
 class MapPublicKeyCredentialUserEntityRepositoryTests {
 
 	private MapPublicKeyCredentialUserEntityRepository userEntities = new MapPublicKeyCredentialUserEntityRepository();
-	private PublicKeyCredentialUserEntity userEntity = TestPublicKeyCredentialUserEntity.userEntity().build();
 	private String username = "username";
+	private PublicKeyCredentialUserEntity userEntity = TestPublicKeyCredentialUserEntity.userEntity().name(this.username).build();
 
 	@Test
-	void findUsernameByUserEntityIdWhenExistsThenFound() {
-		this.userEntities.save(this.username, this.userEntity);
-		String foundUsername = this.userEntities.findUsernameByUserEntityId(this.userEntity.getId());
-		assertThat(foundUsername).isEqualTo(this.username);
+	void findByIdWhenExistsThenFound() {
+		this.userEntities.save(this.userEntity);
+		PublicKeyCredentialUserEntity findById = this.userEntities.findById(this.userEntity.getId());
+		assertThat(findById).isEqualTo(this.userEntity);
 	}
 
 	@Test
-	void findUsernameByUserEntityIdWhenDoesNotExistThenNull() {
-		String foundUsername = this.userEntities.findUsernameByUserEntityId(this.userEntity.getId());
-		assertThat(foundUsername).isNull();
+	void findByIdWhenDoesNotExistThenNull() {
+		PublicKeyCredentialUserEntity findById = this.userEntities.findById(this.userEntity.getId());
+		assertThat(findById).isNull();
 	}
 
 	@Test
 	void findByUsernameWhenExistsThenFound() {
-		this.userEntities.save(this.username, this.userEntity);
+		this.userEntities.save(this.userEntity);
 		PublicKeyCredentialUserEntity foundUserEntity = this.userEntities.findByUsername(this.username);
 		assertThat(foundUserEntity).isEqualTo(this.userEntity);
 	}
@@ -62,7 +62,7 @@ class MapPublicKeyCredentialUserEntityRepositoryTests {
 
 	@Test
 	void saveWhenNonNullThenSuccess() {
-		this.userEntities.save(this.username, this.userEntity);
+		this.userEntities.save(this.userEntity);
 		PublicKeyCredentialUserEntity foundUserEntity = this.userEntities.findByUsername(this.username);
 		assertThat(foundUserEntity).isEqualTo(this.userEntity);
 	}
@@ -70,24 +70,25 @@ class MapPublicKeyCredentialUserEntityRepositoryTests {
 	@Test
 	void saveWhenUpdateThenUpdated() {
 		PublicKeyCredentialUserEntity newUserEntity = TestPublicKeyCredentialUserEntity.userEntity()
+			.name(this.userEntity.getName())
 			.displayName("Updated")
 			.build();
-		this.userEntities.save(this.username, this.userEntity);
-		this.userEntities.save(this.username, newUserEntity);
+		this.userEntities.save(this.userEntity);
+		this.userEntities.save(newUserEntity);
 		PublicKeyCredentialUserEntity foundUserEntity = this.userEntities.findByUsername(this.username);
 		assertThat(foundUserEntity).isEqualTo(newUserEntity);
 	}
 
 	@Test
-	void saveWhenNullThenRemovesExistingEntry() {
-		this.userEntities.save(this.username, this.userEntity);
-		this.userEntities.save(this.username, null);
+	void deleteWhenExistsThenRemovesExistingEntry() {
+		this.userEntities.save(this.userEntity);
+		this.userEntities.delete(this.userEntity.getId());
 		assertThat(this.userEntities.findByUsername(this.username)).isNull();
-		assertThat(this.userEntities.findUsernameByUserEntityId(this.userEntity.getId())).isNull();
+		assertThat(this.userEntities.findById(this.userEntity.getId())).isNull();
 	}
 
 	@Test
-	void saveWhenNullAndDOesNotExistThenNoException() {
-		assertThatNoException().isThrownBy(() -> this.userEntities.save(this.username, null));
+	void deleteWhenNullAndDoesNotExistThenNoException() {
+		assertThatNoException().isThrownBy(() -> this.userEntities.delete(this.userEntity.getId()));
 	}
 }

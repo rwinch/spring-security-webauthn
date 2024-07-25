@@ -32,12 +32,12 @@ public class MapPublicKeyCredentialUserEntityRepository implements PublicKeyCred
 
 	private final Map<String,PublicKeyCredentialUserEntity> usernameToUserEntity = new HashMap<>();
 
-	private final Map<Base64Url,String> idToUsername = new HashMap<>();
+	private final Map<Base64Url,PublicKeyCredentialUserEntity> idToUserEntity = new HashMap<>();
 
 	@Override
-	public String findUsernameByUserEntityId(Base64Url id) {
+	public PublicKeyCredentialUserEntity findById(Base64Url id) {
 		Assert.notNull(id, "id cannot be null");
-		return this.idToUsername.get(id);
+		return this.idToUserEntity.get(id);
 	}
 
 	@Override
@@ -47,19 +47,19 @@ public class MapPublicKeyCredentialUserEntityRepository implements PublicKeyCred
 	}
 
 	@Override
-	public void save(String username, PublicKeyCredentialUserEntity userEntity) {
-		Assert.notNull(username, "username cannot be null");
+	public void save(PublicKeyCredentialUserEntity userEntity) {
 		if (userEntity == null) {
-			PublicKeyCredentialUserEntity existing = findByUsername(username);
-			if (existing != null) {
-				this.usernameToUserEntity.remove(username);
-				this.idToUsername.remove(existing.getId());
-			}
+			throw new IllegalArgumentException("userEntity cannot be null");
 		}
-		else {
-			this.usernameToUserEntity.put(username, userEntity);
-			this.idToUsername.put(userEntity.getId(), username);
-		}
+		this.usernameToUserEntity.put(userEntity.getName(), userEntity);
+		this.idToUserEntity.put(userEntity.getId(), userEntity);
 	}
 
+	@Override
+	public void delete(Base64Url id) {
+		PublicKeyCredentialUserEntity existing = this.idToUserEntity.remove(id);
+		if (existing != null) {
+			this.usernameToUserEntity.remove(existing.getName());
+		}
+	}
 }

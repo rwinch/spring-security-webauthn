@@ -28,11 +28,11 @@ import org.springframework.security.webauthn.api.PublicKeyCredentialUserEntity;
 public interface PublicKeyCredentialUserEntityRepository {
 
 	/**
-	 * Finds the associated username by the {@link PublicKeyCredentialUserEntity#getId()}
+	 * Finds the {@link PublicKeyCredentialUserEntity} by {@link PublicKeyCredentialUserEntity#getId()}
 	 * @param id the id to lookup the username by
 	 * @return the username or null if not found.
 	 */
-	String findUsernameByUserEntityId(Base64Url id);
+	PublicKeyCredentialUserEntity findById(Base64Url id);
 
 	/**
 	 * Finds the {@link PublicKeyCredentialUserEntity} by the username.
@@ -43,10 +43,10 @@ public interface PublicKeyCredentialUserEntityRepository {
 
 	/**
 	 * Saves the {@link PublicKeyCredentialUserEntity} to the associated username.
-	 * @param username the username to associate to the provided {@link PublicKeyCredentialUserEntity}
 	 * @param userEntity the {@link PublicKeyCredentialUserEntity} to associate to the provided username. If null, any
 	 * existing entry is deleted.
 	 */
-	void save(String username, PublicKeyCredentialUserEntity userEntity);
+	void save(PublicKeyCredentialUserEntity userEntity);
 
+	void delete(Base64Url id);
 }

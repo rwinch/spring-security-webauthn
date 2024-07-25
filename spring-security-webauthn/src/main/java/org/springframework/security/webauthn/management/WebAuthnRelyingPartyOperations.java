@@ -57,7 +57,6 @@ public interface WebAuthnRelyingPartyOperations {
 	 * @return the principal name (e.g. username) if authentication was successful
 	 * @throws RuntimeException if authentication fails
 	 */
-	// FIXME: Think about the name RelyingPartyAuthenticationRequest (does it align with rfc)
-	// FIXME: think about the method name (does it align with rfc)
+	// FIXME: Return UserAuthorities
 	String authenticate(RelyingPartyAuthenticationRequest request);
 }

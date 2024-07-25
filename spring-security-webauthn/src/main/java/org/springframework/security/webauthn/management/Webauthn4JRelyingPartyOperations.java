@@ -107,7 +107,7 @@ public class Webauthn4JRelyingPartyOperations implements WebAuthnRelyingPartyOpe
 
 	/**
 	 * Sets a {@link Consumer} used to customize the {@link PublicKeyCredentialCreationOptionsBuilder} for
-	 * {@link #createPublicKeyCredentialCreationOptions(Authentication)}. The default values are always populated, but
+	 * {@link #createPublicKeyCredentialCreationOptions(PublicKeyCredentialCreationOptionsRequest)}. The default values are always populated, but
 	 * can be overridden with this property.
 	 *
 	 * @param customizeCreationOptions the {@link Consumer} to customize the {@link PublicKeyCredentialCreationOptionsBuilder}
@@ -119,7 +119,7 @@ public class Webauthn4JRelyingPartyOperations implements WebAuthnRelyingPartyOpe
 
 	/**
 	 * Sets a {@link Consumer} used to customize the {@link PublicKeyCredentialRequestOptionsBuilder} for
-	 * {@link #createCredentialRequestOptions(Authentication)}.The default values are always populated, but
+	 * {@link #createCredentialRequestOptions(PublicKeyCredentialRequestOptionsRequest)}.The default values are always populated, but
 	 * can be overridden with this property.
 	 *
 	 * @param customizeRequestOptions the {@link Consumer} to customize the {@link PublicKeyCredentialRequestOptionsBuilder}
@@ -187,7 +187,7 @@ public class Webauthn4JRelyingPartyOperations implements WebAuthnRelyingPartyOpe
 				.id(Base64Url.random())
 				.name(username)
 				.build();
-		this.userEntities.save(username, userEntity);
+		this.userEntities.save(userEntity);
 		return userEntity;
 	}
 
@@ -327,7 +327,8 @@ public class Webauthn4JRelyingPartyOperations implements WebAuthnRelyingPartyOpe
 				.build();
 		this.userCredentials.save(updatedRecord);
 
-		return this.userEntities.findUsernameByUserEntityId(credentialRecord.getUserEntityUserId());
+		PublicKeyCredentialUserEntity userEntity = this.userEntities.findById(credentialRecord.getUserEntityUserId());
+		return userEntity.getName();
 	}
 
 }
