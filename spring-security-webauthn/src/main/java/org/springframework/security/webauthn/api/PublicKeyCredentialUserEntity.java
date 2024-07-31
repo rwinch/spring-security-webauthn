@@ -16,6 +16,8 @@
 
 package org.springframework.security.webauthn.api;
 
+import java.security.Principal;
+
 /**
  * <a href="https://www.w3.org/TR/webauthn-3/#dictdef-publickeycredentialuserentity">PublicKeyCredentialUserEntity</a>
  * is used to supply additional <a href="https://www.w3.org/TR/webauthn-3/#user-account">user account</a> attributes
@@ -23,7 +25,8 @@ package org.springframework.security.webauthn.api;
  * @since 6.4
  * @author Rob Winch
  */
-public class PublicKeyCredentialUserEntity {
+// FIXME: Must be an interface (this is like UserDetails)
+public class PublicKeyCredentialUserEntity implements Principal {
 	/**
 	 * When inherited by PublicKeyCredentialUserEntity, it is a human-palatable identifier for a user account. It is
 	 * intended only for display, i.e., aiding the user in determining the difference between user accounts with similar

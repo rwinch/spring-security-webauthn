@@ -23,6 +23,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.webauthn.api.PublicKeyCredentialUserEntity;
 import org.springframework.security.webauthn.management.RelyingPartyAuthenticationRequest;
 import org.springframework.security.webauthn.management.WebAuthnRelyingPartyOperations;
 import org.springframework.util.Assert;
@@ -58,9 +59,10 @@ public class WebAuthnAuthenticationProvider implements AuthenticationProvider {
 	public Authentication authenticate(Authentication authentication) throws AuthenticationException {
 		WebAuthnAuthenticationRequestToken webAuthnRequest = (WebAuthnAuthenticationRequestToken) authentication;
 		try {
-			String username = this.relyingPartyOperations.authenticate(webAuthnRequest.getWebAuthnRequest());
+			PublicKeyCredentialUserEntity userEntity = this.relyingPartyOperations.authenticate(webAuthnRequest.getWebAuthnRequest());
+			String username = userEntity.getName();
 			UserDetails userDetails = this.userDetailsService.loadUserByUsername(username);
-			return UsernamePasswordAuthenticationToken.authenticated(userDetails, userDetails.getPassword(), userDetails.getAuthorities());
+			return new WebAuthnAuthenticationToken(userEntity, userDetails.getAuthorities());
 		}
 		catch (RuntimeException e) {
 			throw new BadCredentialsException(e.getMessage(), e);

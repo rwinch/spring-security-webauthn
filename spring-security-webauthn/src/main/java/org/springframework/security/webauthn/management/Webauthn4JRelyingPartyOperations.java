@@ -286,7 +286,7 @@ public class Webauthn4JRelyingPartyOperations implements WebAuthnRelyingPartyOpe
 	}
 
 	@Override
-	public String authenticate(RelyingPartyAuthenticationRequest request) {
+	public PublicKeyCredentialUserEntity authenticate(RelyingPartyAuthenticationRequest request) {
 		PublicKeyCredentialRequestOptions requestOptions = request.getRequestOptions();
 		AuthenticatorAssertionResponse assertionResponse = request.getPublicKey().getResponse();
 		Base64Url keyId = request.getPublicKey().getRawId();
@@ -327,8 +327,7 @@ public class Webauthn4JRelyingPartyOperations implements WebAuthnRelyingPartyOpe
 				.build();
 		this.userCredentials.save(updatedRecord);
 
-		PublicKeyCredentialUserEntity userEntity = this.userEntities.findById(credentialRecord.getUserEntityUserId());
-		return userEntity.getName();
+		return this.userEntities.findById(credentialRecord.getUserEntityUserId());
 	}
 
 }

@@ -19,6 +19,7 @@ package org.springframework.security.webauthn.management;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.webauthn.api.PublicKeyCredentialRequestOptions;
 import org.springframework.security.webauthn.api.PublicKeyCredentialCreationOptions;
+import org.springframework.security.webauthn.api.PublicKeyCredentialUserEntity;
 
 /**
  * An API for <a href="https://www.w3.org/TR/webauthn-3/#sctn-rp-operations">WebAuthn Relying Party Operations</a>
@@ -53,10 +54,10 @@ public interface WebAuthnRelyingPartyOperations {
 
 	/**
 	 * Authenticates the {@link RelyingPartyAuthenticationRequest} passed in
+	 *
 	 * @param request the {@link RelyingPartyAuthenticationRequest}
 	 * @return the principal name (e.g. username) if authentication was successful
 	 * @throws RuntimeException if authentication fails
 	 */
-	// FIXME: Return UserAuthorities
-	String authenticate(RelyingPartyAuthenticationRequest request);
+	PublicKeyCredentialUserEntity authenticate(RelyingPartyAuthenticationRequest request);
 }
