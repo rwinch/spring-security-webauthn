@@ -16,11 +16,11 @@
 
 package org.springframework.security.webauthn.api;
 
-import org.springframework.security.webauthn.api.PublicKeyCredentialUserEntity.PublicKeyCredentialUserEntityBuilder;
+import org.springframework.security.webauthn.api.ImmutablePublicKeyCredentialUserEntity.PublicKeyCredentialUserEntityBuilder;
 
 public class TestPublicKeyCredentialUserEntity {
 	public static PublicKeyCredentialUserEntityBuilder userEntity() {
-		return PublicKeyCredentialUserEntity.builder()
+		return ImmutablePublicKeyCredentialUserEntity.builder()
 				.name("user")
 				.id(Base64Url.random())
 				.displayName("user");

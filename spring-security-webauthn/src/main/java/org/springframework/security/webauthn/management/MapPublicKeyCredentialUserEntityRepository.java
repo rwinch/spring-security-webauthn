@@ -30,9 +30,9 @@ import java.util.Map;
  */
 public class MapPublicKeyCredentialUserEntityRepository implements PublicKeyCredentialUserEntityRepository {
 
-	private final Map<String,PublicKeyCredentialUserEntity> usernameToUserEntity = new HashMap<>();
+	private final Map<String, PublicKeyCredentialUserEntity> usernameToUserEntity = new HashMap<>();
 
-	private final Map<Base64Url,PublicKeyCredentialUserEntity> idToUserEntity = new HashMap<>();
+	private final Map<Base64Url, PublicKeyCredentialUserEntity> idToUserEntity = new HashMap<>();
 
 	@Override
 	public PublicKeyCredentialUserEntity findById(Base64Url id) {

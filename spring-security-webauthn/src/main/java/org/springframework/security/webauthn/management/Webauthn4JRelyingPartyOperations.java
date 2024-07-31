@@ -182,7 +182,7 @@ public class Webauthn4JRelyingPartyOperations implements WebAuthnRelyingPartyOpe
 			return foundUserEntity;
 		}
 
-		PublicKeyCredentialUserEntity userEntity = PublicKeyCredentialUserEntity.builder()
+		PublicKeyCredentialUserEntity userEntity = ImmutablePublicKeyCredentialUserEntity.builder()
 				.displayName(username)
 				.id(Base64Url.random())
 				.name(username)

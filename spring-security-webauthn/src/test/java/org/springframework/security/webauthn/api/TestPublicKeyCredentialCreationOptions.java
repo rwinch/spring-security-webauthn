@@ -31,7 +31,7 @@ public class TestPublicKeyCredentialCreationOptions {
 				.name("SimpleWebAuthn Example")
 				.build();
 		Base64Url userId = Base64Url.fromBase64("oWJtkJ6vJ_m5b84LB4_K7QKTCTEwLIjCh4tFMCGHO4w");
-		PublicKeyCredentialUserEntity userEntity = PublicKeyCredentialUserEntity.builder()
+		PublicKeyCredentialUserEntity userEntity = ImmutablePublicKeyCredentialUserEntity.builder()
 				.displayName("user@example.localhost")
 				.id(userId)
 				.name("user@example.localhost")
