@@ -19,6 +19,7 @@ package org.springframework.security.webauthn.authentication;
 import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.webauthn.api.PublicKeyCredentialUserEntity;
+import org.springframework.util.Assert;
 
 import java.util.Collection;
 
@@ -34,6 +35,14 @@ public class WebAuthnAuthentication extends AbstractAuthenticationToken {
 	public WebAuthnAuthentication(PublicKeyCredentialUserEntity principal, Collection<? extends GrantedAuthority> authorities) {
 		super(authorities);
 		this.principal = principal;
+		super.setAuthenticated(true);
+	}
+
+	@Override
+	public void setAuthenticated(boolean authenticated) {
+		Assert.isTrue(!authenticated,
+				"Cannot set this token to trusted");
+		super.setAuthenticated(authenticated);
 	}
 
 	@Override
