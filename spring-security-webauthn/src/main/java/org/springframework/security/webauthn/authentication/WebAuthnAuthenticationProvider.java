@@ -61,7 +61,7 @@ public class WebAuthnAuthenticationProvider implements AuthenticationProvider {
 			PublicKeyCredentialUserEntity userEntity = this.relyingPartyOperations.authenticate(webAuthnRequest.getWebAuthnRequest());
 			String username = userEntity.getName();
 			UserDetails userDetails = this.userDetailsService.loadUserByUsername(username);
-			return new WebAuthnAuthenticationToken(userEntity, userDetails.getAuthorities());
+			return new WebAuthnAuthentication(userEntity, userDetails.getAuthorities());
 		}
 		catch (RuntimeException e) {
 			throw new BadCredentialsException(e.getMessage(), e);

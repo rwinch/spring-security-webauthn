@@ -22,10 +22,16 @@ import org.springframework.security.webauthn.api.PublicKeyCredentialUserEntity;
 
 import java.util.Collection;
 
-public class WebAuthnAuthenticationToken extends AbstractAuthenticationToken {
+/**
+ * A {@link WebAuthnAuthentication} is used to represent successful authentication with WebAuthn.
+ * @since 6.4
+ * @see WebAuthnAuthenticationRequestToken
+ * @author Rob Winch
+ */
+public class WebAuthnAuthentication extends AbstractAuthenticationToken {
 	private final PublicKeyCredentialUserEntity principal;
 
-	public WebAuthnAuthenticationToken(PublicKeyCredentialUserEntity principal, Collection<? extends GrantedAuthority> authorities) {
+	public WebAuthnAuthentication(PublicKeyCredentialUserEntity principal, Collection<? extends GrantedAuthority> authorities) {
 		super(authorities);
 		this.principal = principal;
 	}
