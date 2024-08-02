@@ -39,6 +39,7 @@ describe("webauthn-registration", () => {
     let labelField;
     let errorPopup;
     let successPopup;
+    let deleteForms;
     let ui;
 
     beforeEach(() => {
@@ -61,6 +62,7 @@ describe("webauthn-registration", () => {
       labelField = {
         value: undefined,
       };
+      deleteForms = []
       ui = {
         getSuccess: function() {
           return successPopup
@@ -73,9 +75,17 @@ describe("webauthn-registration", () => {
         },
         getLabelInput: function() {
           return labelField
+        },
+        getDeleteForms: function() {
+          return deleteForms
         }
       };
-      global.window = {};
+      global.window = {
+        location: {
+          href: {}
+        },
+      };
+
     });
 
     afterEach(() => {
@@ -169,6 +179,46 @@ describe("webauthn-registration", () => {
           expect(successPopup).to.be.hidden;
         });
       });
+
+      describe("delete", () => {
+        beforeEach(() => {
+          global.fetch = fake.resolves({ ok: true });
+        });
+
+        afterEach(() => {
+          delete global.fetch;
+        });
+
+        it("no errors when no forms", async() => {
+          await setupRegistration({}, "/some/path", ui);
+        });
+
+        it("sets up forms for fetch", async() => {
+          const contextPath = '/some/path'
+          const deleteForm = {
+            action: `${contextPath}/webauthn/1234`,
+            addEventListener: fake(),
+          }
+          deleteForms = [deleteForm]
+          const headers = {
+            'X-CSRF-TOKEN': 'token',
+          }
+          await setupRegistration(headers, contextPath, ui);
+          const clickEvent = {
+            preventDefault: fake()
+          }
+          await deleteForm.addEventListener.firstCall.lastArg(clickEvent)
+          assert.calledOnce(clickEvent.preventDefault)
+          assert.calledOnceWithExactly(global.fetch, deleteForm.action, {
+            method: "DELETE",
+            headers: {
+              "Content-Type": "application/json",
+              ...headers,
+            },
+          });
+          expect(global.window.location.href).to.equal(`${contextPath}/webauthn/register?success`)
+        });
+      })
     });
   });
 });

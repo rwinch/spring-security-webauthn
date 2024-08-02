@@ -143,16 +143,19 @@ public class DefaultWebAuthnRegistrationPageGeneratingFilter extends OncePerRequ
 					const ui = {
 						getRegisterButton: function() {
 							return document.getElementById('register')
-					  	},
+						},
 						getSuccess: function() {
 							return document.getElementById('success')
-					  	},
+						},
 						getError: function() {
 							return document.getElementById('error')
-					  	},
+						},
 						getLabelInput: function() {
 							return document.getElementById('label')
-					  	},						
+						},
+						getDeleteForms: function() {
+							return Array.from(document.getElementsByClassName("delete-form"))
+						},
 					}
 					document.addEventListener("DOMContentLoaded",() => setupRegistration(${csrfHeaders}, "${contextPath}", ui));
 				//-->
@@ -190,7 +193,7 @@ public class DefaultWebAuthnRegistrationPageGeneratingFilter extends OncePerRequ
 			<td>${lastUsed}</td>
 			<td>${signatureCount}</td>
 			<td>
-				<form method="post" action="${contextPath}/webauthn/register/${credentialId}">
+				<form class="delete-form" method="post" action="${contextPath}/webauthn/register/${credentialId}">
 					<input type="hidden" name="method" value="delete">
 					<input type="hidden" name="${csrfParameterName}" value="${csrfToken}">
 					<button class="btn btn-sm btn-primary btn-block" type="submit">Delete</button>

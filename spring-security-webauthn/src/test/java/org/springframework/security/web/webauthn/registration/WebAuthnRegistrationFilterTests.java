@@ -177,6 +177,15 @@ class WebAuthnRegistrationFilterTests {
 		verify(this.creationOptionsRepository).save(any(), any(), eq(null));
 	}
 
+	@Test
+	void doFilterWhenDeleteSuccessThenNoContent() throws Exception {
+		MockHttpServletRequest request = MockMvcRequestBuilders
+				.delete("/webauthn/register/123456")
+				.buildRequest(new MockServletContext());
+		this.filter.doFilter(request, this.response, this.chain);
+		assertThat(this.response.getStatus()).isEqualTo(HttpStatus.NO_CONTENT.value());
+	}
+
 	private static MockHttpServletRequest registerCredentialRequest(String body) {
 		return MockMvcRequestBuilders
 				.post(WebAuthnRegistrationFilter.DEFAULT_REGISTER_CREDENTIAL_URL)

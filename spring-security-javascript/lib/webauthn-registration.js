@@ -50,7 +50,7 @@ function resetPopups(ui) {
  *
  * @param headers
  * @param contextPath
- * @param ui contains getRegisterButton(), getSuccess(), getError(), & getLabelInput()
+ * @param ui contains getRegisterButton(), getSuccess(), getError(), getLabelInput(), getDeleteForms()
  * @returns {Promise<void>}
  */
 export async function setupRegistration(headers, contextPath, ui) {
@@ -72,4 +72,22 @@ export async function setupRegistration(headers, contextPath, ui) {
       setError(ui, err.message);
     }
   });
+
+  ui.getDeleteForms().forEach((form) => form.addEventListener('submit', async function (e) {
+    e.preventDefault()
+    submitDeleteForm(contextPath, form, headers)
+  }));
+}
+
+async function submitDeleteForm(contextPath, form, headers) {
+  const options = {
+    method: "DELETE",
+    headers: {
+      "Content-Type": "application/json",
+      ...headers,
+    },
+  }
+  await fetch(form.action, options);
+  window.location.href = `${contextPath}/webauthn/register?success`;
+  return false
 }

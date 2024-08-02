@@ -92,7 +92,7 @@ public class WebAuthnRegistrationFilter extends OncePerRequestFilter {
 
 	private RequestMatcher registerCredentialMatcher = antMatcher(HttpMethod.POST, DEFAULT_REGISTER_CREDENTIAL_URL);
 
-	private RequestMatcher removeCredentialMatcher = antMatcher(HttpMethod.POST, "/webauthn/register/{id}");
+	private RequestMatcher removeCredentialMatcher = antMatcher(HttpMethod.DELETE, "/webauthn/register/{id}");
 
 	public WebAuthnRegistrationFilter(UserCredentialRepository userCredentials, WebAuthnRelyingPartyOperations rpOptions) {
 		Assert.notNull(userCredentials, "userCredentials must not be null");
@@ -165,7 +165,7 @@ public class WebAuthnRegistrationFilter extends OncePerRequestFilter {
 
 	private void removeCredential(HttpServletRequest request, HttpServletResponse response, String id) throws IOException {
 		this.userCredentials.delete(Base64Url.fromBase64(id));
-		response.sendRedirect("/webauthn/register?success");
+		response.setStatus(HttpStatus.NO_CONTENT.value());
 	}
 
 	// FIXME: make private

@@ -93,7 +93,7 @@ class DefaultWebAuthnRegistrationPageGeneratingFilterTests {
 		String body = bodyAsString(matchingRequest());
 		assertThat(body).contains("setupRegistration({\"X-CSRF-TOKEN\" : \"CSRF_TOKEN\"}");
 		assertThat(body.replaceAll("\\s", "")).contains("""
-			<form method="post" action="/webauthn/register/NauGCN7bZ5jEBwThcde51g">
+			<form class="delete-form" method="post" action="/webauthn/register/NauGCN7bZ5jEBwThcde51g">
 				<input type="hidden" name="method" value="delete">
 				<input type="hidden" name="_csrf" value="CSRF_TOKEN">
 				<button class="btn btn-sm btn-primary btn-block" type="submit">Delete</button>
