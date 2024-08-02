@@ -151,6 +151,14 @@ describe("webauthn-registration", () => {
           assert.calledOnceWithExactly(registerStub, headers, contextPath, labelField.value);
         });
 
+        it("navigates to success page", async () => {
+          labelField.value = "passkey name";
+
+          await registerButton.addEventListener.firstCall.lastArg();
+
+          expect(global.window.location.href).to.equal(`${contextPath}/webauthn/register?success`);
+        });
+
         it("handles errors", async () => {
           registerStub.rejects(new Error("The registration failed"));
 

@@ -67,6 +67,7 @@ export async function setupRegistration(headers, contextPath, ui) {
     const label = ui.getLabelInput().value;
     try {
       await webauthn.register(headers, contextPath, label);
+      window.location.href = `${contextPath}/webauthn/register?success`;
     } catch (err) {
       setError(ui, err.message);
     }

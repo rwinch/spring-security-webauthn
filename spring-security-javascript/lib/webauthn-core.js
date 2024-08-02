@@ -145,9 +145,7 @@ async function register(headers, contextPath, label) {
   const verificationJSON = await verificationResp.json();
 
   // Show UI appropriate for the `success` status & reload to display the new registration
-  if (verificationJSON && verificationJSON.success) {
-    window.location.href = `${contextPath}/webauthn/register?success`;
-  } else {
+  if (!(verificationJSON && verificationJSON.success)) {
     // TODO: handle <pre>
     throw new Error(`Registration failed! Response: <pre>${JSON.stringify(verificationJSON, null, 2)}</pre>`);
   }

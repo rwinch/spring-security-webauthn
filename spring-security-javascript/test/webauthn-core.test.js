@@ -262,7 +262,6 @@ describe("webauthn-core", () => {
       });
 
       await webauthn.register(headers, contextPath, "my passkey");
-      expect(global.window.location.href).to.equal(`${contextPath}/webauthn/register?success`);
       assert.calledWithExactly(
         httpPostStub.lastCall,
         `${contextPath}/webauthn/register`,
