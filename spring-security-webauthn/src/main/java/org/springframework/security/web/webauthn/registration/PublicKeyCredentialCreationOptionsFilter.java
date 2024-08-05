@@ -34,7 +34,6 @@ import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.context.SecurityContextHolderStrategy;
 import org.springframework.security.web.util.matcher.RequestMatcher;
-import org.springframework.security.web.util.matcher.RequestMatchers;
 import org.springframework.security.webauthn.api.PublicKeyCredentialCreationOptions;
 import org.springframework.security.webauthn.jackson.WebauthnJackson2Module;
 import org.springframework.security.webauthn.management.ImmutablePublicKeyCredentialCreationOptionsRequest;
@@ -57,7 +56,9 @@ public class PublicKeyCredentialCreationOptionsFilter extends OncePerRequestFilt
 
 	private SecurityContextHolderStrategy securityContextHolderStrategy = SecurityContextHolder.getContextHolderStrategy();
 
-	private RequestMatcher matcher = RequestMatchers.allOf(antMatcher(HttpMethod.POST, "/webauthn/register/options"), new AuthenticatedRequestMatcher());
+	private RequestMatcher matcher = antMatcher(HttpMethod.POST, "/webauthn/register/options");
+
+	private AuthenticationTrustResolver trustResolver = new AuthenticationTrustResolverImpl();
 
 	private final WebAuthnRelyingPartyOperations rpOperations;
 
@@ -81,24 +82,16 @@ public class PublicKeyCredentialCreationOptionsFilter extends OncePerRequestFilt
 		}
 
 		SecurityContext context = this.securityContextHolderStrategy.getContext();
-		PublicKeyCredentialCreationOptions options = this.rpOperations.createPublicKeyCredentialCreationOptions(new ImmutablePublicKeyCredentialCreationOptionsRequest(context.getAuthentication()));
+		Authentication authentication = context.getAuthentication();
+		if (!this.trustResolver.isAuthenticated(authentication)) {
+			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+			return;
+		}
+		PublicKeyCredentialCreationOptions options = this.rpOperations.createPublicKeyCredentialCreationOptions(new ImmutablePublicKeyCredentialCreationOptionsRequest(authentication));
 		this.repository.save(request, response, options);
 		response.setStatus(HttpServletResponse.SC_OK);
 		response.setHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE);
 		this.converter.write(options, MediaType.APPLICATION_JSON, new ServletServerHttpResponse(response));
-	}
-
-	private final class AuthenticatedRequestMatcher implements RequestMatcher {
-
-		private final AuthenticationTrustResolver resolver = new AuthenticationTrustResolverImpl();
-
-		@Override
-		public boolean matches(HttpServletRequest request) {
-			SecurityContext context = PublicKeyCredentialCreationOptionsFilter.this.securityContextHolderStrategy.getContext();
-			Authentication authentication = context.getAuthentication();
-			return this.resolver.isAuthenticated(authentication);
-		}
-
 	}
 
 }

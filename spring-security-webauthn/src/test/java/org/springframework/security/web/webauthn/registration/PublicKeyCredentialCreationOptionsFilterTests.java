@@ -22,17 +22,15 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.authentication.TestingAuthenticationToken;
 import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.context.SecurityContextImpl;
-import org.springframework.security.webauthn.api.TestPublicKeyCredentialCreationOptions;
-import org.springframework.security.webauthn.api.Base64Url;
-import org.springframework.security.webauthn.api.AuthenticatorTransport;
-import org.springframework.security.webauthn.api.PublicKeyCredentialCreationOptions;
-import org.springframework.security.webauthn.api.PublicKeyCredentialDescriptor;
+import org.springframework.security.webauthn.api.*;
 import org.springframework.security.webauthn.management.WebAuthnRelyingPartyOperations;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
@@ -40,6 +38,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import java.util.Arrays;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verifyNoInteractions;
@@ -84,8 +83,8 @@ class PublicKeyCredentialCreationOptionsFilterTests {
 	@Test
 	void doFilterWhenNotAuthenticatedThenNoInvocations() throws Exception {
 		MockMvc mockMvc = mockMvc();
-		mockMvc.perform(post(REGISTER_OPTONS_URL));
-		verifyNoInteractions(this.rpOperations);
+		MockHttpServletResponse response = mockMvc.perform(post(REGISTER_OPTONS_URL)).andReturn().getResponse();
+		assertThat(response.getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
 	}
 
 	@Test
@@ -93,7 +92,9 @@ class PublicKeyCredentialCreationOptionsFilterTests {
 		AnonymousAuthenticationToken anonymous = new AnonymousAuthenticationToken("key", "anonymousUser", AuthorityUtils.createAuthorityList("ROLE_ANONYMOUS"));
 		SecurityContextImpl context = new SecurityContextImpl(anonymous);
 		SecurityContextHolder.setContext(context);
-		doFilterWhenWrongUrlThenNoInteractions();
+		MockMvc mockMvc = mockMvc();
+		MockHttpServletResponse response = mockMvc.perform(post(REGISTER_OPTONS_URL)).andReturn().getResponse();
+		assertThat(response.getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
 	}
 
 	@Test
