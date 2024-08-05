@@ -48,6 +48,4 @@ public interface PublicKeyCredentialCreationOptionsRepository {
 	 * @return the {@link PublicKeyCredentialCreationOptions} that was saved, otherwise null.
 	 */
 	PublicKeyCredentialCreationOptions load(HttpServletRequest request);
-
-	// FIXME: add a method to load / remove in a single method? Are there other places Spring Security does this?
 }
