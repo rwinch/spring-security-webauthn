@@ -31,15 +31,15 @@ package org.springframework.security.webauthn.api;
  */
 public class AuthenticatorAssertionResponse extends AuthenticatorResponse  {
 
-	private final Base64Url authenticatorData;
+	private final Bytes authenticatorData;
 
-	private final Base64Url signature;
+	private final Bytes signature;
 
-	private final Base64Url userHandle;
+	private final Bytes userHandle;
 
-	private final Base64Url attestationObject;
+	private final Bytes attestationObject;
 
-	private AuthenticatorAssertionResponse(Base64Url clientDataJSON, Base64Url authenticatorData, Base64Url signature, Base64Url userHandle, Base64Url attestationObject) {
+	private AuthenticatorAssertionResponse(Bytes clientDataJSON, Bytes authenticatorData, Bytes signature, Bytes userHandle, Bytes attestationObject) {
 		super(clientDataJSON);
 		this.authenticatorData = authenticatorData;
 		this.signature = signature;
@@ -53,7 +53,7 @@ public class AuthenticatorAssertionResponse extends AuthenticatorResponse  {
 	 * the authenticator. See <a href="https://www.w3.org/TR/webauthn-3/#sctn-authenticator-data">6.1 Authenticator Data.</a>.
 	 * @return the {@code authenticatorData}
 	 */
-	public Base64Url getAuthenticatorData() {
+	public Bytes getAuthenticatorData() {
 		return this.authenticatorData;
 	}
 
@@ -63,7 +63,7 @@ public class AuthenticatorAssertionResponse extends AuthenticatorResponse  {
 	 * <a href="https://www.w3.org/TR/webauthn-3/#sctn-op-get-assertion">6.3.3 The authenticatorGetAssertion Operation</a>.
 	 * @return the {@code signature}
 	 */
-	public Base64Url getSignature() {
+	public Bytes getSignature() {
 		return this.signature;
 	}
 
@@ -79,7 +79,7 @@ public class AuthenticatorAssertionResponse extends AuthenticatorResponse  {
 	 *
 	 * @return the <a href="https://www.w3.org/TR/webauthn-3/#user-handle">user handle</a>
 	 */
-	public Base64Url getUserHandle() {
+	public Bytes getUserHandle() {
 		return this.userHandle;
 	}
 
@@ -90,7 +90,7 @@ public class AuthenticatorAssertionResponse extends AuthenticatorResponse  {
 	 *
 	 * @return the {@code attestationObject}
 	 */
-	public Base64Url getAttestationObject() {
+	public Bytes getAttestationObject() {
 		return this.attestationObject;
 	}
 
@@ -109,11 +109,11 @@ public class AuthenticatorAssertionResponse extends AuthenticatorResponse  {
 	 * @author Rob Winch
 	 */
 	public static final class AuthenticatorAssertionResponseBuilder {
-		private Base64Url authenticatorData;
-		private Base64Url signature;
-		private Base64Url userHandle;
-		private Base64Url attestationObject;
-		private Base64Url clientDataJSON;
+		private Bytes authenticatorData;
+		private Bytes signature;
+		private Bytes userHandle;
+		private Bytes attestationObject;
+		private Bytes clientDataJSON;
 
 		private AuthenticatorAssertionResponseBuilder() {
 		}
@@ -123,7 +123,7 @@ public class AuthenticatorAssertionResponse extends AuthenticatorResponse  {
 		 * @param authenticatorData the authenticator data.
 		 * @return the {@link AuthenticatorAssertionResponseBuilder}
 		 */
-		public AuthenticatorAssertionResponseBuilder authenticatorData(Base64Url authenticatorData) {
+		public AuthenticatorAssertionResponseBuilder authenticatorData(Bytes authenticatorData) {
 			this.authenticatorData = authenticatorData;
 			return this;
 		}
@@ -133,7 +133,7 @@ public class AuthenticatorAssertionResponse extends AuthenticatorResponse  {
 		 * @param signature the signature
 		 * @return the {@link AuthenticatorAssertionResponseBuilder}
 		 */
-		public AuthenticatorAssertionResponseBuilder signature(Base64Url signature) {
+		public AuthenticatorAssertionResponseBuilder signature(Bytes signature) {
 			this.signature = signature;
 			return this;
 		}
@@ -143,7 +143,7 @@ public class AuthenticatorAssertionResponse extends AuthenticatorResponse  {
 		 * @param userHandle the user handle
 		 * @return the {@link AuthenticatorAssertionResponseBuilder}
 		 */
-		public AuthenticatorAssertionResponseBuilder userHandle(Base64Url userHandle) {
+		public AuthenticatorAssertionResponseBuilder userHandle(Bytes userHandle) {
 			this.userHandle = userHandle;
 			return this;
 		}
@@ -153,7 +153,7 @@ public class AuthenticatorAssertionResponse extends AuthenticatorResponse  {
 		 * @param attestationObject the attestation object
 		 * @return the {@link AuthenticatorAssertionResponseBuilder}
 		 */
-		public AuthenticatorAssertionResponseBuilder attestationObject(Base64Url attestationObject) {
+		public AuthenticatorAssertionResponseBuilder attestationObject(Bytes attestationObject) {
 			this.attestationObject = attestationObject;
 			return this;
 		}
@@ -163,7 +163,7 @@ public class AuthenticatorAssertionResponse extends AuthenticatorResponse  {
 		 * @param clientDataJSON the client data JSON
 		 * @return the {@link AuthenticatorAssertionResponseBuilder}
 		 */
-		public AuthenticatorAssertionResponseBuilder clientDataJSON(Base64Url clientDataJSON) {
+		public AuthenticatorAssertionResponseBuilder clientDataJSON(Bytes clientDataJSON) {
 			this.clientDataJSON = clientDataJSON;
 			return this;
 		}

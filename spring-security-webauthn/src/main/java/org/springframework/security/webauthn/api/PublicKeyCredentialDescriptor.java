@@ -32,11 +32,11 @@ public class PublicKeyCredentialDescriptor {
 
 	private final PublicKeyCredentialType type;
 
-	private final Base64Url id;
+	private final Bytes id;
 
 	private final List<AuthenticatorTransport> transports;
 
-	private PublicKeyCredentialDescriptor(PublicKeyCredentialType type, Base64Url id, List<AuthenticatorTransport> transports) {
+	private PublicKeyCredentialDescriptor(PublicKeyCredentialType type, Bytes id, List<AuthenticatorTransport> transports) {
 		this.type = type;
 		this.id = id;
 		this.transports = transports;
@@ -56,7 +56,7 @@ public class PublicKeyCredentialDescriptor {
 	 * credential ID of the public key credential the caller is referring to.
 	 * @return the id
 	 */
-	public Base64Url getId() {
+	public Bytes getId() {
 		return this.id;
 	}
 
@@ -85,7 +85,7 @@ public class PublicKeyCredentialDescriptor {
 	 */
 	public static final class PublicKeyCredentialDescriptorBuilder {
 		private PublicKeyCredentialType type = PublicKeyCredentialType.PUBLIC_KEY;
-		private Base64Url id;
+		private Bytes id;
 		private List<AuthenticatorTransport> transports;
 
 		private PublicKeyCredentialDescriptorBuilder() {
@@ -106,7 +106,7 @@ public class PublicKeyCredentialDescriptor {
 		 * @param id the id
 		 * @return the {@link PublicKeyCredentialDescriptorBuilder}
 		 */
-		public PublicKeyCredentialDescriptorBuilder id(Base64Url id) {
+		public PublicKeyCredentialDescriptorBuilder id(Bytes id) {
 			this.id = id;
 			return this;
 		}

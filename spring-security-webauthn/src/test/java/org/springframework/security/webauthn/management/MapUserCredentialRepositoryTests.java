@@ -17,7 +17,7 @@
 package org.springframework.security.webauthn.management;
 
 import org.junit.jupiter.api.Test;
-import org.springframework.security.webauthn.api.Base64Url;
+import org.springframework.security.webauthn.api.Bytes;
 import org.springframework.security.webauthn.api.TestCredentialRecord;
 
 import java.time.Instant;
@@ -35,7 +35,7 @@ class MapUserCredentialRepositoryTests {
 
 	@Test
 	void findByUserIdWhenNotFoundThenEmpty() {
-		assertThat(this.userCredentials.findByUserId(Base64Url.random())).isEmpty();
+		assertThat(this.userCredentials.findByUserId(Bytes.random())).isEmpty();
 	}
 
 	@Test
@@ -50,7 +50,7 @@ class MapUserCredentialRepositoryTests {
 
 	@Test
 	void findByCredentialIdWhenNotFoundThenIllegalArgumentException() {
-		assertThat(this.userCredentials.findByCredentialId(Base64Url.random())).isNull();
+		assertThat(this.userCredentials.findByCredentialId(Bytes.random())).isNull();
 	}
 
 	@Test
@@ -104,7 +104,7 @@ class MapUserCredentialRepositoryTests {
 		ImmutableCredentialRecord credentialRecord = TestCredentialRecord.userCredential().build();
 		this.userCredentials.save(credentialRecord);
 		CredentialRecord newCredentialRecord = ImmutableCredentialRecord.fromCredentialRecord(credentialRecord)
-				.credentialId(Base64Url.random())
+				.credentialId(Bytes.random())
 				.build();
 		this.userCredentials.save(newCredentialRecord);
 		assertThat(this.userCredentials.findByCredentialId(credentialRecord.getCredentialId())).isEqualTo(credentialRecord);
@@ -117,8 +117,8 @@ class MapUserCredentialRepositoryTests {
 		ImmutableCredentialRecord credentialRecord = TestCredentialRecord.userCredential().build();
 		this.userCredentials.save(credentialRecord);
 		CredentialRecord newCredentialRecord = ImmutableCredentialRecord.fromCredentialRecord(credentialRecord)
-				.userEntityUserId(Base64Url.random())
-				.credentialId(Base64Url.random())
+				.userEntityUserId(Bytes.random())
+				.credentialId(Bytes.random())
 				.build();
 		this.userCredentials.save(newCredentialRecord);
 		assertThat(this.userCredentials.findByCredentialId(credentialRecord.getCredentialId())).isEqualTo(credentialRecord);

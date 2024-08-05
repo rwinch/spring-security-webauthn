@@ -29,7 +29,7 @@ public class PublicKeyCredential<R extends AuthenticatorResponse> {
 
 	private final PublicKeyCredentialType type;
 
-	private final Base64Url rawId;
+	private final Bytes rawId;
 
 	private final R response;
 
@@ -38,7 +38,7 @@ public class PublicKeyCredential<R extends AuthenticatorResponse> {
 	private final AuthenticationExtensionsClientOutputs clientExtensionResults;
 
 
-	private PublicKeyCredential(String id, PublicKeyCredentialType type, Base64Url rawId, R response, AuthenticatorAttachment authenticatorAttachment, AuthenticationExtensionsClientOutputs clientExtensionResults) {
+	private PublicKeyCredential(String id, PublicKeyCredentialType type, Bytes rawId, R response, AuthenticatorAttachment authenticatorAttachment, AuthenticationExtensionsClientOutputs clientExtensionResults) {
 		this.id = id;
 		this.type = type;
 		this.rawId = rawId;
@@ -71,7 +71,7 @@ public class PublicKeyCredential<R extends AuthenticatorResponse> {
 	 * identifier.
 	 * @return the raw id
 	 */
-	public Base64Url getRawId() {
+	public Bytes getRawId() {
 		return this.rawId;
 	}
 
@@ -123,7 +123,7 @@ public class PublicKeyCredential<R extends AuthenticatorResponse> {
 	public static final class PublicKeyCredentialBuilder<R extends AuthenticatorResponse> {
 		private String id;
 		private PublicKeyCredentialType type;
-		private Base64Url rawId;
+		private Bytes rawId;
 		private R response;
 		private AuthenticatorAttachment authenticatorAttachment;
 		private AuthenticationExtensionsClientOutputs clientExtensionResults;
@@ -156,7 +156,7 @@ public class PublicKeyCredential<R extends AuthenticatorResponse> {
 		 * @param rawId the raw id
 		 * @return the PublicKeyCredentialBuilder
 		 */
-		public PublicKeyCredentialBuilder rawId(Base64Url rawId) {
+		public PublicKeyCredentialBuilder rawId(Bytes rawId) {
 			this.rawId = rawId;
 			return this;
 		}

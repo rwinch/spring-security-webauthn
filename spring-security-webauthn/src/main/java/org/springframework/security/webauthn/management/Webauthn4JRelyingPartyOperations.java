@@ -152,7 +152,7 @@ public class Webauthn4JRelyingPartyOperations implements WebAuthnRelyingPartyOpe
 				.attestation(AttestationConveyancePreference.DIRECT)
 				.pubKeyCredParams(PublicKeyCredentialParameters.EdDSA, PublicKeyCredentialParameters.ES256, PublicKeyCredentialParameters.RS256)
 				.authenticatorSelection(authenticatorSelection)
-				.challenge(Base64Url.random())
+				.challenge(Bytes.random())
 				.extensions(clientInputs)
 				.timeout(Duration.ofMinutes(5))
 				.user(userEntity)
@@ -166,7 +166,7 @@ public class Webauthn4JRelyingPartyOperations implements WebAuthnRelyingPartyOpe
 	private static List<PublicKeyCredentialDescriptor> credentialDescriptors(List<CredentialRecord> credentialRecords) {
 		List result = new ArrayList();
 		for (CredentialRecord credentialRecord : credentialRecords) {
-			Base64Url id = Base64Url.fromBase64(credentialRecord.getCredentialId().getBytesAsBase64());
+			Bytes id = Bytes.fromBase64(credentialRecord.getCredentialId().toBase64UrlString());
 			PublicKeyCredentialDescriptor credentialDescriptor = PublicKeyCredentialDescriptor.builder()
 					.id(id)
 					.transports(credentialRecord.getTransports())
@@ -184,7 +184,7 @@ public class Webauthn4JRelyingPartyOperations implements WebAuthnRelyingPartyOpe
 
 		PublicKeyCredentialUserEntity userEntity = ImmutablePublicKeyCredentialUserEntity.builder()
 				.displayName(username)
-				.id(Base64Url.random())
+				.id(Bytes.random())
 				.name(username)
 				.build();
 		this.userEntities.save(userEntity);
@@ -194,7 +194,7 @@ public class Webauthn4JRelyingPartyOperations implements WebAuthnRelyingPartyOpe
 	@Override
 	public CredentialRecord registerCredential(RelyingPartyRegistrationRequest rpRegistrationRequest) {
 		Assert.notNull(rpRegistrationRequest, "rpRegistrationRequest cannot be null");
-		Base64Url credentialId = rpRegistrationRequest.getPublicKey().getCredential().getRawId();
+		Bytes credentialId = rpRegistrationRequest.getPublicKey().getCredential().getRawId();
 		CredentialRecord existingCredential = this.userCredentials.findByCredentialId(credentialId);
 		if (existingCredential != null) {
 			throw new IllegalArgumentException("Credential with id " + credentialId + " already exists");
@@ -277,7 +277,7 @@ public class Webauthn4JRelyingPartyOperations implements WebAuthnRelyingPartyOpe
 		List<CredentialRecord> credentialRecords = this.userCredentials.findByUserId(userEntity.getId());
 		return PublicKeyCredentialRequestOptions.builder()
 				.allowCredentials(credentialDescriptors(credentialRecords))
-				.challenge(Base64Url.random())
+				.challenge(Bytes.random())
 				.rpId(this.rp.getId())
 				.timeout(Duration.ofMinutes(5))
 				.userVerification(UserVerificationRequirement.PREFERRED)
@@ -289,7 +289,7 @@ public class Webauthn4JRelyingPartyOperations implements WebAuthnRelyingPartyOpe
 	public PublicKeyCredentialUserEntity authenticate(RelyingPartyAuthenticationRequest request) {
 		PublicKeyCredentialRequestOptions requestOptions = request.getRequestOptions();
 		AuthenticatorAssertionResponse assertionResponse = request.getPublicKey().getResponse();
-		Base64Url keyId = request.getPublicKey().getRawId();
+		Bytes keyId = request.getPublicKey().getRawId();
 		CredentialRecord credentialRecord = this.userCredentials.findByCredentialId(keyId);
 
 		CborConverter cborConverter = this.objectConverter.getCborConverter();

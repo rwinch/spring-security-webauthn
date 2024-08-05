@@ -31,7 +31,7 @@ import java.util.function.Consumer;
  * @author Rob Winch
  */
 public class PublicKeyCredentialRequestOptions {
-	private final Base64Url challenge;
+	private final Bytes challenge;
 
 	// FIXME: a null timeout is being rendered. Should we forbid null or should we not render null.
 	private final Duration timeout;
@@ -45,7 +45,7 @@ public class PublicKeyCredentialRequestOptions {
 
 	private final AuthenticationExtensionsClientInputs extensions;
 
-	private PublicKeyCredentialRequestOptions(Base64Url challenge, Duration timeout, String rpId, List<PublicKeyCredentialDescriptor> allowCredentials, UserVerificationRequirement userVerification, AuthenticationExtensionsClientInputs extensions) {
+	private PublicKeyCredentialRequestOptions(Bytes challenge, Duration timeout, String rpId, List<PublicKeyCredentialDescriptor> allowCredentials, UserVerificationRequirement userVerification, AuthenticationExtensionsClientInputs extensions) {
 		this.challenge = challenge;
 		this.timeout = timeout;
 		this.rpId = rpId;
@@ -60,7 +60,7 @@ public class PublicKeyCredentialRequestOptions {
 	 * authentication assertion.
 	 * @return the challenge
 	 */
-	public Base64Url getChallenge() {
+	public Bytes getChallenge() {
 		return this.challenge;
 	}
 
@@ -128,7 +128,7 @@ public class PublicKeyCredentialRequestOptions {
 	 * @author Rob Winch
 	 */
 	public static final class PublicKeyCredentialRequestOptionsBuilder {
-		private Base64Url challenge;
+		private Bytes challenge;
 		private Duration timeout;
 		private String rpId;
 		private List<PublicKeyCredentialDescriptor> allowCredentials = Collections.emptyList();
@@ -143,7 +143,7 @@ public class PublicKeyCredentialRequestOptions {
 		 * @param challenge the challenge
 		 * @return the {@link PublicKeyCredentialRequestOptionsBuilder}
 		 */
-		public PublicKeyCredentialRequestOptionsBuilder challenge(Base64Url challenge) {
+		public PublicKeyCredentialRequestOptionsBuilder challenge(Bytes challenge) {
 			this.challenge = challenge;
 			return this;
 		}

@@ -20,13 +20,15 @@ package org.springframework.security.webauthn.api;
 import org.springframework.util.Assert;
 
 import java.security.SecureRandom;
+import java.util.Arrays;
 import java.util.Base64;
 
 /**
- * Represents a Base64 URL encoded String.
- * FIXME: Consider a new name it contains bytes that are raw and can be encoded as Base64 URL String
+ * An object representation of byte[].
+ * @since 6.4
+ * @author Rob Winch
  */
-public class Base64Url {
+public final class Bytes {
 
 	private static final SecureRandom RANDOM = new SecureRandom();
 
@@ -40,7 +42,7 @@ public class Base64Url {
 	 * Creates a new instance
 	 * @param bytes the raw base64UrlString that will be encoded.
 	 */
-	public Base64Url(byte[] bytes) {
+	public Bytes(byte[] bytes) {
 		Assert.notNull(bytes, "bytes cannot be null");
 		this.bytes = bytes;
 	}
@@ -50,52 +52,52 @@ public class Base64Url {
 	 * @return the bytes
 	 */
 	public byte[] getBytes() {
-		return this.bytes;
+		return Arrays.copyOf(this.bytes, this.bytes.length);
 	}
 
 	/**
 	 * Gets the bytes as Base64 URL encoded String.
 	 * @return
 	 */
-	public String getBytesAsBase64() {
+	public String toBase64UrlString() {
 		return ENCODER.encodeToString(getBytes());
 	}
 
 	@Override
 	public int hashCode() {
-		return getBytesAsBase64().hashCode();
+		return toBase64UrlString().hashCode();
 	}
 
 	public String toString() {
-		return "Base64Url[" + getBytesAsBase64() + "]";
+		return "Bytes[" + toBase64UrlString() + "]";
 	}
 
 	@Override
 	public boolean equals(Object obj) {
-		if (obj instanceof Base64Url buffer) {
-			return buffer.getBytesAsBase64().equals(getBytesAsBase64());
+		if (obj instanceof Bytes bytes) {
+			return bytes.toBase64UrlString().equals(toBase64UrlString());
 		}
 		return false;
 	}
 
 	/**
-	 * Creates a secure random Base64Url with random bytes and sufficient entropy.
-	 * @return a new secure random generated base64UrlString
+	 * Creates a secure random {@link Bytes} with random bytes and sufficient entropy.
+	 * @return a new secure random generated {@link Bytes}
 	 */
-	public static Base64Url random() {
+	public static Bytes random() {
 		byte[] bytes = new byte[32];
 		RANDOM.nextBytes(bytes);
-		return new Base64Url(bytes);
+		return new Bytes(bytes);
 	}
 
 	/**
 	 * Creates a new instance from a base64 url string.
 	 * @param base64UrlString the base64 url string
-	 * @return the {@link Base64Url}
+	 * @return the {@link Bytes}
 	 */
-	public static Base64Url fromBase64(String base64UrlString) {
+	public static Bytes fromBase64(String base64UrlString) {
 		byte[] bytes = DECODER.decode(base64UrlString);
-		return new Base64Url(bytes);
+		return new Bytes(bytes);
 	}
 
 }

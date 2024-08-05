@@ -27,7 +27,7 @@ public class TestPublicKeyCredential {
 		ImmutableAuthenticationExtensionsClientOutputs clientExtensionResults = new ImmutableAuthenticationExtensionsClientOutputs(new CredentialPropertiesOutput(false));
 		return PublicKeyCredential.builder()
 				.id("AX6nVVERrH6opMafUGn3Z9EyNEy6cftfBKV_2YxYl1jdW8CSJxMKGXFV3bnrKTiMSJeInkG7C6B2lPt8E5i3KaM")
-				.rawId(Base64Url.fromBase64("AX6nVVERrH6opMafUGn3Z9EyNEy6cftfBKV_2YxYl1jdW8CSJxMKGXFV3bnrKTiMSJeInkG7C6B2lPt8E5i3KaM"))
+				.rawId(Bytes.fromBase64("AX6nVVERrH6opMafUGn3Z9EyNEy6cftfBKV_2YxYl1jdW8CSJxMKGXFV3bnrKTiMSJeInkG7C6B2lPt8E5i3KaM"))
 				.response(response)
 				.type(PublicKeyCredentialType.PUBLIC_KEY)
 				.clientExtensionResults(clientExtensionResults);

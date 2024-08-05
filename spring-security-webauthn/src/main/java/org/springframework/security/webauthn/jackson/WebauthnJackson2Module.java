@@ -20,8 +20,7 @@ import com.fasterxml.jackson.core.Version;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import org.springframework.security.webauthn.api.AuthenticatorAssertionResponse;
 import org.springframework.security.webauthn.api.PublicKeyCredentialRequestOptions;
-import org.springframework.security.webauthn.api.Base64Url;
-import org.springframework.security.webauthn.api.Base64Url;
+import org.springframework.security.webauthn.api.Bytes;
 import org.springframework.security.webauthn.api.*;
 import org.springframework.security.webauthn.management.RelyingPartyPublicKey;
 
@@ -43,7 +42,7 @@ public class WebauthnJackson2Module extends SimpleModule {
 
 	@Override
 	public void setupModule(SetupContext context) {
-		context.setMixInAnnotations(Base64Url.class, Base64UrlMixin.class);
+		context.setMixInAnnotations(Bytes.class, BytesMixin.class);
 		context.setMixInAnnotations(AttestationConveyancePreference.class, AttestationConveyancePreferenceMixin.class);
 		context.setMixInAnnotations(AuthenticationExtensionsClientInputs.class, AuthenticationExtensionsClientInputsMixin.class);
 		context.setMixInAnnotations(AuthenticationExtensionsClientOutputs.class, AuthenticationExtensionsClientOutputsMixin.class);

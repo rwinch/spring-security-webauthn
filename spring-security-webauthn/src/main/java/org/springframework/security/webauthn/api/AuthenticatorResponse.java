@@ -26,13 +26,13 @@ package org.springframework.security.webauthn.api;
  */
 abstract class AuthenticatorResponse {
 
-	private final Base64Url clientDataJSON;
+	private final Bytes clientDataJSON;
 
 	/**
 	 * Creates a new instance
 	 * @param clientDataJSON the {@link #getClientDataJSON()}
 	 */
-	protected AuthenticatorResponse(Base64Url clientDataJSON) {
+	protected AuthenticatorResponse(Bytes clientDataJSON) {
 		this.clientDataJSON = clientDataJSON;
 	}
 
@@ -43,7 +43,7 @@ abstract class AuthenticatorResponse {
 	 * authenticator).
 	 * @return the client data JSON
 	 */
-	public Base64Url getClientDataJSON() {
+	public Bytes getClientDataJSON() {
 		return this.clientDataJSON;
 	}
 

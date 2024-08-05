@@ -16,7 +16,7 @@
 
 package org.springframework.security.webauthn.management;
 
-import org.springframework.security.webauthn.api.Base64Url;
+import org.springframework.security.webauthn.api.Bytes;
 import org.springframework.security.webauthn.api.PublicKeyCredentialUserEntity;
 
 /**
@@ -32,7 +32,7 @@ public interface PublicKeyCredentialUserEntityRepository {
 	 * @param id the id to lookup the username by
 	 * @return the username or null if not found.
 	 */
-	PublicKeyCredentialUserEntity findById(Base64Url id);
+	PublicKeyCredentialUserEntity findById(Bytes id);
 
 	/**
 	 * Finds the {@link PublicKeyCredentialUserEntity} by the username.
@@ -48,5 +48,5 @@ public interface PublicKeyCredentialUserEntityRepository {
 	 */
 	void save(PublicKeyCredentialUserEntity userEntity);
 
-	void delete(Base64Url id);
+	void delete(Bytes id);
 }

@@ -158,7 +158,7 @@ class PublicKeyCredentialCreationOptionsFilterTests {
 	void doFilterWhenExcludeCredentialsThenIncludedInResponse() throws Exception {
 		PublicKeyCredentialDescriptor credentialDescriptor = PublicKeyCredentialDescriptor.builder()
 			.transports(AuthenticatorTransport.HYBRID)
-			.id(Base64Url.fromBase64("ChfoCM8CJA_wwUGDdzdtuw"))
+			.id(Bytes.fromBase64("ChfoCM8CJA_wwUGDdzdtuw"))
 			.build();
 		PublicKeyCredentialCreationOptions options = TestPublicKeyCredentialCreationOptions
 			.createPublicKeyCredentialCreationOptions()

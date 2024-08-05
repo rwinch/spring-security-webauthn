@@ -158,11 +158,11 @@ class WebAuthnAuthenticationFilterTests {
 		PublicKeyCredential<AuthenticatorAssertionResponse> publicKey = authnRequest.getPublicKey();
 		AuthenticatorAssertionResponse assertionResponse = publicKey.getResponse();
 		assertThat(publicKey.getId()).isEqualTo("dYF7EGnRFFIXkpXi9XU2wg");
-		assertThat(publicKey.getRawId().getBytesAsBase64()).isEqualTo("dYF7EGnRFFIXkpXi9XU2wg");
-		assertThat(assertionResponse.getAuthenticatorData().getBytesAsBase64()).isEqualTo("y9GqwTRaMpzVDbXq1dyEAXVOxrou08k22ggRC45MKNgdAAAAAA");
-		assertThat(assertionResponse.getClientDataJSON().getBytesAsBase64()).isEqualTo("eyJ0eXBlIjoid2ViYXV0aG4uZ2V0IiwiY2hhbGxlbmdlIjoiRFVsRzRDbU9naWhKMG1vdXZFcE9HdUk0ZVJ6MGRRWmxUQmFtbjdHQ1FTNCIsIm9yaWdpbiI6Imh0dHBzOi8vZXhhbXBsZS5sb2NhbGhvc3Q6ODQ0MyIsImNyb3NzT3JpZ2luIjpmYWxzZX0");
-		assertThat(assertionResponse.getSignature().getBytesAsBase64()).isEqualTo("MEYCIQCW2BcUkRCAXDmGxwMi78jknenZ7_amWrUJEYoTkweldAIhAMD0EMp1rw2GfwhdrsFIeDsL7tfOXVPwOtfqJntjAo4z");
-		assertThat(assertionResponse.getUserHandle().getBytesAsBase64()).isEqualTo("Q3_0Xd64_HW0BlKRAJnVagJTpLKLgARCj8zjugpRnVo");
+		assertThat(publicKey.getRawId().toBase64UrlString()).isEqualTo("dYF7EGnRFFIXkpXi9XU2wg");
+		assertThat(assertionResponse.getAuthenticatorData().toBase64UrlString()).isEqualTo("y9GqwTRaMpzVDbXq1dyEAXVOxrou08k22ggRC45MKNgdAAAAAA");
+		assertThat(assertionResponse.getClientDataJSON().toBase64UrlString()).isEqualTo("eyJ0eXBlIjoid2ViYXV0aG4uZ2V0IiwiY2hhbGxlbmdlIjoiRFVsRzRDbU9naWhKMG1vdXZFcE9HdUk0ZVJ6MGRRWmxUQmFtbjdHQ1FTNCIsIm9yaWdpbiI6Imh0dHBzOi8vZXhhbXBsZS5sb2NhbGhvc3Q6ODQ0MyIsImNyb3NzT3JpZ2luIjpmYWxzZX0");
+		assertThat(assertionResponse.getSignature().toBase64UrlString()).isEqualTo("MEYCIQCW2BcUkRCAXDmGxwMi78jknenZ7_amWrUJEYoTkweldAIhAMD0EMp1rw2GfwhdrsFIeDsL7tfOXVPwOtfqJntjAo4z");
+		assertThat(assertionResponse.getUserHandle().toBase64UrlString()).isEqualTo("Q3_0Xd64_HW0BlKRAJnVagJTpLKLgARCj8zjugpRnVo");
 		assertThat(publicKey.getClientExtensionResults().getOutputs()).isEmpty();
 		assertThat(authnRequest.getRequestOptions()).isEqualTo(options);
 		// FIXME: assert authenticatorAttachment: platform but does not exist on publicKey

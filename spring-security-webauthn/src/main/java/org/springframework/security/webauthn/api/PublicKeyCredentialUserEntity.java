@@ -41,7 +41,7 @@ public interface PublicKeyCredentialUserEntity extends Principal {
 	 *
 	 * @return the user handle of the user account
 	 */
-	Base64Url getId();
+	Bytes getId();
 
 	/**
 	 * The <a href="https://www.w3.org/TR/webauthn-3/#dom-publickeycredentialuserentity-displayname">displayName</a> is

@@ -22,7 +22,7 @@ public class TestPublicKeyCredentialUserEntity {
 	public static PublicKeyCredentialUserEntityBuilder userEntity() {
 		return ImmutablePublicKeyCredentialUserEntity.builder()
 				.name("user")
-				.id(Base64Url.random())
+				.id(Bytes.random())
 				.displayName("user");
 	}
 }

@@ -106,7 +106,7 @@ public class DefaultWebAuthnRegistrationPageGeneratingFilter extends OncePerRequ
 			context.put("created", credential.getCreated());
 			context.put("lastUsed", credential.getLastUsed());
 			context.put("signatureCount", credential.getSignatureCount());
-			context.put("credentialId", credential.getCredentialId().getBytesAsBase64());
+			context.put("credentialId", credential.getCredentialId().toBase64UrlString());
 			html += processTemplate(PASSKEY_ROW_TEMPLATE, context);
 		}
 		return html;

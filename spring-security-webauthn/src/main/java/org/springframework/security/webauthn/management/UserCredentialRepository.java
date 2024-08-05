@@ -16,7 +16,7 @@
 
 package org.springframework.security.webauthn.management;
 
-import org.springframework.security.webauthn.api.Base64Url;
+import org.springframework.security.webauthn.api.Bytes;
 import org.springframework.security.webauthn.api.PublicKeyCredentialUserEntity;
 
 import java.util.List;
@@ -32,7 +32,7 @@ public interface UserCredentialRepository {
 	 * Deletes an entry by credential id
 	 * @param credentialId {@link CredentialRecord#getCredentialId()}
 	 */
-	void delete(Base64Url credentialId);
+	void delete(Bytes credentialId);
 
 	/**
 	 * Saves a {@link CredentialRecord}
@@ -45,7 +45,7 @@ public interface UserCredentialRepository {
 	 * @param credentialId {@link CredentialRecord#getCredentialId()}
 	 * @return the {@link CredentialRecord} or null if not found.
 	 */
-	CredentialRecord findByCredentialId(Base64Url credentialId);
+	CredentialRecord findByCredentialId(Bytes credentialId);
 
 	/**
 	 * Finds all {@link CredentialRecord} instances for a specific user.
@@ -53,6 +53,6 @@ public interface UserCredentialRepository {
 	 * @return all {@link CredentialRecord} instances for a specific user or empty if no results found. Never null.
 	 * @see PublicKeyCredentialUserEntityRepository
 	 */
-	List<CredentialRecord> findByUserId(Base64Url userId);
+	List<CredentialRecord> findByUserId(Bytes userId);
 
 }

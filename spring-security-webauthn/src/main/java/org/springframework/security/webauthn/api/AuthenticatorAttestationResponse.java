@@ -30,20 +30,20 @@ import java.util.List;
  */
 public class AuthenticatorAttestationResponse extends AuthenticatorResponse {
 
-	private final Base64Url attestationObject;
+	private final Bytes attestationObject;
 
 	private final List<AuthenticatorTransport> transports;
 
 	/**
 	 * FIXME: This is computed from the attestationObject. Needs to be an interface so that can be computed or injected
 	 */
-	private final Base64Url authenticatorData;
+	private final Bytes authenticatorData;
 
-	private final Base64Url publicKey;
+	private final Bytes publicKey;
 
 	private final COSEAlgorithmIdentifier publicKeyAlgorithm;
 
-	private AuthenticatorAttestationResponse(Base64Url clientDataJSON, Base64Url attestationObject, List<AuthenticatorTransport> transports, Base64Url authenticatorData, Base64Url publicKey, COSEAlgorithmIdentifier publicKeyAlgorithm) {
+	private AuthenticatorAttestationResponse(Bytes clientDataJSON, Bytes attestationObject, List<AuthenticatorTransport> transports, Bytes authenticatorData, Bytes publicKey, COSEAlgorithmIdentifier publicKeyAlgorithm) {
 		super(clientDataJSON);
 		this.attestationObject = attestationObject;
 		this.transports = transports;
@@ -58,7 +58,7 @@ public class AuthenticatorAttestationResponse extends AuthenticatorResponse {
 	 * by, the client.
 	 * @return the attestationObject
 	 */
-	public Base64Url getAttestationObject() {
+	public Bytes getAttestationObject() {
 		return this.attestationObject;
 	}
 
@@ -77,7 +77,7 @@ public class AuthenticatorAttestationResponse extends AuthenticatorResponse {
 	 * <a href="https://www.w3.org/TR/webauthn-3/#sctn-public-key-easy">5.2.1.1 Easily accessing credential data</a>.
 	 * @return the authenticatorData
 	 */
-	public Base64Url getAuthenticatorData() {
+	public Bytes getAuthenticatorData() {
 		return this.authenticatorData;
 	}
 
@@ -87,7 +87,7 @@ public class AuthenticatorAttestationResponse extends AuthenticatorResponse {
 	 * credential, or null if this is not available.
 	 * @return the publicKey
 	 */
-	public Base64Url getPublicKey() {
+	public Bytes getPublicKey() {
 		return this.publicKey;
 	}
 
@@ -115,12 +115,12 @@ public class AuthenticatorAttestationResponse extends AuthenticatorResponse {
 	 * @author Rob Winch
 	 */
 	public static final class AuthenticatorAttestationResponseBuilder {
-		private Base64Url attestationObject;
+		private Bytes attestationObject;
 		private List<AuthenticatorTransport> transports;
-		private Base64Url authenticatorData;
-		private Base64Url publicKey;
+		private Bytes authenticatorData;
+		private Bytes publicKey;
 		private COSEAlgorithmIdentifier publicKeyAlgorithm;
-		private Base64Url clientDataJSON;
+		private Bytes clientDataJSON;
 
 		private AuthenticatorAttestationResponseBuilder() {
 		}
@@ -131,7 +131,7 @@ public class AuthenticatorAttestationResponse extends AuthenticatorResponse {
 		 * @param attestationObject the attestation object.
 		 * @return the {@link AuthenticatorAttestationResponseBuilder}
 		 */
-		public AuthenticatorAttestationResponseBuilder attestationObject(Base64Url attestationObject) {
+		public AuthenticatorAttestationResponseBuilder attestationObject(Bytes attestationObject) {
 			this.attestationObject = attestationObject;
 			return this;
 		}
@@ -163,7 +163,7 @@ public class AuthenticatorAttestationResponse extends AuthenticatorResponse {
 		 * @param authenticatorData the authenticator data.
 		 * @return  the {@link AuthenticatorAttestationResponseBuilder}
 		 */
-		public AuthenticatorAttestationResponseBuilder authenticatorData(Base64Url authenticatorData) {
+		public AuthenticatorAttestationResponseBuilder authenticatorData(Bytes authenticatorData) {
 			this.authenticatorData = authenticatorData;
 			return this;
 		}
@@ -174,7 +174,7 @@ public class AuthenticatorAttestationResponse extends AuthenticatorResponse {
 		 * @param publicKey the public key.
 		 * @return the {@link AuthenticatorAttestationResponseBuilder}
 		 */
-		public AuthenticatorAttestationResponseBuilder publicKey(Base64Url publicKey) {
+		public AuthenticatorAttestationResponseBuilder publicKey(Bytes publicKey) {
 			this.publicKey = publicKey;
 			return this;
 		}
@@ -194,7 +194,7 @@ public class AuthenticatorAttestationResponse extends AuthenticatorResponse {
 		 * @param clientDataJSON the client data JSON.
 		 * @return the {@link AuthenticatorAttestationResponseBuilder}
 		 */
-		public AuthenticatorAttestationResponseBuilder clientDataJSON(Base64Url clientDataJSON) {
+		public AuthenticatorAttestationResponseBuilder clientDataJSON(Bytes clientDataJSON) {
 			this.clientDataJSON = clientDataJSON;
 			return this;
 		}

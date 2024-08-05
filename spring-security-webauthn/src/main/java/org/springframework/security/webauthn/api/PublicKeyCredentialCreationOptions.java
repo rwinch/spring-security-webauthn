@@ -38,7 +38,7 @@ public class PublicKeyCredentialCreationOptions {
 
 	private final PublicKeyCredentialUserEntity user;
 
-	private final Base64Url challenge;
+	private final Bytes challenge;
 
 	private final List<PublicKeyCredentialParameters> pubKeyCredParams;
 
@@ -52,7 +52,7 @@ public class PublicKeyCredentialCreationOptions {
 
 	private final AuthenticationExtensionsClientInputs extensions;
 
-	private PublicKeyCredentialCreationOptions(PublicKeyCredentialRpEntity rp, PublicKeyCredentialUserEntity user, Base64Url challenge, List<PublicKeyCredentialParameters> pubKeyCredParams, Duration timeout, List<PublicKeyCredentialDescriptor> excludeCredentials, AuthenticatorSelectionCriteria authenticatorSelection, AttestationConveyancePreference attestation, AuthenticationExtensionsClientInputs extensions) {
+	private PublicKeyCredentialCreationOptions(PublicKeyCredentialRpEntity rp, PublicKeyCredentialUserEntity user, Bytes challenge, List<PublicKeyCredentialParameters> pubKeyCredParams, Duration timeout, List<PublicKeyCredentialDescriptor> excludeCredentials, AuthenticatorSelectionCriteria authenticatorSelection, AttestationConveyancePreference attestation, AuthenticationExtensionsClientInputs extensions) {
 		this.rp = rp;
 		this.user = user;
 		this.challenge = challenge;
@@ -88,7 +88,7 @@ public class PublicKeyCredentialCreationOptions {
 	 * for the newly created credential.
 	 * @return the challenge
 	 */
-	public Base64Url getChallenge() {
+	public Bytes getChallenge() {
 		return this.challenge;
 	}
 
@@ -166,7 +166,7 @@ public class PublicKeyCredentialCreationOptions {
 	public static final class PublicKeyCredentialCreationOptionsBuilder {
 		private PublicKeyCredentialRpEntity rp;
 		private PublicKeyCredentialUserEntity user;
-		private Base64Url challenge;
+		private Bytes challenge;
 		private List<PublicKeyCredentialParameters> pubKeyCredParams = new ArrayList<>();
 		private Duration timeout;
 		private List<PublicKeyCredentialDescriptor> excludeCredentials = new ArrayList<>();
@@ -202,7 +202,7 @@ public class PublicKeyCredentialCreationOptions {
 		 * @param challenge the challenge
 		 * @return the PublicKeyCredentialCreationOptionsBuilder
 		 */
-		public PublicKeyCredentialCreationOptionsBuilder challenge(Base64Url challenge) {
+		public PublicKeyCredentialCreationOptionsBuilder challenge(Bytes challenge) {
 			this.challenge = challenge;
 			return this;
 		}

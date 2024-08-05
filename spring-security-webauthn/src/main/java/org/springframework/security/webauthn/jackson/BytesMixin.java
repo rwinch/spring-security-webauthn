@@ -16,29 +16,19 @@
 
 package org.springframework.security.webauthn.jackson;
 
-import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.databind.SerializerProvider;
-import com.fasterxml.jackson.databind.ser.std.StdSerializer;
-import org.springframework.security.webauthn.api.Base64Url;
-
-import java.io.IOException;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import org.springframework.security.webauthn.api.Bytes;
 
 /**
- * Jackson serializer for {@link Base64Url}
+ * Jackson mixin for {@link Bytes}
  * @since 6.4
  * @author Rob Winch
  */
-class Base64Serializer extends StdSerializer<Base64Url> {
-
-	/**
-	 * Creates a new instance.
-	 */
-	Base64Serializer() {
-		super(Base64Url.class);
-	}
-
-	@Override
-	public void serialize(Base64Url base64Url, JsonGenerator jgen, SerializerProvider provider) throws IOException {
-		jgen.writeString(base64Url.getBytesAsBase64());
+@JsonSerialize(using = BytesSerializer.class)
+class BytesMixin {
+	@JsonCreator
+	public static Bytes fromBase64(String value) {
+		return Bytes.fromBase64(value);
 	}
 }

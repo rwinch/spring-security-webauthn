@@ -19,7 +19,7 @@ package org.springframework.security.webauthn.management;
 import java.time.Instant;
 import java.util.List;
 
-import org.springframework.security.webauthn.api.Base64Url;
+import org.springframework.security.webauthn.api.Bytes;
 import org.springframework.security.webauthn.api.AuthenticatorTransport;
 import org.springframework.security.webauthn.api.PublicKeyCredentialType;
 
@@ -32,9 +32,9 @@ public class ImmutableCredentialRecord implements CredentialRecord {
 
 	private final PublicKeyCredentialType credentialType;
 
-	private final Base64Url credentialId;
+	private final Bytes credentialId;
 
-	private final Base64Url userEntityUserId;
+	private final Bytes userEntityUserId;
 
 	private final PublicKeyCose publicKey;
 
@@ -48,9 +48,9 @@ public class ImmutableCredentialRecord implements CredentialRecord {
 
 	private final boolean backupState;
 
-	private final Base64Url attestationObject;
+	private final Bytes attestationObject;
 
-	private final Base64Url attestationClientDataJSON;
+	private final Bytes attestationClientDataJSON;
 
 	private final Instant created;
 
@@ -58,7 +58,7 @@ public class ImmutableCredentialRecord implements CredentialRecord {
 
 	private final String label;
 
-	private ImmutableCredentialRecord(PublicKeyCredentialType credentialType, Base64Url credentialId, Base64Url userEntityUserId, PublicKeyCose publicKey, long signatureCount, boolean uvInitialized, List<AuthenticatorTransport> transports, boolean backupEligible, boolean backupState, Base64Url attestationObject, Base64Url attestationClientDataJSON, Instant created, Instant lastUsed, String label) {
+	private ImmutableCredentialRecord(PublicKeyCredentialType credentialType, Bytes credentialId, Bytes userEntityUserId, PublicKeyCose publicKey, long signatureCount, boolean uvInitialized, List<AuthenticatorTransport> transports, boolean backupEligible, boolean backupState, Bytes attestationObject, Bytes attestationClientDataJSON, Instant created, Instant lastUsed, String label) {
 		this.credentialType = credentialType;
 		this.credentialId = credentialId;
 		this.userEntityUserId = userEntityUserId;
@@ -81,12 +81,12 @@ public class ImmutableCredentialRecord implements CredentialRecord {
 	}
 
 	@Override
-	public Base64Url getCredentialId() {
+	public Bytes getCredentialId() {
 		return this.credentialId;
 	}
 
 	@Override
-	public Base64Url getUserEntityUserId() {
+	public Bytes getUserEntityUserId() {
 		return this.userEntityUserId;
 	}
 
@@ -121,12 +121,12 @@ public class ImmutableCredentialRecord implements CredentialRecord {
 	}
 
 	@Override
-	public Base64Url getAttestationObject() {
+	public Bytes getAttestationObject() {
 		return this.attestationObject;
 	}
 
 	@Override
-	public Base64Url getAttestationClientDataJSON() {
+	public Bytes getAttestationClientDataJSON() {
 		return this.attestationClientDataJSON;
 	}
 
@@ -155,16 +155,16 @@ public class ImmutableCredentialRecord implements CredentialRecord {
 
 	public static final class ImmutableCredentialRecordBuilder {
 		private PublicKeyCredentialType credentialType;
-		private Base64Url credentialId;
-		private Base64Url userEntityUserId;
+		private Bytes credentialId;
+		private Bytes userEntityUserId;
 		private PublicKeyCose publicKey;
 		private long signatureCount;
 		private boolean uvInitialized;
 		private List<AuthenticatorTransport> transports;
 		private boolean backupEligible;
 		private boolean backupState;
-		private Base64Url attestationObject;
-		private Base64Url attestationClientDataJSON;
+		private Bytes attestationObject;
+		private Bytes attestationClientDataJSON;
 		private Instant created = Instant.now();
 		private Instant lastUsed = this.created;
 		private String label;
@@ -195,12 +195,12 @@ public class ImmutableCredentialRecord implements CredentialRecord {
 			return this;
 		}
 
-		public ImmutableCredentialRecordBuilder credentialId(Base64Url credentialId) {
+		public ImmutableCredentialRecordBuilder credentialId(Bytes credentialId) {
 			this.credentialId = credentialId;
 			return this;
 		}
 
-		public ImmutableCredentialRecordBuilder userEntityUserId(Base64Url userEntityUserId) {
+		public ImmutableCredentialRecordBuilder userEntityUserId(Bytes userEntityUserId) {
 			this.userEntityUserId = userEntityUserId;
 			return this;
 		}
@@ -235,12 +235,12 @@ public class ImmutableCredentialRecord implements CredentialRecord {
 			return this;
 		}
 
-		public ImmutableCredentialRecordBuilder attestationObject(Base64Url attestationObject) {
+		public ImmutableCredentialRecordBuilder attestationObject(Bytes attestationObject) {
 			this.attestationObject = attestationObject;
 			return this;
 		}
 
-		public ImmutableCredentialRecordBuilder attestationClientDataJSON(Base64Url attestationClientDataJSON) {
+		public ImmutableCredentialRecordBuilder attestationClientDataJSON(Bytes attestationClientDataJSON) {
 			this.attestationClientDataJSON = attestationClientDataJSON;
 			return this;
 		}

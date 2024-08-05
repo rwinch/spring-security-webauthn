@@ -16,7 +16,7 @@
 
 package org.springframework.security.webauthn.management;
 
-import org.springframework.security.webauthn.api.Base64Url;
+import org.springframework.security.webauthn.api.Bytes;
 import org.springframework.security.webauthn.api.PublicKeyCredentialUserEntity;
 import org.springframework.util.Assert;
 
@@ -32,10 +32,10 @@ public class MapPublicKeyCredentialUserEntityRepository implements PublicKeyCred
 
 	private final Map<String, PublicKeyCredentialUserEntity> usernameToUserEntity = new HashMap<>();
 
-	private final Map<Base64Url, PublicKeyCredentialUserEntity> idToUserEntity = new HashMap<>();
+	private final Map<Bytes, PublicKeyCredentialUserEntity> idToUserEntity = new HashMap<>();
 
 	@Override
-	public PublicKeyCredentialUserEntity findById(Base64Url id) {
+	public PublicKeyCredentialUserEntity findById(Bytes id) {
 		Assert.notNull(id, "id cannot be null");
 		return this.idToUserEntity.get(id);
 	}
@@ -56,7 +56,7 @@ public class MapPublicKeyCredentialUserEntityRepository implements PublicKeyCred
 	}
 
 	@Override
-	public void delete(Base64Url id) {
+	public void delete(Bytes id) {
 		PublicKeyCredentialUserEntity existing = this.idToUserEntity.remove(id);
 		if (existing != null) {
 			this.usernameToUserEntity.remove(existing.getName());

@@ -57,7 +57,7 @@ public class ImmutablePublicKeyCredentialUserEntity implements PublicKeyCredenti
 	 * credentials, because some authenticators always create discoverable credentials. Thus a constant user handle
 	 * would prevent a user from using such an authenticator with more than one account at the Relying Party.
 	 */
-	private final Base64Url id;
+	private final Bytes id;
 
 	/**
 	 * A human-palatable name for the user account, intended only for display. For example, "Alex Müller" or "田中倫".
@@ -83,7 +83,7 @@ public class ImmutablePublicKeyCredentialUserEntity implements PublicKeyCredenti
 	 */
 	private final String displayName;
 
-	private ImmutablePublicKeyCredentialUserEntity(String name, Base64Url id, String displayName) {
+	private ImmutablePublicKeyCredentialUserEntity(String name, Bytes id, String displayName) {
 		this.name = name;
 		this.id = id;
 		this.displayName = displayName;
@@ -95,7 +95,7 @@ public class ImmutablePublicKeyCredentialUserEntity implements PublicKeyCredenti
 	}
 
 	@Override
-	public Base64Url getId() {
+	public Bytes getId() {
 		return this.id;
 	}
 
@@ -119,7 +119,7 @@ public class ImmutablePublicKeyCredentialUserEntity implements PublicKeyCredenti
 	 */
 	public static final class PublicKeyCredentialUserEntityBuilder {
 		private String name;
-		private Base64Url id;
+		private Bytes id;
 		private String displayName;
 
 		private PublicKeyCredentialUserEntityBuilder() {
@@ -140,7 +140,7 @@ public class ImmutablePublicKeyCredentialUserEntity implements PublicKeyCredenti
 		 * @param id the id
 		 * @return the {@link PublicKeyCredentialUserEntityBuilder}
 		 */
-		public PublicKeyCredentialUserEntityBuilder id(Base64Url id) {
+		public PublicKeyCredentialUserEntityBuilder id(Bytes id) {
 			this.id = id;
 			return this;
 		}

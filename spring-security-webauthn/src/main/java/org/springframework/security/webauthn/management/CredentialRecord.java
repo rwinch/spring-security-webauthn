@@ -19,7 +19,7 @@ package org.springframework.security.webauthn.management;
 import java.time.Instant;
 import java.util.List;
 
-import org.springframework.security.webauthn.api.Base64Url;
+import org.springframework.security.webauthn.api.Bytes;
 import org.springframework.security.webauthn.api.AuthenticatorTransport;
 import org.springframework.security.webauthn.api.PublicKeyCredentialType;
 import org.springframework.security.webauthn.api.PublicKeyCredentialUserEntity;
@@ -44,7 +44,7 @@ public interface CredentialRecord {
 	 * @return
 	 */
 	// FIXME: Change type to CredentialId(id, rawId)
-	Base64Url getCredentialId();
+	Bytes getCredentialId();
 
 	/**
 	 * The <a href="https://www.w3.org/TR/webauthn-3/#abstract-opdef-credential-record-publickey">publicKey</a>
@@ -93,21 +93,21 @@ public interface CredentialRecord {
 	 * A reference to the associated {@link PublicKeyCredentialUserEntity#getId()}
 	 * @return
 	 */
-	Base64Url getUserEntityUserId();
+	Bytes getUserEntityUserId();
 
 	/**
 	 * The <a href="https://www.w3.org/TR/webauthn-3/#abstract-opdef-credential-record-attestationobject">attestationObject</a>
 	 * is the value of the attestationObject attribute when the public key credential source was registered.
 	 * @return the attestationObject
 	 */
-	Base64Url getAttestationObject();
+	Bytes getAttestationObject();
 
 	/**
 	 * The <a href="https://www.w3.org/TR/webauthn-3/#abstract-opdef-credential-record-attestationclientdatajson">attestationClientDataJSON</a>
 	 * is the value of the attestationObject attribute when the public key credential source was registered.
 	 * @return
 	 */
-	Base64Url getAttestationClientDataJSON();
+	Bytes getAttestationClientDataJSON();
 
 	/**
 	 * A human-readable label for this {@link CredentialRecord} assigned by the user.

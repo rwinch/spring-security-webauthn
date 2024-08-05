@@ -16,7 +16,7 @@
 
 package org.springframework.security.webauthn.management;
 
-import org.springframework.security.webauthn.api.Base64Url;
+import org.springframework.security.webauthn.api.Bytes;
 import org.springframework.util.Assert;
 
 import java.util.*;
@@ -29,16 +29,16 @@ import java.util.stream.Collectors;
  */
 public class MapUserCredentialRepository implements UserCredentialRepository {
 
-	private final Map<Base64Url, CredentialRecord> credentialIdToUserCredential = new HashMap<>();
+	private final Map<Bytes, CredentialRecord> credentialIdToUserCredential = new HashMap<>();
 
-	private final Map<Base64Url,Set<Base64Url>> userEntityIdToUserCredentialIds = new HashMap<>();
+	private final Map<Bytes,Set<Bytes>> userEntityIdToUserCredentialIds = new HashMap<>();
 
 	@Override
-	public void delete(Base64Url credentialId) {
+	public void delete(Bytes credentialId) {
 		Assert.notNull(credentialId, "credentialId cannot be null");
 		CredentialRecord credentialRecord = this.credentialIdToUserCredential.remove(credentialId);
 		if (credentialRecord != null) {
-			Set<Base64Url> credentialIds = this.userEntityIdToUserCredentialIds.get(credentialRecord.getUserEntityUserId());
+			Set<Bytes> credentialIds = this.userEntityIdToUserCredentialIds.get(credentialRecord.getUserEntityUserId());
 			if (credentialIds != null) {
 				credentialIds.remove(credentialId);
 			}
@@ -53,15 +53,15 @@ public class MapUserCredentialRepository implements UserCredentialRepository {
 	}
 
 	@Override
-	public CredentialRecord findByCredentialId(Base64Url credentialId) {
+	public CredentialRecord findByCredentialId(Bytes credentialId) {
 		Assert.notNull(credentialId, "credentialId cannot be null");
 		return this.credentialIdToUserCredential.get(credentialId);
 	}
 
 	@Override
-	public List<CredentialRecord> findByUserId(Base64Url userId) {
+	public List<CredentialRecord> findByUserId(Bytes userId) {
 		Assert.notNull(userId, "userId cannot be null");
-		Set<Base64Url> credentialIds = this.userEntityIdToUserCredentialIds.getOrDefault(userId, Collections.emptySet());
+		Set<Bytes> credentialIds = this.userEntityIdToUserCredentialIds.getOrDefault(userId, Collections.emptySet());
 		return credentialIds.stream()
 			.map(this::findByCredentialId)
 			.collect(Collectors.toUnmodifiableList());

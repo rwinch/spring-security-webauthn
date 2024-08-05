@@ -38,7 +38,7 @@ import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.webauthn.api.AuthenticatorAttestationResponse;
 import org.springframework.security.webauthn.api.AuthenticatorAttestationResponse.AuthenticatorAttestationResponseBuilder;
 import org.springframework.security.webauthn.api.AuthenticatorSelectionCriteria;
-import org.springframework.security.webauthn.api.Base64Url;
+import org.springframework.security.webauthn.api.Bytes;
 import org.springframework.security.webauthn.api.PublicKeyCredential;
 import org.springframework.security.webauthn.api.PublicKeyCredentialCreationOptions;
 import org.springframework.security.webauthn.api.PublicKeyCredentialDescriptor;
@@ -154,7 +154,7 @@ class Webauthn4jRelyingPartyOperationsTests {
 		assertThat(userEntity.getName()).isNotNull();
 		assertThat(userEntity.getDisplayName()).isNotNull();
 		// https://www.w3.org/TR/webauthn-3/#dom-publickeycredentialuserentity-id
-		Base64Url userId = userEntity.getId();
+		Bytes userId = userEntity.getId();
 		assertThat(userId).isNotNull();
 		assertThat(userId.getBytes())
 				.describedAs("user id is a maximum size of 64 bytes")
@@ -163,7 +163,7 @@ class Webauthn4jRelyingPartyOperationsTests {
 				.describedAs("we want enough entropy in the user id, so it should be at least 16 bytes")
 				.hasSizeGreaterThanOrEqualTo(16);
 
-		Base64Url challenge = creationOptions.getChallenge();
+		Bytes challenge = creationOptions.getChallenge();
 		assertThat(challenge).isNotNull();
 		byte[] challengeBytes = challenge.getBytes();
 		// https://www.w3.org/TR/webauthn-3/#sctn-cryptographic-challenges
@@ -237,7 +237,7 @@ class Webauthn4jRelyingPartyOperationsTests {
 		String invalidTypeClientDataJSON = originalClientDataJSON.replace("webauthn.create", "webauthn.INVALID");
 		AuthenticatorAttestationResponseBuilder responseBldr = TestAuthenticatorAttestationResponse
 				.createAuthenticatorAttestationResponse()
-				.clientDataJSON(new Base64Url(invalidTypeClientDataJSON.getBytes(StandardCharsets.UTF_8)));
+				.clientDataJSON(new Bytes(invalidTypeClientDataJSON.getBytes(StandardCharsets.UTF_8)));
 		PublicKeyCredential publicKey = TestPublicKeyCredential.createPublicKeyCredential(responseBldr.build())
 				.build();
 		ImmutableRelyingPartyRegistrationRequest registrationRequest = new ImmutableRelyingPartyRegistrationRequest(options, new RelyingPartyPublicKey(publicKey, this.label));
@@ -255,7 +255,7 @@ class Webauthn4jRelyingPartyOperationsTests {
 	void registerCredentialWhenCChallengeNotEqualBase64UrlEncodingOptionsChallenge() {
 		PublicKeyCredentialCreationOptions options = TestPublicKeyCredentialCreationOptions.createPublicKeyCredentialCreationOptions()
 				// change the expected challenge so it does not match
-				.challenge(Base64Url.fromBase64("h0vgwGQjoCzAzDUsmzPpk-JVIJRRgn0L4KVSYNRcEZc"))
+				.challenge(Bytes.fromBase64("h0vgwGQjoCzAzDUsmzPpk-JVIJRRgn0L4KVSYNRcEZc"))
 				.build();
 		AuthenticatorAttestationResponseBuilder responseBldr = TestAuthenticatorAttestationResponse.createAuthenticatorAttestationResponse();
 		PublicKeyCredential publicKey = TestPublicKeyCredential.createPublicKeyCredential(responseBldr.build())
@@ -453,7 +453,7 @@ class Webauthn4jRelyingPartyOperationsTests {
 		AuthenticatorData<RegistrationExtensionAuthenticatorOutput> authenticatorData = attestationObject.getAuthenticatorData();
 		boolean flagBE = authenticatorData.isFlagBE();
 		boolean flagBS = authenticatorData.isFlagBS();
-		authAttResponseBldr.attestationObject(new Base64Url(updatedAttObjBytes)).authenticatorData(new Base64Url(rawAuthData));
+		authAttResponseBldr.attestationObject(new Bytes(updatedAttObjBytes)).authenticatorData(new Bytes(rawAuthData));
 		return authAttResponseBldr.build();
 	}
 
@@ -464,7 +464,7 @@ class Webauthn4jRelyingPartyOperationsTests {
 		ObjectNode attObj = (ObjectNode) cbor.readTree(originalAttestationObjBytes);
 		JsonNodeFactory f = JsonNodeFactory.instance;
 		byte[] updatedAttObjBytes = cbor.writeValueAsBytes(attObj.setAll(Map.of("fmt", f.textNode(fmt))));
-		authAttResponseBldr.attestationObject(new Base64Url(updatedAttObjBytes));
+		authAttResponseBldr.attestationObject(new Bytes(updatedAttObjBytes));
 		return authAttResponseBldr.build();
 	}
 
