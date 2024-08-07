@@ -17,7 +17,8 @@
 package org.springframework.security.webauthn.api;
 
 /**
- * An entry in the {@link AuthenticationExtensionsClientInputs}
+ * A <a href="https://www.w3.org/TR/webauthn-3/#client-extension-input">client extension input</a> entry in the
+ * {@link AuthenticationExtensionsClientInputs}.
  *
  * @since 6.4
  * @see ImmutableAuthenticationExtensionsClientInput
