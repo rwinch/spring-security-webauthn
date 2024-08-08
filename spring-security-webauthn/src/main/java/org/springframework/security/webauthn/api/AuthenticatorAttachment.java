@@ -23,7 +23,7 @@ package org.springframework.security.webauthn.api;
  * @since 6.4
  * @author Rob Winch
  */
-public enum AuthenticatorAttachment {
+public final class AuthenticatorAttachment {
 
 	/**
 	 * Indicates <a
@@ -32,7 +32,7 @@ public enum AuthenticatorAttachment {
 	 *
 	 * <p>Authenticators of this class are removable from, and can "roam" among, client platforms.
 	 */
-	CROSS_PLATFORM("cross-platform"),
+	public static final AuthenticatorAttachment CROSS_PLATFORM = new AuthenticatorAttachment("cross-platform");
 
 	/**
 	 * Indicates <a
@@ -41,7 +41,7 @@ public enum AuthenticatorAttachment {
 	 *
 	 * <p>Usually, authenticators of this class are not removable from the platform.
 	 */
-	PLATFORM("platform");
+	public static final AuthenticatorAttachment PLATFORM = new AuthenticatorAttachment("platform");
 
 	private final String value;
 
@@ -57,4 +57,20 @@ public enum AuthenticatorAttachment {
 		return this.value;
 	}
 
+	/**
+	 * Gets an instance of {@link AuthenticatorAttachment} based upon the value passed in.
+	 * @param value the value to obtain the {@link AuthenticatorAttachment}
+	 * @return the {@link AuthenticatorAttachment}
+	 */
+	public static AuthenticatorAttachment valueOf(String value) {
+		switch (value) {
+			case "cross-platform": return CROSS_PLATFORM;
+			case "platform": return PLATFORM;
+			default: return new AuthenticatorAttachment(value);
+		}
+	}
+
+	public static AuthenticatorAttachment[] values() {
+		return new AuthenticatorAttachment[]{CROSS_PLATFORM, PLATFORM};
+	}
 }
