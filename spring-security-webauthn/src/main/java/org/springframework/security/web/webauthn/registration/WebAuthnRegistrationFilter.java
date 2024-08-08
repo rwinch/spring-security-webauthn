@@ -21,6 +21,8 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.http.HttpInputMessage;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
@@ -77,6 +79,8 @@ import static org.springframework.security.web.util.matcher.AntPathRequestMatche
 public class WebAuthnRegistrationFilter extends OncePerRequestFilter {
 
 	static final String DEFAULT_REGISTER_CREDENTIAL_URL = "/webauthn/register";
+
+	private static final Log logger = LogFactory.getLog(WebAuthnRegistrationFilter.class);
 
 	private final WebAuthnRelyingPartyOperations rpOptions;
 
@@ -155,7 +159,8 @@ public class WebAuthnRegistrationFilter extends OncePerRequestFilter {
 		try {
 			return (WebAuthnRegistrationRequest) this.converter.read(WebAuthnRegistrationRequest.class, inputMessage);
 		}
-		catch (Exception e) {
+		catch (Exception ex) {
+			logger.debug("Unable to parse WebAuthnRegistrationRequest", ex);
 			return null;
 		}
 	}
