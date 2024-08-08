@@ -22,7 +22,11 @@ package org.springframework.security.webauthn.api;
  * used by <a href="https://www.w3.org/TR/webauthn-3/#webauthn-relying-party">WebAuthn Relying Parties</a> to specify
  * their requirements regarding authenticator attributes.
  *
+ * There is no <a href="https://www.w3.org/TR/webauthn-3/#dom-authenticatorselectioncriteria-requireresidentkey">requireResidentKey</a>
+ * property because it is only for backwards compatability with WebAuthn Level 1.
+ *
  * @since 6.4
+ * @see PublicKeyCredentialCreationOptions#getAuthenticatorSelection()
  * @author Rob Winch
  */
 public class AuthenticatorSelectionCriteria {
@@ -32,6 +36,8 @@ public class AuthenticatorSelectionCriteria {
 	private final ResidentKeyRequirement residentKey;
 
 	private final UserVerificationRequirement userVerification;
+
+	// NOTE: There is no requireResidentKey property because it is only for backward compatability with WebAuthn Level 1
 
 	/**
 	 * Creates a new instance
