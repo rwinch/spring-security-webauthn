@@ -27,6 +27,7 @@ package org.springframework.security.webauthn.api;
  * evidence of <a href="https://www.w3.org/TR/webauthn-3/#user-consent">user consent</a> to a specific transaction.
  *
  * @since 6.4
+ * @see PublicKeyCredential#getResponse()
  * @author Rob Winch
  */
 public class AuthenticatorAssertionResponse extends AuthenticatorResponse  {
