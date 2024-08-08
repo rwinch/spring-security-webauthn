@@ -176,7 +176,7 @@ class PublicKeyCredentialCreationOptionsFilterTests {
 					"type": "public-key",
 					"id": "ChfoCM8CJA_wwUGDdzdtuw",
 					"transports": [
-						"HYBRID"
+						"hybrid"
 					]
 				}
 			]

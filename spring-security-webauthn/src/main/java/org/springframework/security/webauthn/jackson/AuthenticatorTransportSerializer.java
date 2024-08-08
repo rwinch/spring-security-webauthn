@@ -16,15 +16,21 @@
 
 package org.springframework.security.webauthn.jackson;
 
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.databind.JsonSerializer;
+import com.fasterxml.jackson.databind.SerializerProvider;
+import org.springframework.security.webauthn.api.AuthenticatorTransport;
+
+import java.io.IOException;
 
 /**
- * Jackson mixin for {@link org.springframework.security.webauthn.api.AuthenticatorTransport}
+ * Jackson serializer for {@link AuthenticatorTransport}
  * @since 6.4
  * @author Rob Winch
  */
-@JsonDeserialize(using = AuthenticatorTransportDeserializer.class)
-@JsonSerialize(using = AuthenticatorTransportSerializer.class)
-class AuthenticatorTransportMixin {
+class AuthenticatorTransportSerializer extends JsonSerializer<AuthenticatorTransport> {
+	@Override
+	public void serialize(AuthenticatorTransport transport, JsonGenerator jgen, SerializerProvider provider) throws IOException {
+		jgen.writeString(transport.getValue());
+	}
 }
