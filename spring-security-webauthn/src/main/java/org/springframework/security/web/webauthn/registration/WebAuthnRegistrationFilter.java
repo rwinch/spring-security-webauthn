@@ -61,10 +61,7 @@ import static org.springframework.security.web.util.matcher.AntPathRequestMatche
  * 				"transports": [
  * 					"internal",
  * 					"hybrid"
- * 				],
- * 				"publicKeyAlgorithm": -7,
- * 				"publicKey": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEQjmrekPGzyqtoKK9HPUH-8Z2FLpoqkklFpFPQVICQ3L6I9Jvmor685fOZOyGXqUd87tXfvJk8rxj9OhuZvUALA",
- * 				"authenticatorData": "y9GqwTRaMpzVDbXq1dyEAXVOxrou08k22ggRC45MKNhdAAAAALraVWanqkAfvZZFYZpVEg0AEHWBexBp0RRSF5KV4vV1NsKlAQIDJiABIVggQjmrekPGzyqtoKK9HPUH-8Z2FLpoqkklFpFPQVICQ3IiWCD6I9Jvmor685fOZOyGXqUd87tXfvJk8rxj9OhuZvUALA"
+ * 				]
  * 			},
  * 			"type": "public-key",
  * 			"clientExtensionResults": {},

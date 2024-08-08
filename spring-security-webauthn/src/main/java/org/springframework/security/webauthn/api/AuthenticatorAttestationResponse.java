@@ -35,22 +35,10 @@ public class AuthenticatorAttestationResponse extends AuthenticatorResponse {
 
 	private final List<AuthenticatorTransport> transports;
 
-	/**
-	 * FIXME: This is computed from the attestationObject. Needs to be an interface so that can be computed or injected
-	 */
-	private final Bytes authenticatorData;
-
-	private final Bytes publicKey;
-
-	private final COSEAlgorithmIdentifier publicKeyAlgorithm;
-
-	private AuthenticatorAttestationResponse(Bytes clientDataJSON, Bytes attestationObject, List<AuthenticatorTransport> transports, Bytes authenticatorData, Bytes publicKey, COSEAlgorithmIdentifier publicKeyAlgorithm) {
+	private AuthenticatorAttestationResponse(Bytes clientDataJSON, Bytes attestationObject, List<AuthenticatorTransport> transports) {
 		super(clientDataJSON);
 		this.attestationObject = attestationObject;
 		this.transports = transports;
-		this.authenticatorData = authenticatorData;
-		this.publicKey = publicKey;
-		this.publicKeyAlgorithm = publicKeyAlgorithm;
 	}
 
 	/**
@@ -73,35 +61,6 @@ public class AuthenticatorAttestationResponse extends AuthenticatorResponse {
 	}
 
 	/**
-	 * The <a href="https://www.w3.org/TR/webauthn-3/#dom-authenticatorattestationresponse-getauthenticatordata">authenticatorData</a>
-	 * contained within attestationObject. See
-	 * <a href="https://www.w3.org/TR/webauthn-3/#sctn-public-key-easy">5.2.1.1 Easily accessing credential data</a>.
-	 * @return the authenticatorData
-	 */
-	public Bytes getAuthenticatorData() {
-		return this.authenticatorData;
-	}
-
-	/**
-	 * The <a href="https://www.w3.org/TR/webauthn-3/#dom-authenticatorattestationresponse-getpublickey">publicKey</a>
-	 * returns the DER <a href="https://tools.ietf.org/html/rfc5280#section-4.1.2.7">SubjectPublicKeyInfo</a> of the new
-	 * credential, or null if this is not available.
-	 * @return the publicKey
-	 */
-	public Bytes getPublicKey() {
-		return this.publicKey;
-	}
-
-	/**
-	 * The <a href="https://www.w3.org/TR/webauthn-3/#dom-authenticatorattestationresponse-getpublickeyalgorithm">publicKeyAlgorithm</a>
-	 * is the {@link COSEAlgorithmIdentifier} of the new credential.
-	 * @return the {@link COSEAlgorithmIdentifier}
-	 */
-	public COSEAlgorithmIdentifier getPublicKeyAlgorithm() {
-		return this.publicKeyAlgorithm;
-	}
-
-	/**
 	 * Creates a new instance.
 	 * @return the {@link AuthenticatorAttestationResponseBuilder}
 	 */
@@ -118,9 +77,6 @@ public class AuthenticatorAttestationResponse extends AuthenticatorResponse {
 	public static final class AuthenticatorAttestationResponseBuilder {
 		private Bytes attestationObject;
 		private List<AuthenticatorTransport> transports;
-		private Bytes authenticatorData;
-		private Bytes publicKey;
-		private COSEAlgorithmIdentifier publicKeyAlgorithm;
 		private Bytes clientDataJSON;
 
 		private AuthenticatorAttestationResponseBuilder() {
@@ -159,38 +115,6 @@ public class AuthenticatorAttestationResponse extends AuthenticatorResponse {
 		}
 
 		/**
-		 * Sets the {@link #getAuthenticatorData()} property.
-		 *
-		 * @param authenticatorData the authenticator data.
-		 * @return  the {@link AuthenticatorAttestationResponseBuilder}
-		 */
-		public AuthenticatorAttestationResponseBuilder authenticatorData(Bytes authenticatorData) {
-			this.authenticatorData = authenticatorData;
-			return this;
-		}
-
-		/**
-		 * Sets the {@link #getPublicKey()} property.
-		 *
-		 * @param publicKey the public key.
-		 * @return the {@link AuthenticatorAttestationResponseBuilder}
-		 */
-		public AuthenticatorAttestationResponseBuilder publicKey(Bytes publicKey) {
-			this.publicKey = publicKey;
-			return this;
-		}
-
-		/**
-		 * Sets the {@link #getPublicKeyAlgorithm()} property.
-		 * @param publicKeyAlgorithm the public key algorithm
-		 * @return the {@link AuthenticatorAttestationResponseBuilder}
-		 */
-		public AuthenticatorAttestationResponseBuilder publicKeyAlgorithm(COSEAlgorithmIdentifier publicKeyAlgorithm) {
-			this.publicKeyAlgorithm = publicKeyAlgorithm;
-			return this;
-		}
-
-		/**
 		 * Sets the {@link #getClientDataJSON()} property.
 		 * @param clientDataJSON the client data JSON.
 		 * @return the {@link AuthenticatorAttestationResponseBuilder}
@@ -206,7 +130,7 @@ public class AuthenticatorAttestationResponse extends AuthenticatorResponse {
 		 * @return the {@link AuthenticatorAttestationResponseBuilder}
 		 */
 		public AuthenticatorAttestationResponse build() {
-			return new AuthenticatorAttestationResponse(this.clientDataJSON, this.attestationObject, this.transports, this.authenticatorData, this.publicKey, this.publicKeyAlgorithm);
+			return new AuthenticatorAttestationResponse(this.clientDataJSON, this.attestationObject, this.transports);
 		}
 
 	}

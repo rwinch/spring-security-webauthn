@@ -453,7 +453,7 @@ class Webauthn4jRelyingPartyOperationsTests {
 		AuthenticatorData<RegistrationExtensionAuthenticatorOutput> authenticatorData = attestationObject.getAuthenticatorData();
 		boolean flagBE = authenticatorData.isFlagBE();
 		boolean flagBS = authenticatorData.isFlagBS();
-		authAttResponseBldr.attestationObject(new Bytes(updatedAttObjBytes)).authenticatorData(new Bytes(rawAuthData));
+		authAttResponseBldr.attestationObject(new Bytes(updatedAttObjBytes));
 		return authAttResponseBldr.build();
 	}
 

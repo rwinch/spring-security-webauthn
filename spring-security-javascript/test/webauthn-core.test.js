@@ -277,11 +277,6 @@ describe("webauthn-core", () => {
                 clientDataJSON:
                   "eyJ0eXBlIjoid2ViYXV0aG4uY3JlYXRlIiwiY2hhbGxlbmdlIjoiUVdwd3lUcXJpYVlqbVdnOWFvZ0FxUlRKNVFYMFBGV2JWR2xNeGNsVjZhcyIsIm9yaWdpbiI6Imh0dHBzOi8vZXhhbXBsZS5sb2NhbGhvc3Q6ODQ0MyJ9",
                 transports: ["internal"],
-                publicKeyAlgorithm: -7,
-                publicKey:
-                  "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEwH2kzYF5J4Qbzd8AoVVIsoh-8MEFWjIaAyiIbET7paBrMCiMzmx25DLYzuvPV2jnmdVo0sZeHyTjEEfP47L3UQ",
-                authenticatorData:
-                  "y9GqwTRaMpzVDbXq1dyEAXVOxrou08k22ggRC45MKNhdAAAAAPv8MAcVTk7MjAtuAgVX170AFPcALnsf9NuQYBEK7O3zsqaOUhgQpQECAyYgASFYIMB9pM2BeSeEG83fAKFVSLKIfvDBBVoyGgMoiGxE-6WgIlggazAojM5sduQy2M7rz1do55nVaNLGXh8k4xBHz-Oy91E",
               },
               type: "public-key",
               clientExtensionResults: {},

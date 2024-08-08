@@ -16,6 +16,7 @@
 
 package org.springframework.security.webauthn.jackson;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonSetter;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
@@ -29,11 +30,12 @@ import java.util.List;
  * @since 6.4
  * @author Rob Winch
  */
-@JsonDeserialize(builder = AuthenticatorAttestationResponse.AuthenticatorAttestationResponseBuilder.class) // FIXME: Externalize @JsonDeserialize
+@JsonDeserialize(builder = AuthenticatorAttestationResponse.AuthenticatorAttestationResponseBuilder.class)
 class AuthenticatorAttestationResponseMixin {
 	@JsonPOJOBuilder(withPrefix = "")
+	@JsonIgnoreProperties(ignoreUnknown = true)
 	abstract class AuthenticatorAttestationResponseBuilderMixin {
-		@JsonSetter // FIXME: externalize
+		@JsonSetter
 		abstract AuthenticatorAttestationResponse.AuthenticatorAttestationResponseBuilder transports(List<AuthenticatorTransport> transports);
 	}
 }
