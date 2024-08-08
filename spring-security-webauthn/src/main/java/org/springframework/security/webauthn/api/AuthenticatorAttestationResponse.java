@@ -26,6 +26,7 @@ import java.util.List;
  * credential</a>.
  *
  * @since 6.4
+ * @see PublicKeyCredential#getResponse()
  * @author Rob Winch
  */
 public class AuthenticatorAttestationResponse extends AuthenticatorResponse {
