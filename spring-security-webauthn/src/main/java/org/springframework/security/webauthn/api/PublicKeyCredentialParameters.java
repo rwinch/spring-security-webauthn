@@ -21,6 +21,7 @@ package org.springframework.security.webauthn.api;
  * The <a href="https://www.w3.org/TR/webauthn-3/#dictdef-publickeycredentialparameters">PublicKeyCredentialParameters</a>
  * is used to supply additional parameters when creating a new credential.
  * @since 6.4
+ * @see PublicKeyCredentialCreationOptions#getPubKeyCredParams()
  * @author Rob Winch
  */
 public class PublicKeyCredentialParameters {

@@ -21,33 +21,43 @@ package org.springframework.security.webauthn.api;
  * cryptographic algorithm.
  *
  * @since 6.4
+ * @see PublicKeyCredentialParameters#getAlg()
  * @author Rob Winch
  */
-public enum COSEAlgorithmIdentifier {
+public final class COSEAlgorithmIdentifier {
 
-	EdDSA(-8),
+	public static final COSEAlgorithmIdentifier EdDSA = new COSEAlgorithmIdentifier(-8);
 
-	ES256(-7),
+	public static final COSEAlgorithmIdentifier ES256 = new COSEAlgorithmIdentifier(-7);
 
-	ES384(-35),
+	public static final COSEAlgorithmIdentifier ES384 = new COSEAlgorithmIdentifier(-35);
 
-	ES512(-36),
+	public static final COSEAlgorithmIdentifier ES512 = new COSEAlgorithmIdentifier(-36);
 
-	RS256(-257),
+	public static final COSEAlgorithmIdentifier RS256 = new COSEAlgorithmIdentifier(-257);
 
-	RS384(-258),
+	public static final COSEAlgorithmIdentifier RS384 = new COSEAlgorithmIdentifier(-258);
 
-	RS512(-259),
+	public static final COSEAlgorithmIdentifier RS512 = new COSEAlgorithmIdentifier(-259);
 
-	RS1(-65535);
+	public static final COSEAlgorithmIdentifier RS1 = new COSEAlgorithmIdentifier(-65535);
 
 	private final long value;
 
-	COSEAlgorithmIdentifier(long value) {
+	private COSEAlgorithmIdentifier(long value) {
 		this.value = value;
 	}
 
 	public long getValue() {
 		return this.value;
+	}
+
+	@Override
+	public String toString() {
+		return String.valueOf(this.value);
+	}
+
+	public static COSEAlgorithmIdentifier[] values() {
+		return new COSEAlgorithmIdentifier[] { EdDSA, ES256, ES384, ES512, RS256, RS384, RS512, RS1 };
 	}
 }
