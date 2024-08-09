@@ -21,6 +21,7 @@ package org.springframework.security.webauthn.api;
  *
  * @param <T> the input type
  * @since 6.4
+ * @since AuthenticationExtensionsClientInputs
  * @author Rob Winch
  */
 public class ImmutableAuthenticationExtensionsClientInput<T> implements AuthenticationExtensionsClientInput<T> {
