@@ -20,6 +20,7 @@ package org.springframework.security.webauthn.api;
  * A <a href="https://www.w3.org/TR/webauthn-3/#client-extension-output">client extension output</a> entry in
  * {@link AuthenticationExtensionsClientOutputs}.
  * @param <T>
+ * @see AuthenticationExtensionsClientOutputs#getOutputs()
  * @see CredentialPropertiesOutput
  */
 public interface AuthenticationExtensionsClientOutput<T> {
