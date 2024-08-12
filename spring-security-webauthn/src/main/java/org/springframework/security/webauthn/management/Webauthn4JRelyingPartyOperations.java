@@ -260,13 +260,13 @@ public class Webauthn4JRelyingPartyOperations implements WebAuthnRelyingPartyOpe
 		return this.allowedOrigins.stream().map(Origin::new).collect(Collectors.toSet());
 	}
 
-	private static List<AuthenticatorTransport> convertTransports(Set<com.webauthn4j.data.AuthenticatorTransport> transports) {
+	private static Set<AuthenticatorTransport> convertTransports(Set<com.webauthn4j.data.AuthenticatorTransport> transports) {
 		if (transports == null) {
-			return Collections.emptyList();
+			return Collections.emptySet();
 		}
 		return transports.stream()
 				.map(t -> AuthenticatorTransport.valueOf(t.getValue()))
-				.collect(Collectors.toUnmodifiableList());
+				.collect(Collectors.toUnmodifiableSet());
 	}
 
 	@Override

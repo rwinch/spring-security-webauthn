@@ -17,7 +17,7 @@
 package org.springframework.security.webauthn.management;
 
 import java.time.Instant;
-import java.util.List;
+import java.util.Set;
 
 import org.springframework.security.webauthn.api.Bytes;
 import org.springframework.security.webauthn.api.AuthenticatorTransport;
@@ -74,7 +74,7 @@ public interface CredentialRecord {
 	 *
 	 * @return
 	 */
-	List<AuthenticatorTransport> getTransports();
+	Set<AuthenticatorTransport> getTransports();
 
 	/**
 	 * The <a href="https://www.w3.org/TR/webauthn-3/#abstract-opdef-credential-record-backupeligible">backupElgible</a>

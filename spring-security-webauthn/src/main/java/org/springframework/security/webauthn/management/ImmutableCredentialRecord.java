@@ -18,6 +18,7 @@ package org.springframework.security.webauthn.management;
 
 import java.time.Instant;
 import java.util.List;
+import java.util.Set;
 
 import org.springframework.security.webauthn.api.Bytes;
 import org.springframework.security.webauthn.api.AuthenticatorTransport;
@@ -42,7 +43,7 @@ public class ImmutableCredentialRecord implements CredentialRecord {
 
 	private final boolean uvInitialized;
 
-	private final List<AuthenticatorTransport> transports;
+	private final Set<AuthenticatorTransport> transports;
 
 	private final boolean backupEligible;
 
@@ -58,7 +59,7 @@ public class ImmutableCredentialRecord implements CredentialRecord {
 
 	private final String label;
 
-	private ImmutableCredentialRecord(PublicKeyCredentialType credentialType, Bytes credentialId, Bytes userEntityUserId, PublicKeyCose publicKey, long signatureCount, boolean uvInitialized, List<AuthenticatorTransport> transports, boolean backupEligible, boolean backupState, Bytes attestationObject, Bytes attestationClientDataJSON, Instant created, Instant lastUsed, String label) {
+	private ImmutableCredentialRecord(PublicKeyCredentialType credentialType, Bytes credentialId, Bytes userEntityUserId, PublicKeyCose publicKey, long signatureCount, boolean uvInitialized, Set<AuthenticatorTransport> transports, boolean backupEligible, boolean backupState, Bytes attestationObject, Bytes attestationClientDataJSON, Instant created, Instant lastUsed, String label) {
 		this.credentialType = credentialType;
 		this.credentialId = credentialId;
 		this.userEntityUserId = userEntityUserId;
@@ -106,7 +107,7 @@ public class ImmutableCredentialRecord implements CredentialRecord {
 	}
 
 	@Override
-	public List<AuthenticatorTransport> getTransports() {
+	public Set<AuthenticatorTransport> getTransports() {
 		return this.transports;
 	}
 
@@ -160,7 +161,7 @@ public class ImmutableCredentialRecord implements CredentialRecord {
 		private PublicKeyCose publicKey;
 		private long signatureCount;
 		private boolean uvInitialized;
-		private List<AuthenticatorTransport> transports;
+		private Set<AuthenticatorTransport> transports;
 		private boolean backupEligible;
 		private boolean backupState;
 		private Bytes attestationObject;
@@ -220,7 +221,7 @@ public class ImmutableCredentialRecord implements CredentialRecord {
 			return this;
 		}
 
-		public ImmutableCredentialRecordBuilder transports(List<AuthenticatorTransport> transports) {
+		public ImmutableCredentialRecordBuilder transports(Set<AuthenticatorTransport> transports) {
 			this.transports = transports;
 			return this;
 		}

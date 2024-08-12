@@ -16,8 +16,7 @@
 
 package org.springframework.security.webauthn.api;
 
-import java.util.Arrays;
-import java.util.List;
+import java.util.Set;
 
 /**
  * <a href="https://www.w3.org/TR/webauthn-3/#dictdef-publickeycredentialdescriptor">PublicKeyCredentialDescriptor</a>
@@ -34,9 +33,9 @@ public class PublicKeyCredentialDescriptor {
 
 	private final Bytes id;
 
-	private final List<AuthenticatorTransport> transports;
+	private final Set<AuthenticatorTransport> transports;
 
-	private PublicKeyCredentialDescriptor(PublicKeyCredentialType type, Bytes id, List<AuthenticatorTransport> transports) {
+	private PublicKeyCredentialDescriptor(PublicKeyCredentialType type, Bytes id, Set<AuthenticatorTransport> transports) {
 		this.type = type;
 		this.id = id;
 		this.transports = transports;
@@ -66,7 +65,7 @@ public class PublicKeyCredentialDescriptor {
 	 * authenticator of the public key credential the caller is referring to.
 	 * @return the transports
 	 */
-	public List<AuthenticatorTransport> getTransports() {
+	public Set<AuthenticatorTransport> getTransports() {
 		return this.transports;
 	}
 
@@ -86,7 +85,7 @@ public class PublicKeyCredentialDescriptor {
 	public static final class PublicKeyCredentialDescriptorBuilder {
 		private PublicKeyCredentialType type = PublicKeyCredentialType.PUBLIC_KEY;
 		private Bytes id;
-		private List<AuthenticatorTransport> transports;
+		private Set<AuthenticatorTransport> transports;
 
 		private PublicKeyCredentialDescriptorBuilder() {
 		}
@@ -116,7 +115,7 @@ public class PublicKeyCredentialDescriptor {
 		 * @param transports the transports
 		 * @return the {@link PublicKeyCredentialDescriptorBuilder}
 		 */
-		public PublicKeyCredentialDescriptorBuilder transports(List<AuthenticatorTransport> transports) {
+		public PublicKeyCredentialDescriptorBuilder transports(Set<AuthenticatorTransport> transports) {
 			this.transports = transports;
 			return this;
 		}
@@ -127,7 +126,7 @@ public class PublicKeyCredentialDescriptor {
 		 * @return the {@link PublicKeyCredentialDescriptorBuilder}
 		 */
 		public PublicKeyCredentialDescriptorBuilder transports(AuthenticatorTransport... transports) {
-			return transports(Arrays.asList(transports));
+			return transports(Set.of(transports));
 		}
 
 		/**
