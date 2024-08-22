@@ -16,15 +16,19 @@
 
 package org.springframework.security.config.annotation.web.configurers;
 
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.config.annotation.web.HttpSecurityBuilder;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.access.intercept.AuthorizationFilter;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.ui.DefaultLoginPageGeneratingFilter;
+import org.springframework.security.web.authentication.ui.DefaultWebauthnLoginPageGeneratingFilter;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 import org.springframework.security.web.csrf.CsrfToken;
+import org.springframework.security.web.server.ui.LoginPageGeneratingWebFilter;
 import org.springframework.security.web.webauthn.authentication.PublicKeyCredentialRequestOptionsFilter;
 import org.springframework.security.web.webauthn.authentication.WebAuthnAuthenticationFilter;
 import org.springframework.security.web.webauthn.registration.DefaultWebAuthnRegistrationPageGeneratingFilter;
@@ -34,10 +38,7 @@ import org.springframework.security.webauthn.api.PublicKeyCredentialRpEntity;
 import org.springframework.security.webauthn.authentication.WebAuthnAuthenticationProvider;
 import org.springframework.security.webauthn.management.*;
 
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Configures WebAuthn for Spring Security applications
@@ -89,12 +90,28 @@ public class WebauthnConfigurer<B extends HttpSecurityBuilder<B>>
 		DefaultLoginPageGeneratingFilter loginPageGeneratingFilter = http
 				.getSharedObject(DefaultLoginPageGeneratingFilter.class);
 		if (loginPageGeneratingFilter != null) {
-			loginPageGeneratingFilter.setPasskeysEnabled(true);
-			loginPageGeneratingFilter.setResolveHeaders((request) -> {
+			UsernamePasswordAuthenticationFilter usernamePasswordFilter = http.getSharedObject(UsernamePasswordAuthenticationFilter.class);
+			DefaultWebauthnLoginPageGeneratingFilter webauthnLogin = new DefaultWebauthnLoginPageGeneratingFilter(usernamePasswordFilter);
+			webauthnLogin.setFormLoginEnabled(true);
+			webauthnLogin.setPasskeysEnabled(true);
+			webauthnLogin.setResolveHeaders((request) -> {
 				CsrfToken csrfToken = (CsrfToken) request.getAttribute(CsrfToken.class.getName());
 				return Map.of( csrfToken.getHeaderName(), csrfToken.getToken());
 			});
+			webauthnLogin.setLoginPageUrl("/login");
+			webauthnLogin.setAuthenticationUrl("/login");
+			webauthnLogin.setFailureUrl("/login?error");
+			webauthnLogin.setUsernameParameter("username");
+			webauthnLogin.setPasswordParameter("password");
+			webauthnLogin.setResolveHiddenInputs(this::hiddenInputs);
+			http.addFilterBefore(webauthnLogin, DefaultLoginPageGeneratingFilter.class);
 		}
+	}
+
+	private Map<String, String> hiddenInputs(HttpServletRequest request) {
+		CsrfToken token = (CsrfToken) request.getAttribute(CsrfToken.class.getName());
+		return (token != null) ? Collections.singletonMap(token.getParameterName(), token.getToken())
+				: Collections.emptyMap();
 	}
 
 	private <C> Optional<C> getSharedOrBean(B http, Class<C> type) {

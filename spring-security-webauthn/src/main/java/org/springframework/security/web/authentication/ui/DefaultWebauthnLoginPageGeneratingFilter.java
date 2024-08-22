@@ -33,7 +33,6 @@ import jakarta.servlet.http.HttpSession;
 
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.WebAttributes;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
@@ -55,7 +54,7 @@ import static org.springframework.security.web.util.matcher.AntPathRequestMatche
  * @author Luke Taylor
  * @since 2.0
  */
-public class DefaultLoginPageGeneratingFilter extends GenericFilterBean {
+public class DefaultWebauthnLoginPageGeneratingFilter extends GenericFilterBean {
 
 	public static final String DEFAULT_LOGIN_PAGE_URL = "/login";
 
@@ -91,10 +90,10 @@ public class DefaultLoginPageGeneratingFilter extends GenericFilterBean {
 
 	private Function<HttpServletRequest, Map<String, String>> resolveHeaders = (request) -> Collections.emptyMap();
 
-	public DefaultLoginPageGeneratingFilter() {
+	public DefaultWebauthnLoginPageGeneratingFilter() {
 	}
 
-	public DefaultLoginPageGeneratingFilter(UsernamePasswordAuthenticationFilter authFilter) {
+	public DefaultWebauthnLoginPageGeneratingFilter(UsernamePasswordAuthenticationFilter authFilter) {
 		this.loginPageUrl = DEFAULT_LOGIN_PAGE_URL;
 		this.logoutSuccessUrl = DEFAULT_LOGIN_PAGE_URL + "?logout";
 		this.failureUrl = DEFAULT_LOGIN_PAGE_URL + "?" + ERROR_PARAMETER_NAME;
