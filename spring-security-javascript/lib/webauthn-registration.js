@@ -73,10 +73,12 @@ export async function setupRegistration(headers, contextPath, ui) {
     }
   });
 
-  ui.getDeleteForms().forEach((form) => form.addEventListener('submit', async function (e) {
-    e.preventDefault()
-    submitDeleteForm(contextPath, form, headers)
-  }));
+  ui.getDeleteForms().forEach((form) =>
+    form.addEventListener("submit", async function (e) {
+      e.preventDefault();
+      submitDeleteForm(contextPath, form, headers);
+    }),
+  );
 }
 
 async function submitDeleteForm(contextPath, form, headers) {
@@ -86,8 +88,8 @@ async function submitDeleteForm(contextPath, form, headers) {
       "Content-Type": "application/json",
       ...headers,
     },
-  }
+  };
   await fetch(form.action, options);
   window.location.href = `${contextPath}/webauthn/register?success`;
-  return false
+  return false;
 }
