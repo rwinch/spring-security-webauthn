@@ -21,7 +21,7 @@ plugins {
 }
 
 tasks.named('check') {
-    dependsOn 'npm_run_test'
+    dependsOn 'npm_run_check'
 }
 
 tasks.register('dist', Zip) {
