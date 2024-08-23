@@ -62,30 +62,29 @@ describe("webauthn-registration", () => {
       labelField = {
         value: undefined,
       };
-      deleteForms = []
+      deleteForms = [];
       ui = {
-        getSuccess: function() {
-          return successPopup
+        getSuccess: function () {
+          return successPopup;
         },
-        getError: function() {
-          return errorPopup
+        getError: function () {
+          return errorPopup;
         },
-        getRegisterButton: function() {
-          return registerButton
+        getRegisterButton: function () {
+          return registerButton;
         },
-        getLabelInput: function() {
-          return labelField
+        getLabelInput: function () {
+          return labelField;
         },
-        getDeleteForms: function() {
-          return deleteForms
-        }
+        getDeleteForms: function () {
+          return deleteForms;
+        },
       };
       global.window = {
         location: {
-          href: {}
+          href: {},
         },
       };
-
     });
 
     afterEach(() => {
@@ -189,26 +188,26 @@ describe("webauthn-registration", () => {
           delete global.fetch;
         });
 
-        it("no errors when no forms", async() => {
+        it("no errors when no forms", async () => {
           await setupRegistration({}, "/some/path", ui);
         });
 
-        it("sets up forms for fetch", async() => {
-          const contextPath = '/some/path'
+        it("sets up forms for fetch", async () => {
+          const contextPath = "/some/path";
           const deleteForm = {
             action: `${contextPath}/webauthn/1234`,
             addEventListener: fake(),
-          }
-          deleteForms = [deleteForm]
+          };
+          deleteForms = [deleteForm];
           const headers = {
-            'X-CSRF-TOKEN': 'token',
-          }
+            "X-CSRF-TOKEN": "token",
+          };
           await setupRegistration(headers, contextPath, ui);
           const clickEvent = {
-            preventDefault: fake()
-          }
-          await deleteForm.addEventListener.firstCall.lastArg(clickEvent)
-          assert.calledOnce(clickEvent.preventDefault)
+            preventDefault: fake(),
+          };
+          await deleteForm.addEventListener.firstCall.lastArg(clickEvent);
+          assert.calledOnce(clickEvent.preventDefault);
           assert.calledOnceWithExactly(global.fetch, deleteForm.action, {
             method: "DELETE",
             headers: {
@@ -216,9 +215,9 @@ describe("webauthn-registration", () => {
               ...headers,
             },
           });
-          expect(global.window.location.href).to.equal(`${contextPath}/webauthn/register?success`)
+          expect(global.window.location.href).to.equal(`${contextPath}/webauthn/register?success`);
         });
-      })
+      });
     });
   });
 });
