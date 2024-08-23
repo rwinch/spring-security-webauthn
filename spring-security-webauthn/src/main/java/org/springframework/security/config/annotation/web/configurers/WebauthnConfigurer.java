@@ -21,6 +21,7 @@ import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.config.annotation.web.HttpSecurityBuilder;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.access.intercept.AuthorizationFilter;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
@@ -37,6 +38,7 @@ import org.springframework.security.web.webauthn.registration.WebAuthnRegistrati
 import org.springframework.security.webauthn.api.PublicKeyCredentialRpEntity;
 import org.springframework.security.webauthn.authentication.WebAuthnAuthenticationProvider;
 import org.springframework.security.webauthn.management.*;
+import org.springframework.util.ClassUtils;
 
 import java.util.*;
 
@@ -98,6 +100,11 @@ public class WebauthnConfigurer<B extends HttpSecurityBuilder<B>>
 				CsrfToken csrfToken = (CsrfToken) request.getAttribute(CsrfToken.class.getName());
 				return Map.of( csrfToken.getHeaderName(), csrfToken.getToken());
 			});
+			boolean ottEnabled = isOttEnabled(http);
+			if (ottEnabled) {
+				webauthnLogin.setOneTimeTokenEnabled(true);
+				webauthnLogin.setOneTimeTokenAuthenticationRequestUrl("/ott/generate");
+			}
 			webauthnLogin.setLoginPageUrl("/login");
 			webauthnLogin.setAuthenticationUrl("/login");
 			webauthnLogin.setFailureUrl("/login?error");
@@ -105,6 +112,16 @@ public class WebauthnConfigurer<B extends HttpSecurityBuilder<B>>
 			webauthnLogin.setPasswordParameter("password");
 			webauthnLogin.setResolveHiddenInputs(this::hiddenInputs);
 			http.addFilterBefore(webauthnLogin, DefaultLoginPageGeneratingFilter.class);
+		}
+	}
+
+	private boolean isOttEnabled(B http) {
+		try {
+			Class ottConfigurer = ClassUtils.forName("org.springframework.security.config.annotation.web.configurers.ott.OneTimeTokenLoginConfigurer", WebauthnConfigurer.class.getClassLoader());
+			return http.getConfigurer(ottConfigurer) != null;
+		}
+		catch (Exception ex) {
+			return false;
 		}
 	}
 
