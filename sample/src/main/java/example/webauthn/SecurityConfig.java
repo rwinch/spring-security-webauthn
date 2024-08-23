@@ -24,6 +24,8 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configurers.WebauthnConfigurer;
 import org.springframework.security.web.DefaultSecurityFilterChain;
 
+import static org.springframework.security.config.annotation.web.configurers.WebauthnConfigurer.webauthn;
+
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
@@ -37,7 +39,7 @@ public class SecurityConfig {
 				.requestMatchers("/login/**", "/message", "/error").permitAll()
 				.anyRequest().authenticated()
 			)
-			.with(new WebauthnConfigurer<>(), (passkeys) -> passkeys
+			.with(webauthn(), (passkeys) -> passkeys
 					.rpName("Spring Security Relying Party")
 					.rpId("example.localhost")
 					.allowedOrigins("https://example.localhost:8443")

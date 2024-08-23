@@ -115,6 +115,10 @@ public class WebauthnConfigurer<B extends HttpSecurityBuilder<B>>
 		}
 	}
 
+	public static <B extends HttpSecurityBuilder<B>> WebauthnConfigurer<B> webauthn() {
+		return new WebauthnConfigurer<>();
+	}
+
 	private boolean isOttEnabled(B http) {
 		try {
 			Class ottConfigurer = ClassUtils.forName("org.springframework.security.config.annotation.web.configurers.ott.OneTimeTokenLoginConfigurer", WebauthnConfigurer.class.getClassLoader());
