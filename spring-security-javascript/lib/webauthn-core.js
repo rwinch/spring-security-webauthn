@@ -18,6 +18,7 @@
 
 import base64url from "./base64url.js";
 import http from "./http.js";
+import abortController from "./abort-controller.js";
 
 async function isConditionalMediationAvailable() {
   return !!(
@@ -28,7 +29,6 @@ async function isConditionalMediationAvailable() {
 }
 
 async function authenticate(headers, contextPath, useConditionalMediation) {
-  const abortController = new AbortController();
   // FIXME: add contextRoot
   const options = await http.post(`${contextPath}/webauthn/authenticate/options`, headers).then((r) => r.json());
   // FIXME: Use https://www.w3.org/TR/webauthn-3/#sctn-parseRequestOptionsFromJSON
@@ -37,7 +37,7 @@ async function authenticate(headers, contextPath, useConditionalMediation) {
   // Invoke the WebAuthn get() method.
   const credentialOptions = {
     publicKey: decodedOptions,
-    signal: abortController.signal,
+    signal: abortController.newSignal(),
   };
   if (useConditionalMediation) {
     // Request a conditional UI
@@ -109,6 +109,7 @@ async function register(headers, contextPath, label) {
   const credentialsContainer = await navigator.credentials
     .create({
       publicKey: decodedOptions,
+      signal: abortController.newSignal(),
     })
     .catch((e) => {
       throw new Error("Registration failed: " + e.message, { cause: e });

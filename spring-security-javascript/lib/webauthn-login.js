@@ -27,9 +27,9 @@ async function conditionalMediation(headers, contextPath) {
 }
 
 export async function setupLogin(headers, contextPath, signinButton) {
-  await conditionalMediation(headers, contextPath);
-
   signinButton.addEventListener("click", async () => {
     await webauthn.authenticate(headers, contextPath, false);
   });
+
+  await conditionalMediation(headers, contextPath);
 }

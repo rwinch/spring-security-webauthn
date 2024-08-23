@@ -56,14 +56,14 @@ describe("webauthn-core", () => {
         global.window = {};
         const result = await webauthn.isConditionalMediationAvailable();
         expect(result).to.be.false;
-      })
+      });
       it("PublicKeyCredential.isConditionalMediationAvailable undefined", async () => {
         global.window = {
           PublicKeyCredential: {},
         };
         const result = await webauthn.isConditionalMediationAvailable();
         expect(result).to.be.false;
-      })
+      });
       it("PublicKeyCredential.isConditionalMediationAvailable false", async () => {
         global.window = {
           PublicKeyCredential: {
@@ -72,7 +72,7 @@ describe("webauthn-core", () => {
         };
         const result = await webauthn.isConditionalMediationAvailable();
         expect(result).to.be.false;
-      })
+      });
     });
   });
 
@@ -304,48 +304,52 @@ describe("webauthn-core", () => {
         // ignored
       }
 
-      assert.calledOnceWithExactly(global.navigator.credentials.create, {
-        publicKey: {
-          rp: {
-            name: "Spring Security Relying Party",
-            id: "example.localhost",
+      assert.calledOnceWithExactly(
+        global.navigator.credentials.create,
+        match({
+          publicKey: {
+            rp: {
+              name: "Spring Security Relying Party",
+              id: "example.localhost",
+            },
+            user: {
+              name: "user",
+              id: base64url.decode("eatPy60xmXG_58JrIiIBa5wq8Y76c7MD6mnY5vW8yP8"),
+              displayName: "user",
+            },
+            challenge: base64url.decode("s0hBOfkSaVLXdsbyD8jii6t2IjUd-eiTP1Cmeuo1qUo"),
+            pubKeyCredParams: [
+              {
+                type: "public-key",
+                alg: -8,
+              },
+              {
+                type: "public-key",
+                alg: -7,
+              },
+              {
+                type: "public-key",
+                alg: -257,
+              },
+            ],
+            timeout: 300000,
+            excludeCredentials: [
+              {
+                id: base64url.decode("nOsjw8eaaqSwVdTBBYE1FqfGdHs"),
+                type: "public-key",
+                transports: [],
+              },
+            ],
+            authenticatorSelection: {
+              residentKey: "required",
+              userVerification: "preferred",
+            },
+            attestation: "direct",
+            extensions: { credProps: true },
           },
-          user: {
-            name: "user",
-            id: base64url.decode("eatPy60xmXG_58JrIiIBa5wq8Y76c7MD6mnY5vW8yP8"),
-            displayName: "user",
-          },
-          challenge: base64url.decode("s0hBOfkSaVLXdsbyD8jii6t2IjUd-eiTP1Cmeuo1qUo"),
-          pubKeyCredParams: [
-            {
-              type: "public-key",
-              alg: -8,
-            },
-            {
-              type: "public-key",
-              alg: -7,
-            },
-            {
-              type: "public-key",
-              alg: -257,
-            },
-          ],
-          timeout: 300000,
-          excludeCredentials: [
-            {
-              id: base64url.decode("nOsjw8eaaqSwVdTBBYE1FqfGdHs"),
-              type: "public-key",
-              transports: [],
-            },
-          ],
-          authenticatorSelection: {
-            residentKey: "required",
-            userVerification: "preferred",
-          },
-          attestation: "direct",
-          extensions: { credProps: true },
-        },
-      });
+          signal: match.any,
+        }),
+      );
     });
 
     it("throws when the navigator.credentials.create fails", () => {
