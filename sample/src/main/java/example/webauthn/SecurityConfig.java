@@ -18,6 +18,8 @@ package example.webauthn;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -41,7 +43,17 @@ public class SecurityConfig {
 					.rpName("Spring Security Relying Party")
 					.rpId("example.localhost")
 					.allowedOrigins("https://example.localhost:8443")
-			);
+			)
+			.oneTimeTokenLogin(c -> c.generatedOneTimeTokenSuccessHandler((request, response, oneTimeToken) -> {
+				var msg = "hey, user, you're going to need to go to https://example.localhost:8443/login/ott?token=" + oneTimeToken.getTokenValue();
+				System.out.println(msg);
+				response.setStatus(HttpStatus.OK.value());
+				response.setContentType(MediaType.TEXT_PLAIN_VALUE);
+				try (var w = response.getWriter()) {
+					w.println("you've got mail!");
+				}
+			}))
+			;
 		return http.build();
 	}
 }

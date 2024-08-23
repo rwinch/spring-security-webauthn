@@ -29,7 +29,10 @@ java {
 
 repositories {
     mavenCentral()
+    mavenLocal()
 }
+
+ext['spring-security.version'] = '6.4.0-SNAPSHOT'
 
 dependencies {
     implementation project(':spring-security-webauthn')
