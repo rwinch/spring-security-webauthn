@@ -103,7 +103,7 @@ public class WebauthnConfigurer<B extends HttpSecurityBuilder<B>>
 			boolean ottEnabled = isOttEnabled(http);
 			if (ottEnabled) {
 				webauthnLogin.setOneTimeTokenEnabled(true);
-				webauthnLogin.setOneTimeTokenAuthenticationRequestUrl("/ott/generate");
+				webauthnLogin.setGenerateOneTimeTokenUrl("/ott/generate");
 			}
 			webauthnLogin.setLoginPageUrl("/login");
 			webauthnLogin.setAuthenticationUrl("/login");

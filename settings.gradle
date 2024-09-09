@@ -19,3 +19,11 @@ rootProject.name = 'spring-security-passkeys-sample'
 include ':spring-security-javascript'
 include ':spring-security-webauthn'
 include ':sample'
+
+dependencyResolutionManagement {
+    repositories {
+        mavenCentral()
+        maven { url 'https://repo.spring.io/snapshot' }
+        maven { url 'https://repo.spring.io/milestone' }
+    }
+}

@@ -26,11 +26,7 @@ version = '0.0.1-SNAPSHOT'
 java {
     sourceCompatibility = '17'
 }
-
-repositories {
-    mavenCentral()
-}
-
+ext['spring-security.version'] = '6.4.0-SNAPSHOT'
 dependencies {
     implementation project(':spring-security-webauthn')
     implementation 'org.springframework.boot:spring-boot-starter-security'

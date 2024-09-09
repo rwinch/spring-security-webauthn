@@ -26,10 +26,6 @@ java {
     sourceCompatibility = '17'
 }
 
-repositories {
-    mavenCentral()
-}
-
 configurations {
     javascript {
         canBeConsumed = false
