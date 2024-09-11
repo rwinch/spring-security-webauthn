@@ -298,6 +298,7 @@ public class DefaultWebauthnLoginPageGeneratingFilter extends GenericFilterBean 
 				.withValue("passwordParameter", this.passwordParameter)
 				.withRawHtml("rememberMeInput", renderRememberMe(this.rememberMeParameter))
 				.withRawHtml("hiddenInputs", hiddenInputs)
+				.withValue("autocomplete", this.passkeysEnabled ? "password webauthn" : "password")
 				.render();
 	}
 
@@ -497,7 +498,7 @@ public class DefaultWebauthnLoginPageGeneratingFilter extends GenericFilterBean 
 			        </p>
 			        <p>
 			          <label for="password" class="screenreader">Password</label>
-			          <input type="password" id="password" name="{{passwordParameter}}" placeholder="Password" required>
+			          <input type="password" id="password" name="{{passwordParameter}}" placeholder="Password" autocomplete="{{autocomplete}}" required>
 			        </p>
 			{{rememberMeInput}}
 			{{hiddenInputs}}
