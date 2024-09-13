@@ -19,6 +19,8 @@ package org.springframework.security.config.annotation.web.configurers;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.context.ApplicationContext;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.http.MediaType;
 import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.config.annotation.web.HttpSecurityBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -26,10 +28,13 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.access.intercept.AuthorizationFilter;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.ui.DefaultLoginPageGeneratingFilter;
+import org.springframework.security.web.authentication.ui.DefaultResourcesFilter;
 import org.springframework.security.web.authentication.ui.DefaultWebauthnLoginPageGeneratingFilter;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 import org.springframework.security.web.csrf.CsrfToken;
 import org.springframework.security.web.server.ui.LoginPageGeneratingWebFilter;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
+import org.springframework.security.web.util.matcher.RequestMatcher;
 import org.springframework.security.web.webauthn.authentication.PublicKeyCredentialRequestOptionsFilter;
 import org.springframework.security.web.webauthn.authentication.WebAuthnAuthenticationFilter;
 import org.springframework.security.web.webauthn.registration.DefaultWebAuthnRegistrationPageGeneratingFilter;
@@ -40,7 +45,11 @@ import org.springframework.security.webauthn.authentication.WebAuthnAuthenticati
 import org.springframework.security.webauthn.management.*;
 import org.springframework.util.ClassUtils;
 
+import java.lang.reflect.Constructor;
 import java.util.*;
+
+import static org.springframework.http.HttpMethod.GET;
+import static org.springframework.security.web.util.matcher.AntPathRequestMatcher.antMatcher;
 
 /**
  * Configures WebAuthn for Spring Security applications
@@ -92,6 +101,14 @@ public class WebauthnConfigurer<B extends HttpSecurityBuilder<B>>
 		DefaultLoginPageGeneratingFilter loginPageGeneratingFilter = http
 				.getSharedObject(DefaultLoginPageGeneratingFilter.class);
 		if (loginPageGeneratingFilter != null) {
+			ClassPathResource webauthn = new ClassPathResource("org/springframework/security/spring-security-webauthn.js");
+			AntPathRequestMatcher matcher = antMatcher(GET, "/login/webauthn.js");
+
+			Constructor<DefaultResourcesFilter> constructor = DefaultResourcesFilter.class.getDeclaredConstructor(RequestMatcher.class, ClassPathResource.class, MediaType.class);
+			constructor.setAccessible(true);
+			DefaultResourcesFilter resourcesFilter =
+					constructor.newInstance(matcher, webauthn, MediaType.parseMediaType("text/javascript"));
+			http.addFilter(resourcesFilter);
 			UsernamePasswordAuthenticationFilter usernamePasswordFilter = http.getSharedObject(UsernamePasswordAuthenticationFilter.class);
 			DefaultWebauthnLoginPageGeneratingFilter webauthnLogin = new DefaultWebauthnLoginPageGeneratingFilter(usernamePasswordFilter);
 			webauthnLogin.setFormLoginEnabled(true);

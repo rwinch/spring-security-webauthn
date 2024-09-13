@@ -16,13 +16,6 @@
 
 package org.springframework.security.web.authentication.ui;
 
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.util.Collections;
-import java.util.Map;
-import java.util.function.Function;
-import java.util.stream.Collectors;
-
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.ServletRequest;
@@ -30,20 +23,20 @@ import jakarta.servlet.ServletResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
-
-import org.springframework.core.io.ClassPathResource;
-import org.springframework.http.HttpHeaders;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.WebAttributes;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.rememberme.AbstractRememberMeServices;
-import org.springframework.security.web.util.CssUtils;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 import org.springframework.web.filter.GenericFilterBean;
 
-import static org.springframework.http.HttpMethod.GET;
-import static org.springframework.security.web.util.matcher.AntPathRequestMatcher.antMatcher;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.util.Collections;
+import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 /**
  * For internal use with namespace configuration in the case where a user doesn't
@@ -214,12 +207,6 @@ public class DefaultWebauthnLoginPageGeneratingFilter extends GenericFilterBean 
 
 	private void doFilter(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
 			throws IOException, ServletException {
-		if (antMatcher(GET, "/login/webauthn.js").matches(request)) {
-			ClassPathResource webauthn = new ClassPathResource("org/springframework/security/spring-security-webauthn.js");
-			response.addHeader(HttpHeaders.CONTENT_TYPE, "application/javascript");
-			response.getWriter().write(webauthn.getContentAsString(StandardCharsets.UTF_8));
-			return;
-		}
 		boolean loginError = isErrorPage(request);
 		boolean logoutSuccess = isLogoutSuccess(request);
 		if (isLoginUrlRequest(request) || loginError || logoutSuccess) {
@@ -238,7 +225,6 @@ public class DefaultWebauthnLoginPageGeneratingFilter extends GenericFilterBean 
 
 		return HtmlTemplates.fromTemplate(LOGIN_PAGE_TEMPLATE)
 				.withRawHtml("contextPath", contextPath)
-				.withRawHtml("cssStyle", CssUtils.getCssStyleBlock().indent(4))
 				.withRawHtml("javaScript", renderJavaScript(request, contextPath))
 				.withRawHtml("formLogin", renderFormLogin(request, loginError, logoutSuccess, contextPath, errorMsg))
 				.withRawHtml("oneTimeTokenLogin",
@@ -279,47 +265,47 @@ public class DefaultWebauthnLoginPageGeneratingFilter extends GenericFilterBean 
 	}
 
 	private String renderFormLogin(HttpServletRequest request, boolean loginError, boolean logoutSuccess,
-								   String contextPath, String errorMsg) {
+			String contextPath, String errorMsg) {
 		if (!this.formLoginEnabled) {
 			return "";
 		}
 
 		String hiddenInputs = this.resolveHiddenInputs.apply(request)
-				.entrySet()
-				.stream()
-				.map((inputKeyValue) -> renderHiddenInput(inputKeyValue.getKey(), inputKeyValue.getValue()))
-				.collect(Collectors.joining("\n"));
+			.entrySet()
+			.stream()
+			.map((inputKeyValue) -> renderHiddenInput(inputKeyValue.getKey(), inputKeyValue.getValue()))
+			.collect(Collectors.joining("\n"));
 
 		return HtmlTemplates.fromTemplate(LOGIN_FORM_TEMPLATE)
-				.withValue("loginUrl", contextPath + this.authenticationUrl)
-				.withRawHtml("errorMessage", renderError(loginError, errorMsg))
-				.withRawHtml("logoutMessage", renderSuccess(logoutSuccess))
-				.withValue("usernameParameter", this.usernameParameter)
-				.withValue("passwordParameter", this.passwordParameter)
-				.withRawHtml("rememberMeInput", renderRememberMe(this.rememberMeParameter))
-				.withRawHtml("hiddenInputs", hiddenInputs)
-				.withValue("autocomplete", this.passkeysEnabled ? "password webauthn" : "password")
-				.render();
+			.withValue("loginUrl", contextPath + this.authenticationUrl)
+			.withRawHtml("errorMessage", renderError(loginError, errorMsg))
+			.withRawHtml("logoutMessage", renderSuccess(logoutSuccess))
+			.withValue("usernameParameter", this.usernameParameter)
+			.withValue("passwordParameter", this.passwordParameter)
+			.withRawHtml("rememberMeInput", renderRememberMe(this.rememberMeParameter))
+			.withRawHtml("hiddenInputs", hiddenInputs)
+			.withValue("autocomplete", this.passkeysEnabled ? "password webauthn" : "password")
+			.render();
 	}
 
 	private String renderOneTimeTokenLogin(HttpServletRequest request, boolean loginError, boolean logoutSuccess,
-										   String contextPath, String errorMsg) {
+			String contextPath, String errorMsg) {
 		if (!this.oneTimeTokenEnabled) {
 			return "";
 		}
 
 		String hiddenInputs = this.resolveHiddenInputs.apply(request)
-				.entrySet()
-				.stream()
-				.map((inputKeyValue) -> renderHiddenInput(inputKeyValue.getKey(), inputKeyValue.getValue()))
-				.collect(Collectors.joining("\n"));
+			.entrySet()
+			.stream()
+			.map((inputKeyValue) -> renderHiddenInput(inputKeyValue.getKey(), inputKeyValue.getValue()))
+			.collect(Collectors.joining("\n"));
 
 		return HtmlTemplates.fromTemplate(ONE_TIME_TEMPLATE)
-				.withValue("generateOneTimeTokenUrl", contextPath + this.generateOneTimeTokenUrl)
-				.withRawHtml("errorMessage", renderError(loginError, errorMsg))
-				.withRawHtml("logoutMessage", renderSuccess(logoutSuccess))
-				.withRawHtml("hiddenInputs", hiddenInputs)
-				.render();
+			.withValue("generateOneTimeTokenUrl", contextPath + this.generateOneTimeTokenUrl)
+			.withRawHtml("errorMessage", renderError(loginError, errorMsg))
+			.withRawHtml("logoutMessage", renderSuccess(logoutSuccess))
+			.withRawHtml("hiddenInputs", hiddenInputs)
+			.render();
 	}
 
 	private String renderOAuth2Login(boolean loginError, boolean logoutSuccess, String errorMsg, String contextPath) {
@@ -328,22 +314,22 @@ public class DefaultWebauthnLoginPageGeneratingFilter extends GenericFilterBean 
 		}
 
 		String oauth2Rows = this.oauth2AuthenticationUrlToClientName.entrySet()
-				.stream()
-				.map((urlToName) -> renderOAuth2Row(contextPath, urlToName.getKey(), urlToName.getValue()))
-				.collect(Collectors.joining("\n"));
+			.stream()
+			.map((urlToName) -> renderOAuth2Row(contextPath, urlToName.getKey(), urlToName.getValue()))
+			.collect(Collectors.joining("\n"));
 
 		return HtmlTemplates.fromTemplate(OAUTH2_LOGIN_TEMPLATE)
-				.withRawHtml("errorMessage", renderError(loginError, errorMsg))
-				.withRawHtml("logoutMessage", renderSuccess(logoutSuccess))
-				.withRawHtml("oauth2Rows", oauth2Rows)
-				.render();
+			.withRawHtml("errorMessage", renderError(loginError, errorMsg))
+			.withRawHtml("logoutMessage", renderSuccess(logoutSuccess))
+			.withRawHtml("oauth2Rows", oauth2Rows)
+			.render();
 	}
 
 	private static String renderOAuth2Row(String contextPath, String url, String clientName) {
 		return HtmlTemplates.fromTemplate(OAUTH2_ROW_TEMPLATE)
-				.withValue("url", contextPath + url)
-				.withValue("clientName", clientName)
-				.render();
+			.withValue("url", contextPath + url)
+			.withValue("clientName", clientName)
+			.render();
 	}
 
 	private String renderSaml2Login(boolean loginError, boolean logoutSuccess, String errorMsg, String contextPath) {
@@ -352,22 +338,22 @@ public class DefaultWebauthnLoginPageGeneratingFilter extends GenericFilterBean 
 		}
 
 		String samlRows = this.saml2AuthenticationUrlToProviderName.entrySet()
-				.stream()
-				.map((urlToName) -> renderSaml2Row(contextPath, urlToName.getKey(), urlToName.getValue()))
-				.collect(Collectors.joining("\n"));
+			.stream()
+			.map((urlToName) -> renderSaml2Row(contextPath, urlToName.getKey(), urlToName.getValue()))
+			.collect(Collectors.joining("\n"));
 
 		return HtmlTemplates.fromTemplate(SAML_LOGIN_TEMPLATE)
-				.withRawHtml("errorMessage", renderError(loginError, errorMsg))
-				.withRawHtml("logoutMessage", renderSuccess(logoutSuccess))
-				.withRawHtml("samlRows", samlRows)
-				.render();
+			.withRawHtml("errorMessage", renderError(loginError, errorMsg))
+			.withRawHtml("logoutMessage", renderSuccess(logoutSuccess))
+			.withRawHtml("samlRows", samlRows)
+			.render();
 	}
 
 	private static String renderSaml2Row(String contextPath, String url, String clientName) {
 		return HtmlTemplates.fromTemplate(SAML_ROW_TEMPLATE)
-				.withValue("url", contextPath + url)
-				.withValue("clientName", clientName)
-				.render();
+			.withValue("url", contextPath + url)
+			.withValue("clientName", clientName)
+			.render();
 	}
 
 	private String getLoginErrorMessage(HttpServletRequest request) {
@@ -376,7 +362,7 @@ public class DefaultWebauthnLoginPageGeneratingFilter extends GenericFilterBean 
 			return "Invalid credentials";
 		}
 		if (!(session
-				.getAttribute(WebAttributes.AUTHENTICATION_EXCEPTION) instanceof AuthenticationException exception)) {
+			.getAttribute(WebAttributes.AUTHENTICATION_EXCEPTION) instanceof AuthenticationException exception)) {
 			return "Invalid credentials";
 		}
 		if (!StringUtils.hasText(exception.getMessage())) {
@@ -387,9 +373,9 @@ public class DefaultWebauthnLoginPageGeneratingFilter extends GenericFilterBean 
 
 	private String renderHiddenInput(String name, String value) {
 		return HtmlTemplates.fromTemplate(HIDDEN_HTML_INPUT_TEMPLATE)
-				.withValue("name", name)
-				.withValue("value", value)
-				.render();
+			.withValue("name", name)
+			.withValue("value", value)
+			.render();
 	}
 
 	private String renderRememberMe(String paramName) {
@@ -397,9 +383,9 @@ public class DefaultWebauthnLoginPageGeneratingFilter extends GenericFilterBean 
 			return "";
 		}
 		return HtmlTemplates
-				.fromTemplate("<p><input type='checkbox' name='{{paramName}}'/> Remember me on this computer.</p>")
-				.withValue("paramName", paramName)
-				.render();
+			.fromTemplate("<p><input type='checkbox' name='{{paramName}}'/> Remember me on this computer.</p>")
+			.withValue("paramName", paramName)
+			.render();
 	}
 
 	private boolean isLogoutSuccess(HttpServletRequest request) {
@@ -455,7 +441,7 @@ public class DefaultWebauthnLoginPageGeneratingFilter extends GenericFilterBean 
 		<script type="text/javascript">
 		<!--
 			document.addEventListener("DOMContentLoaded",() => setupLogin({{csrfHeaders}}, "{{contextPath}}", document.getElementById('passkey-signin')));
-			
+
 		//-->
 		</script>
 	""";
@@ -475,7 +461,8 @@ public class DefaultWebauthnLoginPageGeneratingFilter extends GenericFilterBean 
 			    <meta name="description" content="">
 			    <meta name="author" content="">
 			    <title>Please sign in</title>
-			{{cssStyle}}{{javaScript}}
+			    <link href="{{contextPath}}/default-ui.css" rel="stylesheet" />
+				{{javaScript}}
 			  </head>
 			  <body>
 			    <div class="content">
@@ -534,12 +521,12 @@ public class DefaultWebauthnLoginPageGeneratingFilter extends GenericFilterBean 
 	private static final String ONE_TIME_TEMPLATE = """
 			      <form id="ott-form" class="login-form" method="post" action="{{generateOneTimeTokenUrl}}">
 			        <h2>Request a One-Time Token</h2>
-			      {{errorMessage}}{{logoutMessage}}
+			{{errorMessage}}{{logoutMessage}}
 			        <p>
 			          <label for="ott-username" class="screenreader">Username</label>
 			          <input type="text" id="ott-username" name="username" placeholder="Username" required>
 			        </p>
-			      {{hiddenInputs}}
+			{{hiddenInputs}}
 			        <button class="primary" type="submit" form="ott-form">Send Token</button>
 			      </form>
 			""";
