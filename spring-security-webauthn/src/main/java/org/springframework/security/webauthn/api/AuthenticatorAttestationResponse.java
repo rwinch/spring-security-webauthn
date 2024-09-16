@@ -53,7 +53,7 @@ public class AuthenticatorAttestationResponse extends AuthenticatorResponse {
 
 	/**
 	 * The <a href="https://www.w3.org/TR/webauthn-3/#dom-authenticatorattestationresponse-gettransports">transports</a>
-	 * returns the <a href="https://www.w3.org/TR/webauthn-3/#dom-authenticatorattestationresponse-transports-slot>transports</a>
+	 * returns the <a href="https://www.w3.org/TR/webauthn-3/#dom-authenticatorattestationresponse-transports-slot">transports</a>
 	 * @return the transports
 	 */
 	public List<AuthenticatorTransport> getTransports() {

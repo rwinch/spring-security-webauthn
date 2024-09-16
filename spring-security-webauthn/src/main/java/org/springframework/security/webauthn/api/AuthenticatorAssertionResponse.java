@@ -20,7 +20,7 @@ package org.springframework.security.webauthn.api;
  * The <a href="https://www.w3.org/TR/webauthn-3/#authenticatorassertionresponse">AuthenticatorAssertionResponse</a>
  * interface represents an <a href="https://www.w3.org/TR/webauthn-3/#authenticator">authenticator</a>'s response to a
  * client’s request for generation of a new
- * <a href="https://www.w3.org/TR/webauthn-3/#authentication-assertion>authentication assertion</a> given the
+ * <a href="https://www.w3.org/TR/webauthn-3/#authentication-assertion">authentication assertion</a> given the
  * <a href="https://www.w3.org/TR/webauthn-3/#webauthn-relying-party">WebAuthn Relying Party</a>'s challenge and
  * OPTIONAL list of credentials it is aware of. This response contains a cryptographic signature proving possession of
  * the <a href="https://www.w3.org/TR/webauthn-3/#credential-private-key">credential private key</a>, and optionally
@@ -85,7 +85,7 @@ public class AuthenticatorAssertionResponse extends AuthenticatorResponse  {
 	}
 
 	/**
-	 * The <a href="">attestationObject</a> is an OPTIONAL attribute contains an
+	 * The <a href="https://www.w3.org/TR/webauthn-3/#dom-authenticatorattestationresponse-attestationobject">attestationObject</a> is an OPTIONAL attribute contains an
 	 * <a href="https://www.w3.org/TR/webauthn-3/#attestation-object">attestation object</a>, if the authenticator
 	 * supports attestation in assertions.
 	 *

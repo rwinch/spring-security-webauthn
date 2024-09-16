@@ -35,7 +35,7 @@ public class ImmutableRelyingPartyRegistrationRequest implements RelyingPartyReg
 	/**
 	 * Creates a new instance.
 	 * @param options the {@link PublicKeyCredentialCreationOptions} that were saved when
-	 * {@link WebAuthnRelyingPartyOperations#createCredentialRequestOptions(Authentication)} was called.
+	 * {@link WebAuthnRelyingPartyOperations#createCredentialRequestOptions(PublicKeyCredentialRequestOptionsRequest)} was called.
 	 * @param publicKey this is submitted by the client and if validated stored.
 	 */
 	public ImmutableRelyingPartyRegistrationRequest(PublicKeyCredentialCreationOptions options, RelyingPartyPublicKey publicKey) {

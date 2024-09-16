@@ -32,7 +32,7 @@ public enum UserVerificationRequirement {
 	DISCOURAGED("discouraged"),
 
 	/**
-	 * The <a href="https://www.w3.org/TR/webauthn-3/#dom-userverificationrequirement-preferred>preferred</a> value
+	 * The <a href="https://www.w3.org/TR/webauthn-3/#dom-userverificationrequirement-preferred">preferred</a> value
 	 * indicates that the Relying Party prefers user verification for the operation if possible, but will not fail the
 	 * operation if the response does not have the UV flag set.
 	 */

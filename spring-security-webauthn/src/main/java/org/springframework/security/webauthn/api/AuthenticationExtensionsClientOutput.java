@@ -32,8 +32,8 @@ public interface AuthenticationExtensionsClientOutput<T> {
 	String getExtensionId();
 
 	/**
-	 * The <a href="https://www.w3.org/TR/webauthn-3/#client-extension-output>client extension output</a>.
-	 * @return the <a href="https://www.w3.org/TR/webauthn-3/#client-extension-output>client extension output</a>.
+	 * The <a href="https://www.w3.org/TR/webauthn-3/#client-extension-output">client extension output</a>.
+	 * @return the <a href="https://www.w3.org/TR/webauthn-3/#client-extension-output">client extension output</a>.
 	 */
 	T getOutput();
 

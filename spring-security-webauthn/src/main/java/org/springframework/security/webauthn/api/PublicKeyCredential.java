@@ -85,7 +85,7 @@ public class PublicKeyCredential<R extends AuthenticatorResponse> {
 	}
 
 	/**
-	 * The <a href="">authenticatorAttachment</a>  reports the
+	 * The <a href="https://www.w3.org/TR/webauthn-3/#dom-publickeycredential-authenticatorattachment">authenticatorAttachment</a>  reports the
 	 * <a href="https://www.w3.org/TR/webauthn-3/#authenticator-attachment-modality">authenticator attachment modality</a>
 	 * in effect at the time the navigator.credentials.create() or navigator.credentials.get() methods successfully
 	 * complete.

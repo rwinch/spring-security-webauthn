@@ -55,7 +55,7 @@ public class PublicKeyCredentialRequestOptions {
 	}
 
 	/**
-	 * The <a href="https://www.w3.org/TR/webauthn-3/#dom-publickeycredentialrequestoptions-challenge>challenge</a>
+	 * The <a href="https://www.w3.org/TR/webauthn-3/#dom-publickeycredentialrequestoptions-challenge">challenge</a>
 	 * property specifies a challenge that the authenticator signs, along with other data, when producing an
 	 * authentication assertion.
 	 * @return the challenge
