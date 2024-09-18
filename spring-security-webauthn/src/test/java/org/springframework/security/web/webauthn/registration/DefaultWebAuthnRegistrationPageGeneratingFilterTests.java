@@ -131,8 +131,8 @@ class DefaultWebAuthnRegistrationPageGeneratingFilterTests {
 			.build();
 
 		ImmutableCredentialRecord credential = TestCredentialRecord.userCredential()
-			.created(LocalDateTime.of(2024, 9, 17, 10, 10, 42).toInstant(ZoneOffset.UTC))
-			.lastUsed(LocalDateTime.of(2024, 9, 18, 11, 11, 42).toInstant(ZoneOffset.UTC))
+			.created(LocalDateTime.of(2024, 9, 17, 10, 10, 42, 999_999_999).toInstant(ZoneOffset.UTC))
+			.lastUsed(LocalDateTime.of(2024, 9, 18, 11, 11, 42, 999_999_999).toInstant(ZoneOffset.UTC))
 			.build();
 		when(this.userEntities.findByUsername(any())).thenReturn(userEntity);
 		when(this.userCredentials.findByUserId(userEntity.getId())).thenReturn(Arrays.asList(credential));
@@ -197,8 +197,8 @@ class DefaultWebAuthnRegistrationPageGeneratingFilterTests {
 										<tbody>
 											<tr class="v-middle">
 												<td>label</td>
-												<td>%s</td>
-												<td>%s</td>
+												<td>2024-09-17T10:10:42Z</td>
+												<td>2024-09-18T11:11:42Z</td>
 												<td class="center">0</td>
 												<td>
 													<form class="delete-form" method="post" action="/webauthn/register/NauGCN7bZ5jEBwThcde51g">
@@ -213,8 +213,7 @@ class DefaultWebAuthnRegistrationPageGeneratingFilterTests {
 								</div>
 							</body>
 						</html>
-						"""
-					.formatted(credential.getCreated().toString(), credential.getLastUsed().toString()));
+						""");
 	}
 
 	@Test
