@@ -33,6 +33,11 @@ import org.springframework.util.Assert;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.time.Instant;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -105,14 +110,20 @@ public class DefaultWebAuthnRegistrationPageGeneratingFilter extends OncePerRequ
 	private String renderPasskeyRow(CredentialRecord credential, String contextPath, CsrfToken csrfToken) {
 		return HtmlTemplates.fromTemplate(PASSKEY_ROW_TEMPLATE)
 			.withValue("label", credential.getLabel())
-			.withValue("created", credential.getCreated().toString())
-			.withValue("lastUsed", credential.getLastUsed().toString())
+			.withValue("created", formatInstant(credential.getCreated()))
+			.withValue("lastUsed", formatInstant(credential.getLastUsed()))
 			.withValue("signatureCount", credential.getSignatureCount())
 			.withValue("credentialId", credential.getCredentialId().toBase64UrlString())
 			.withValue("csrfParameterName", csrfToken.getParameterName())
 			.withValue("csrfToken", csrfToken.getToken())
 			.withValue("contextPath", contextPath)
 			.render();
+	}
+
+	private static String formatInstant(Instant created) {
+		return ZonedDateTime.ofInstant(created, ZoneId.of("UTC"))
+			.truncatedTo(ChronoUnit.SECONDS)
+			.format(DateTimeFormatter.ISO_INSTANT);
 	}
 
 	private String renderCsrfHeader(CsrfToken csrfToken) {
