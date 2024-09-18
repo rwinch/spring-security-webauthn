@@ -39,6 +39,8 @@ import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilde
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.util.HtmlUtils;
 
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.Arrays;
 import java.util.Collections;
 
@@ -97,7 +99,7 @@ class DefaultWebAuthnRegistrationPageGeneratingFilterTests {
 				<form class="delete-form" method="post" action="/webauthn/register/NauGCN7bZ5jEBwThcde51g">
 					<input type="hidden" name="method" value="delete">
 					<input type="hidden" name="_csrf" value="CSRF_TOKEN">
-					<button class="btn btn-sm btn-primary btn-block" type="submit">Delete</button>
+					<button class="primary small" type="submit">Delete</button>
 				</form>""".replaceAll("\\s", ""));
 	}
 
@@ -129,15 +131,14 @@ class DefaultWebAuthnRegistrationPageGeneratingFilterTests {
 			.id(Bytes.random())
 			.displayName("User")
 			.build();
-		ImmutableCredentialRecord credential = TestCredentialRecord.userCredential().build();
+
+		ImmutableCredentialRecord credential = TestCredentialRecord.userCredential()
+			.created(LocalDateTime.of(2024, 9, 17, 10, 10, 42).toInstant(ZoneOffset.UTC))
+			.lastUsed(LocalDateTime.of(2024, 9, 18, 11, 11, 42).toInstant(ZoneOffset.UTC))
+			.build();
 		when(this.userEntities.findByUsername(any())).thenReturn(userEntity);
 		when(this.userCredentials.findByUserId(userEntity.getId())).thenReturn(Arrays.asList(credential));
 		String body = bodyAsString(matchingRequest());
-		assertThat(body).contains(credential.getLabel());
-		assertThat(body).contains(credential.getCreated().toString());
-		assertThat(body).contains(credential.getLastUsed().toString());
-		assertThat(body).contains(String.valueOf(credential.getSignatureCount()));
-		assertThat(body).contains(credential.getCredentialId().toBase64UrlString());
 		assertThat(body).isEqualTo(
 				"""
 						<html>
@@ -147,8 +148,7 @@ class DefaultWebAuthnRegistrationPageGeneratingFilterTests {
 								<meta name="description" content="">
 								<meta name="author" content="">
 								<title>WebAuthn Registration</title>
-								<link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-/Y6pD6FV/Vv2HJnA6t+vslU6fwYXjCFtcEpHbNJ0lyAFsXTsjBbfaDjzALeQsN6M" crossorigin="anonymous">
-								<link href="https://getbootstrap.com/docs/4.0/examples/signin/signin.css" rel="stylesheet" crossorigin="anonymous"/>
+								<link href="/default-ui.css" rel="stylesheet" />
 								<script type="text/javascript" src="/login/webauthn.js"></script>
 								<script type="text/javascript">
 								<!--
@@ -174,20 +174,27 @@ class DefaultWebAuthnRegistrationPageGeneratingFilterTests {
 								</script>
 							</head>
 							<body>
-								<div class="container">
-									<form class="form-signin" method="post" action="#" onclick="return false">
-										<h2 class="form-signin-heading">WebAuthn Registration</h2>
+								<div class="content">
+									<form class="login-form" method="post" action="#" onclick="return false">
+										<h2>WebAuthn Registration</h2>
 									\t
 										<div id="success" class="alert alert-success" role="alert"></div>
 										<div id="error" class="alert alert-danger" role="alert"></div>
 										<p>
-											<input type="text" id="label" name="label" class="form-control" placeholder="Passkey Label" required autofocus>
+											<label for="label" class="screenreader">Passkey Label</label>
+											<input type="text" id="label" name="label" placeholder="Passkey Label" required autofocus>
 										</p>
-										<button id="register" class="btn btn-lg btn-primary btn-block" type="submit">Register</button>
+										<button id="register" class="primary" type="submit">Register</button>
 									</form>
 									<table class="table table-striped">
 										<thead>
-											<tr><th>Label</th><th>Created</th><th>Last Used</th><th>Signature Count</th><th>Delete</th></tr>
+											<tr class="table-header">
+												<th>Label</th>
+												<th>Created</th>
+												<th>Last Used</th>
+												<th>Signature Count</th>
+												<th>Delete</th>
+											</tr>
 										</thead>
 										<tbody>
 												<tr>
@@ -199,7 +206,7 @@ class DefaultWebAuthnRegistrationPageGeneratingFilterTests {
 									<form class="delete-form" method="post" action="/webauthn/register/NauGCN7bZ5jEBwThcde51g">
 										<input type="hidden" name="method" value="delete">
 										<input type="hidden" name="_csrf" value="CSRF_TOKEN">
-										<button class="btn btn-sm btn-primary btn-block" type="submit">Delete</button>
+										<button class="primary small" type="submit">Delete</button>
 									</form>
 								</td>
 							</tr>
@@ -209,7 +216,7 @@ class DefaultWebAuthnRegistrationPageGeneratingFilterTests {
 							</body>
 						</html>
 						"""
-					.formatted(credential.getCreated(), credential.getLastUsed()));
+					.formatted(credential.getCreated().toString(), credential.getLastUsed().toString()));
 	}
 
 	@Test

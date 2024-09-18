@@ -105,8 +105,8 @@ public class DefaultWebAuthnRegistrationPageGeneratingFilter extends OncePerRequ
 	private String renderPasskeyRow(CredentialRecord credential, String contextPath, CsrfToken csrfToken) {
 		return HtmlTemplates.fromTemplate(PASSKEY_ROW_TEMPLATE)
 			.withValue("label", credential.getLabel())
-			.withValue("created", credential.getCreated())
-			.withValue("lastUsed", credential.getLastUsed())
+			.withValue("created", credential.getCreated().toString())
+			.withValue("lastUsed", credential.getLastUsed().toString())
 			.withValue("signatureCount", credential.getSignatureCount())
 			.withValue("credentialId", credential.getCredentialId().toBase64UrlString())
 			.withValue("csrfParameterName", csrfToken.getParameterName())
@@ -130,8 +130,7 @@ public class DefaultWebAuthnRegistrationPageGeneratingFilter extends OncePerRequ
 					<meta name="description" content="">
 					<meta name="author" content="">
 					<title>WebAuthn Registration</title>
-					<link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-/Y6pD6FV/Vv2HJnA6t+vslU6fwYXjCFtcEpHbNJ0lyAFsXTsjBbfaDjzALeQsN6M" crossorigin="anonymous">
-					<link href="https://getbootstrap.com/docs/4.0/examples/signin/signin.css" rel="stylesheet" crossorigin="anonymous"/>
+					<link href="{{contextPath}}/default-ui.css" rel="stylesheet" />
 					<script type="text/javascript" src="{{contextPath}}/login/webauthn.js"></script>
 					<script type="text/javascript">
 					<!--
@@ -157,20 +156,27 @@ public class DefaultWebAuthnRegistrationPageGeneratingFilter extends OncePerRequ
 					</script>
 				</head>
 				<body>
-					<div class="container">
-						<form class="form-signin" method="post" action="#" onclick="return false">
-							<h2 class="form-signin-heading">WebAuthn Registration</h2>
+					<div class="content">
+						<form class="login-form" method="post" action="#" onclick="return false">
+							<h2>WebAuthn Registration</h2>
 							{{message}}
 							<div id="success" class="alert alert-success" role="alert"></div>
 							<div id="error" class="alert alert-danger" role="alert"></div>
 							<p>
-								<input type="text" id="label" name="label" class="form-control" placeholder="Passkey Label" required autofocus>
+								<label for="label" class="screenreader">Passkey Label</label>
+								<input type="text" id="label" name="label" placeholder="Passkey Label" required autofocus>
 							</p>
-							<button id="register" class="btn btn-lg btn-primary btn-block" type="submit">Register</button>
+							<button id="register" class="primary" type="submit">Register</button>
 						</form>
 						<table class="table table-striped">
 							<thead>
-								<tr><th>Label</th><th>Created</th><th>Last Used</th><th>Signature Count</th><th>Delete</th></tr>
+								<tr class="table-header">
+									<th>Label</th>
+									<th>Created</th>
+									<th>Last Used</th>
+									<th>Signature Count</th>
+									<th>Delete</th>
+								</tr>
 							</thead>
 							<tbody>
 								{{passkeys}}
@@ -191,7 +197,7 @@ public class DefaultWebAuthnRegistrationPageGeneratingFilter extends OncePerRequ
 						<form class="delete-form" method="post" action="{{contextPath}}/webauthn/register/{{credentialId}}">
 							<input type="hidden" name="method" value="delete">
 							<input type="hidden" name="{{csrfParameterName}}" value="{{csrfToken}}">
-							<button class="btn btn-sm btn-primary btn-block" type="submit">Delete</button>
+							<button class="primary small" type="submit">Delete</button>
 						</form>
 					</td>
 				</tr>
