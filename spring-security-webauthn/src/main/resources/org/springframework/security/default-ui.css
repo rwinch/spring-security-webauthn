@@ -46,6 +46,14 @@ h2 {
     }
 }
 
+.v-middle {
+    vertical-align: middle;
+}
+
+.center {
+    text-align: center;
+}
+
 /* Components */
 a,
 a:visited {
@@ -143,6 +151,10 @@ table {
 td {
     padding: 0.75rem;
     vertical-align: top;
+}
+
+tr.v-middle > td {
+    vertical-align: middle;
 }
 
 /* Login / logout layouts */
