@@ -94,7 +94,7 @@ public class DefaultWebAuthnRegistrationPageGeneratingFilter extends OncePerRequ
 				: this.userCredentials.findByUserId(userEntity.getId());
 		if (credentials.isEmpty()) {
 			return """
-					<tr><td colspan="5">No Passkeys</td></tr>
+										<tr><td colspan="5">No Passkeys</td></tr>
 					""";
 		}
 		return credentials.stream()
@@ -157,9 +157,9 @@ public class DefaultWebAuthnRegistrationPageGeneratingFilter extends OncePerRequ
 				</head>
 				<body>
 					<div class="content">
-						<form class="login-form" method="post" action="#" onclick="return false">
-							<h2>WebAuthn Registration</h2>
-							{{message}}
+						<h2 class="center">WebAuthn Registration</h2>
+						<form class="default-form" method="post" action="#" onclick="return false">
+			{{message}}
 							<div id="success" class="alert alert-success" role="alert"></div>
 							<div id="error" class="alert alert-danger" role="alert"></div>
 							<p>
@@ -179,7 +179,7 @@ public class DefaultWebAuthnRegistrationPageGeneratingFilter extends OncePerRequ
 								</tr>
 							</thead>
 							<tbody>
-								{{passkeys}}
+			{{passkeys}}
 							</tbody>
 						</table>
 					</div>
@@ -188,23 +188,23 @@ public class DefaultWebAuthnRegistrationPageGeneratingFilter extends OncePerRequ
 			""";
 
 	private static final String PASSKEY_ROW_TEMPLATE = """
-				<tr>
-					<td>{{label}}</td>
-					<td>{{created}}</td>
-					<td>{{lastUsed}}</td>
-					<td>{{signatureCount}}</td>
-					<td>
-						<form class="delete-form" method="post" action="{{contextPath}}/webauthn/register/{{credentialId}}">
-							<input type="hidden" name="method" value="delete">
-							<input type="hidden" name="{{csrfParameterName}}" value="{{csrfToken}}">
-							<button class="primary small" type="submit">Delete</button>
-						</form>
-					</td>
-				</tr>
+								<tr class="v-middle">
+									<td>{{label}}</td>
+									<td>{{created}}</td>
+									<td>{{lastUsed}}</td>
+									<td class="center">{{signatureCount}}</td>
+									<td>
+										<form class="delete-form" method="post" action="{{contextPath}}/webauthn/register/{{credentialId}}">
+											<input type="hidden" name="method" value="delete">
+											<input type="hidden" name="{{csrfParameterName}}" value="{{csrfToken}}">
+											<button class="primary small" type="submit">Delete</button>
+										</form>
+									</td>
+								</tr>
 			""";
 
 	private static final String SUCCESS_MESSAGE = """
-					<div class="alert alert-success" role="alert">Success!</div>
+							<div class="alert alert-success" role="alert">Success!</div>
 			""";
 
 	private static final String CSRF_HEADERS = """

@@ -47,9 +47,7 @@ import java.util.Collections;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoInteractions;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 
 @ExtendWith(MockitoExtension.class)
@@ -175,9 +173,9 @@ class DefaultWebAuthnRegistrationPageGeneratingFilterTests {
 							</head>
 							<body>
 								<div class="content">
-									<form class="login-form" method="post" action="#" onclick="return false">
-										<h2>WebAuthn Registration</h2>
-									\t
+									<h2 class="center">WebAuthn Registration</h2>
+									<form class="default-form" method="post" action="#" onclick="return false">
+
 										<div id="success" class="alert alert-success" role="alert"></div>
 										<div id="error" class="alert alert-danger" role="alert"></div>
 										<p>
@@ -197,19 +195,19 @@ class DefaultWebAuthnRegistrationPageGeneratingFilterTests {
 											</tr>
 										</thead>
 										<tbody>
-												<tr>
-								<td>label</td>
-								<td>%s</td>
-								<td>%s</td>
-								<td>0</td>
-								<td>
-									<form class="delete-form" method="post" action="/webauthn/register/NauGCN7bZ5jEBwThcde51g">
-										<input type="hidden" name="method" value="delete">
-										<input type="hidden" name="_csrf" value="CSRF_TOKEN">
-										<button class="primary small" type="submit">Delete</button>
-									</form>
-								</td>
-							</tr>
+											<tr class="v-middle">
+												<td>label</td>
+												<td>%s</td>
+												<td>%s</td>
+												<td class="center">0</td>
+												<td>
+													<form class="delete-form" method="post" action="/webauthn/register/NauGCN7bZ5jEBwThcde51g">
+														<input type="hidden" name="method" value="delete">
+														<input type="hidden" name="_csrf" value="CSRF_TOKEN">
+														<button class="primary small" type="submit">Delete</button>
+													</form>
+												</td>
+											</tr>
 										</tbody>
 									</table>
 								</div>
