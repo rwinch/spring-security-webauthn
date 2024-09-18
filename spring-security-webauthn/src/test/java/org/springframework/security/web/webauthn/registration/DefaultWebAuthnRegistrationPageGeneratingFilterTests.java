@@ -25,10 +25,10 @@ import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.security.web.csrf.CsrfToken;
 import org.springframework.security.web.csrf.DefaultCsrfToken;
-import org.springframework.security.webauthn.api.ImmutablePublicKeyCredentialUserEntity;
-import org.springframework.security.webauthn.api.TestCredentialRecord;
 import org.springframework.security.webauthn.api.Bytes;
+import org.springframework.security.webauthn.api.ImmutablePublicKeyCredentialUserEntity;
 import org.springframework.security.webauthn.api.PublicKeyCredentialUserEntity;
+import org.springframework.security.webauthn.api.TestCredentialRecord;
 import org.springframework.security.webauthn.management.ImmutableCredentialRecord;
 import org.springframework.security.webauthn.management.PublicKeyCredentialUserEntityRepository;
 import org.springframework.security.webauthn.management.UserCredentialRepository;
@@ -62,19 +62,19 @@ class DefaultWebAuthnRegistrationPageGeneratingFilterTests {
 	@Test
 	void constructorWhenNullUserEntities() {
 		assertThatIllegalArgumentException()
-				.isThrownBy(() -> new DefaultWebAuthnRegistrationPageGeneratingFilter(null, this.userCredentials))
-				.withMessage("userEntities cannot be null");
+			.isThrownBy(() -> new DefaultWebAuthnRegistrationPageGeneratingFilter(null, this.userCredentials))
+			.withMessage("userEntities cannot be null");
 	}
 
 	@Test
 	void constructorWhenNullUserCredentials() {
 		assertThatIllegalArgumentException()
-				.isThrownBy(() -> new DefaultWebAuthnRegistrationPageGeneratingFilter(this.userEntities, null))
-				.withMessage("userCredentials cannot be null");
+			.isThrownBy(() -> new DefaultWebAuthnRegistrationPageGeneratingFilter(this.userEntities, null))
+			.withMessage("userCredentials cannot be null");
 	}
 
 	@Test
-	void doFilterWhenNotMatchThenNoInteractions() throws Exception{
+	void doFilterWhenNotMatchThenNoInteractions() throws Exception {
 		MockMvc mockMvc = mockMvc();
 		mockMvc.perform(get("/not-match"));
 
@@ -84,20 +84,21 @@ class DefaultWebAuthnRegistrationPageGeneratingFilterTests {
 	@Test
 	void doFilterThenCsrfDataAttrsPresent() throws Exception {
 		PublicKeyCredentialUserEntity userEntity = ImmutablePublicKeyCredentialUserEntity.builder()
-				.name("user")
-				.id(Bytes.random())
-				.displayName("User")
-				.build();
+			.name("user")
+			.id(Bytes.random())
+			.displayName("User")
+			.build();
 		when(this.userEntities.findByUsername(any())).thenReturn(userEntity);
-		when(this.userCredentials.findByUserId(userEntity.getId())).thenReturn(Arrays.asList(TestCredentialRecord.userCredential().build()));
+		when(this.userCredentials.findByUserId(userEntity.getId()))
+			.thenReturn(Arrays.asList(TestCredentialRecord.userCredential().build()));
 		String body = bodyAsString(matchingRequest());
 		assertThat(body).contains("setupRegistration({\"X-CSRF-TOKEN\" : \"CSRF_TOKEN\"}");
 		assertThat(body.replaceAll("\\s", "")).contains("""
-			<form class="delete-form" method="post" action="/webauthn/register/NauGCN7bZ5jEBwThcde51g">
-				<input type="hidden" name="method" value="delete">
-				<input type="hidden" name="_csrf" value="CSRF_TOKEN">
-				<button class="btn btn-sm btn-primary btn-block" type="submit">Delete</button>
-			</form>""".replaceAll("\\s", ""));
+				<form class="delete-form" method="post" action="/webauthn/register/NauGCN7bZ5jEBwThcde51g">
+					<input type="hidden" name="method" value="delete">
+					<input type="hidden" name="_csrf" value="CSRF_TOKEN">
+					<button class="btn btn-sm btn-primary btn-block" type="submit">Delete</button>
+				</form>""".replaceAll("\\s", ""));
 	}
 
 	@Test
@@ -110,10 +111,10 @@ class DefaultWebAuthnRegistrationPageGeneratingFilterTests {
 	@Test
 	void doFilterWhenNoCredentialsThenNoResults() throws Exception {
 		PublicKeyCredentialUserEntity userEntity = ImmutablePublicKeyCredentialUserEntity.builder()
-				.name("user")
-				.id(Bytes.random())
-				.displayName("User")
-				.build();
+			.name("user")
+			.id(Bytes.random())
+			.displayName("User")
+			.build();
 		when(this.userEntities.findByUsername(any())).thenReturn(userEntity);
 		when(this.userCredentials.findByUserId(userEntity.getId())).thenReturn(Collections.emptyList());
 		String body = bodyAsString(matchingRequest());
@@ -124,10 +125,10 @@ class DefaultWebAuthnRegistrationPageGeneratingFilterTests {
 	@Test
 	void doFilterWhenResultsThenDisplayed() throws Exception {
 		PublicKeyCredentialUserEntity userEntity = ImmutablePublicKeyCredentialUserEntity.builder()
-				.name("user")
-				.id(Bytes.random())
-				.displayName("User")
-				.build();
+			.name("user")
+			.id(Bytes.random())
+			.displayName("User")
+			.build();
 		ImmutableCredentialRecord credential = TestCredentialRecord.userCredential().build();
 		when(this.userEntities.findByUsername(any())).thenReturn(userEntity);
 		when(this.userCredentials.findByUserId(userEntity.getId())).thenReturn(Arrays.asList(credential));
@@ -137,6 +138,78 @@ class DefaultWebAuthnRegistrationPageGeneratingFilterTests {
 		assertThat(body).contains(credential.getLastUsed().toString());
 		assertThat(body).contains(String.valueOf(credential.getSignatureCount()));
 		assertThat(body).contains(credential.getCredentialId().toBase64UrlString());
+		assertThat(body).isEqualTo(
+				"""
+						<html>
+							<head>
+								<meta charset="utf-8">
+								<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+								<meta name="description" content="">
+								<meta name="author" content="">
+								<title>WebAuthn Registration</title>
+								<link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-/Y6pD6FV/Vv2HJnA6t+vslU6fwYXjCFtcEpHbNJ0lyAFsXTsjBbfaDjzALeQsN6M" crossorigin="anonymous">
+								<link href="https://getbootstrap.com/docs/4.0/examples/signin/signin.css" rel="stylesheet" crossorigin="anonymous"/>
+								<script type="text/javascript" src="/login/webauthn.js"></script>
+								<script type="text/javascript">
+								<!--
+									const ui = {
+										getRegisterButton: function() {
+											return document.getElementById('register')
+										},
+										getSuccess: function() {
+											return document.getElementById('success')
+										},
+										getError: function() {
+											return document.getElementById('error')
+										},
+										getLabelInput: function() {
+											return document.getElementById('label')
+										},
+										getDeleteForms: function() {
+											return Array.from(document.getElementsByClassName("delete-form"))
+										},
+									}
+									document.addEventListener("DOMContentLoaded",() => setupRegistration({"X-CSRF-TOKEN" : "CSRF_TOKEN"}, "", ui));
+								//-->
+								</script>
+							</head>
+							<body>
+								<div class="container">
+									<form class="form-signin" method="post" action="#" onclick="return false">
+										<h2 class="form-signin-heading">WebAuthn Registration</h2>
+									\t
+										<div id="success" class="alert alert-success" role="alert"></div>
+										<div id="error" class="alert alert-danger" role="alert"></div>
+										<p>
+											<input type="text" id="label" name="label" class="form-control" placeholder="Passkey Label" required autofocus>
+										</p>
+										<button id="register" class="btn btn-lg btn-primary btn-block" type="submit">Register</button>
+									</form>
+									<table class="table table-striped">
+										<thead>
+											<tr><th>Label</th><th>Created</th><th>Last Used</th><th>Signature Count</th><th>Delete</th></tr>
+										</thead>
+										<tbody>
+												<tr>
+								<td>label</td>
+								<td>%s</td>
+								<td>%s</td>
+								<td>0</td>
+								<td>
+									<form class="delete-form" method="post" action="/webauthn/register/NauGCN7bZ5jEBwThcde51g">
+										<input type="hidden" name="method" value="delete">
+										<input type="hidden" name="_csrf" value="CSRF_TOKEN">
+										<button class="btn btn-sm btn-primary btn-block" type="submit">Delete</button>
+									</form>
+								</td>
+							</tr>
+										</tbody>
+									</table>
+								</div>
+							</body>
+						</html>
+						"""
+					.formatted(credential.getCreated(), credential.getLastUsed()));
 	}
 
 	@Test
@@ -145,13 +218,11 @@ class DefaultWebAuthnRegistrationPageGeneratingFilterTests {
 		String htmlEncodedLabel = HtmlUtils.htmlEscape(label);
 		assertThat(label).isNotEqualTo(htmlEncodedLabel);
 		PublicKeyCredentialUserEntity userEntity = ImmutablePublicKeyCredentialUserEntity.builder()
-				.name("user")
-				.id(Bytes.random())
-				.displayName("User")
-				.build();
-		ImmutableCredentialRecord credential = TestCredentialRecord.userCredential()
-			.label(label)
+			.name("user")
+			.id(Bytes.random())
+			.displayName("User")
 			.build();
+		ImmutableCredentialRecord credential = TestCredentialRecord.userCredential().label(label).build();
 		when(this.userEntities.findByUsername(any())).thenReturn(userEntity);
 		when(this.userCredentials.findByUserId(userEntity.getId())).thenReturn(Arrays.asList(credential));
 		String body = bodyAsString(matchingRequest());
@@ -174,25 +245,26 @@ class DefaultWebAuthnRegistrationPageGeneratingFilterTests {
 	@Test
 	void doFilterWhenContextEmptyThenUrlsEmptyPrefix() throws Exception {
 		PublicKeyCredentialUserEntity userEntity = ImmutablePublicKeyCredentialUserEntity.builder()
-				.name("user")
-				.id(Bytes.random())
-				.displayName("User")
-				.build();
+			.name("user")
+			.id(Bytes.random())
+			.displayName("User")
+			.build();
 		ImmutableCredentialRecord credential = TestCredentialRecord.userCredential().build();
 		when(this.userEntities.findByUsername(any())).thenReturn(userEntity);
 		when(this.userCredentials.findByUserId(userEntity.getId())).thenReturn(Arrays.asList(credential));
 		String body = bodyAsString(matchingRequest());
 		assertThat(body).contains("<script type=\"text/javascript\" src=\"/login/webauthn.js\"></script>");
-		assertThat(body).contains("document.addEventListener(\"DOMContentLoaded\",() => setupRegistration({\"X-CSRF-TOKEN\" : \"CSRF_TOKEN\"}, \"\",");
+		assertThat(body).contains(
+				"document.addEventListener(\"DOMContentLoaded\",() => setupRegistration({\"X-CSRF-TOKEN\" : \"CSRF_TOKEN\"}, \"\",");
 	}
 
 	@Test
 	void doFilterWhenContextNotEmptyThenUrlsPrefixed() throws Exception {
 		PublicKeyCredentialUserEntity userEntity = ImmutablePublicKeyCredentialUserEntity.builder()
-				.name("user")
-				.id(Bytes.random())
-				.displayName("User")
-				.build();
+			.name("user")
+			.id(Bytes.random())
+			.displayName("User")
+			.build();
 		ImmutableCredentialRecord credential = TestCredentialRecord.userCredential().build();
 		when(this.userEntities.findByUsername(any())).thenReturn(userEntity);
 		when(this.userCredentials.findByUserId(userEntity.getId())).thenReturn(Arrays.asList(credential));
@@ -216,15 +288,14 @@ class DefaultWebAuthnRegistrationPageGeneratingFilterTests {
 
 	private MockHttpServletRequestBuilder matchingRequest(String contextPath) {
 		DefaultCsrfToken token = new DefaultCsrfToken("X-CSRF-TOKEN", "_csrf", "CSRF_TOKEN");
-		return get(contextPath + "/webauthn/register")
-			.contextPath(contextPath)
+		return get(contextPath + "/webauthn/register").contextPath(contextPath)
 			.requestAttr(CsrfToken.class.getName(), token);
 	}
 
 	private MockMvc mockMvc() {
-		return MockMvcBuilders
-				.standaloneSetup(new Object())
-				.addFilter(new DefaultWebAuthnRegistrationPageGeneratingFilter(this.userEntities, this.userCredentials))
-				.build();
+		return MockMvcBuilders.standaloneSetup(new Object())
+			.addFilter(new DefaultWebAuthnRegistrationPageGeneratingFilter(this.userEntities, this.userCredentials))
+			.build();
 	}
+
 }
