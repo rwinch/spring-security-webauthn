@@ -22,28 +22,28 @@ package org.springframework.security.webauthn.api;
  * @since 6.4
  * @author Rob Winch
  */
-public enum UserVerificationRequirement {
+public final class UserVerificationRequirement {
 
 	/**
 	 * The <a href="https://www.w3.org/TR/webauthn-3/#dom-userverificationrequirement-discouraged">discouraged</a> value
 	 * indicates that the Relying Party does not want user verification employed during the operation (e.g., in the
 	 * interest of minimizing disruption to the user interaction flow).
 	 */
-	DISCOURAGED("discouraged"),
+	public static final UserVerificationRequirement DISCOURAGED = new UserVerificationRequirement("discouraged");
 
 	/**
 	 * The <a href="https://www.w3.org/TR/webauthn-3/#dom-userverificationrequirement-preferred">preferred</a> value
 	 * indicates that the Relying Party prefers user verification for the operation if possible, but will not fail the
 	 * operation if the response does not have the UV flag set.
 	 */
-	PREFERRED("preferred"),
+	public static final UserVerificationRequirement PREFERRED = new UserVerificationRequirement("preferred");
 
 	/**
 	 * The <a href="https://www.w3.org/TR/webauthn-3/#dom-userverificationrequirement-required">required</a> value
 	 * indicates that the Relying Party requires user verification for the operation and will fail the overall ceremony
 	 * if the response does not have the UV flag set.
 	 */
-	REQUIRED("required");
+	public static final UserVerificationRequirement REQUIRED = new UserVerificationRequirement("required");
 
 	private final String value;
 
