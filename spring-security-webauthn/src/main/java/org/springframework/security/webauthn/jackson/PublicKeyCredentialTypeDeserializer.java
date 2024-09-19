@@ -41,12 +41,7 @@ class PublicKeyCredentialTypeDeserializer extends StdDeserializer<PublicKeyCrede
 	@Override
 	public PublicKeyCredentialType deserialize(JsonParser parser, DeserializationContext ctxt) throws IOException, JacksonException {
 		String type = parser.readValueAs(String.class);
-		for (PublicKeyCredentialType publicKeyCredentialType : PublicKeyCredentialType.values()) {
-			if (publicKeyCredentialType.getValue().equals(type)) {
-				return publicKeyCredentialType;
-			}
-		}
-		return null;
+		return PublicKeyCredentialType.valueOf(type);
 	}
 
 

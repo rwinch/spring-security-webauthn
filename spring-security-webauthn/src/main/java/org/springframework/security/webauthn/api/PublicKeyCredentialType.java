@@ -22,16 +22,16 @@ package org.springframework.security.webauthn.api;
  * @since 6.4
  * @author Rob Winch
  */
-public enum PublicKeyCredentialType {
+public final class PublicKeyCredentialType {
 
 	/**
 	 * The only credential type that currently exists.
 	 */
-	PUBLIC_KEY("public-key");
+	public static final PublicKeyCredentialType PUBLIC_KEY = new PublicKeyCredentialType("public-key");
 
 	private final String value;
 
-	PublicKeyCredentialType(String value) {
+	private PublicKeyCredentialType(String value) {
 		this.value = value;
 	}
 
@@ -41,5 +41,12 @@ public enum PublicKeyCredentialType {
 	 */
 	public String getValue() {
 		return this.value;
+	}
+
+	public static PublicKeyCredentialType valueOf(String value) {
+		if (PUBLIC_KEY.getValue().equals(value)) {
+			return PUBLIC_KEY;
+		}
+		return new PublicKeyCredentialType(value);
 	}
 }
