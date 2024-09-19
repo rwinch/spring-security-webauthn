@@ -24,13 +24,24 @@ function setVisibility(element, value) {
   }
   element.style.display = value ? "block" : "none";
 }
+
 function setError(ui, msg) {
+  resetPopups(ui);
   const error = ui.getError();
   if (!error) {
     return;
   }
-  setVisibility(error, true);
   error.textContent = msg;
+  setVisibility(error, true);
+}
+
+function setSuccess(ui) {
+  resetPopups(ui);
+  const success = ui.getSuccess();
+  if (!success) {
+    return;
+  }
+  setVisibility(success, true);
 }
 
 function resetPopups(ui) {
@@ -38,12 +49,6 @@ function resetPopups(ui) {
   const error = ui.getError();
   setVisibility(success, false);
   setVisibility(error, false);
-  if (!!success) {
-    success.textContent = "";
-  }
-  if (!!error) {
-    error.textContent = "";
-  }
 }
 
 /**
@@ -54,12 +59,16 @@ function resetPopups(ui) {
  * @returns {Promise<void>}
  */
 export async function setupRegistration(headers, contextPath, ui) {
-  // TODO: show success
   resetPopups(ui);
 
   if (!window.PublicKeyCredential) {
     setError(ui, "WebAuthn is not supported");
     return;
+  }
+
+  const queryString = new URLSearchParams(window.location.search);
+  if (queryString.has("success")) {
+    setSuccess(ui);
   }
 
   ui.getRegisterButton().addEventListener("click", async () => {
@@ -90,6 +99,7 @@ async function submitDeleteForm(contextPath, form, headers) {
     },
   };
   await fetch(form.action, options);
+  // TODO: error handling
   window.location.href = `${contextPath}/webauthn/register?success`;
   return false;
 }

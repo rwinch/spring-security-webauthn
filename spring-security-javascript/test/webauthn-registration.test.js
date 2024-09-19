@@ -130,6 +130,19 @@ describe("webauthn-registration", () => {
         assert.calledOnceWithMatch(registerButton.addEventListener, "click", match.typeOf("function"));
       });
 
+      describe(`when the query string contains "success"`, () => {
+        beforeEach(() => {
+          global.window.location.search = "?success&continue=true";
+        });
+
+        it("shows the success popup", async () => {
+          await setupRegistration({}, "/", ui);
+
+          expect(successPopup).to.be.visible;
+          expect(errorPopup).to.be.hidden;
+        });
+      });
+
       describe("when the register button is clicked", () => {
         const headers = { "x-header": "value" };
         const contextPath = "/some/path";
@@ -138,7 +151,7 @@ describe("webauthn-registration", () => {
           await setupRegistration(headers, contextPath, ui);
         });
 
-        it("clears the messages", async () => {
+        it("hides all the popups", async () => {
           successPopup.textContent = "dummy-content";
           successPopup.style.display = "block";
           errorPopup.textContent = "dummy-content";
@@ -146,9 +159,7 @@ describe("webauthn-registration", () => {
 
           await registerButton.addEventListener.firstCall.lastArg();
 
-          expect(successPopup.textContent).to.equal("");
           expect(successPopup).to.be.hidden;
-          expect(errorPopup.textContent).to.equal("");
           expect(errorPopup).to.be.hidden;
         });
 
@@ -195,7 +206,6 @@ describe("webauthn-registration", () => {
         it("sets up forms for fetch", async () => {
           const contextPath = "/some/path";
           const deleteForm = {
-            action: `${contextPath}/webauthn/1234`,
             addEventListener: fake(),
           };
           deleteForms = [deleteForm];

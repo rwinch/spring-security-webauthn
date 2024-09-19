@@ -78,14 +78,11 @@ public class DefaultWebAuthnRegistrationPageGeneratingFilter extends OncePerRequ
 			return;
 		}
 
-		boolean success = request.getParameterMap().containsKey("success");
-
 		CsrfToken csrfToken = (CsrfToken) request.getAttribute(CsrfToken.class.getName());
 		response.setContentType(MediaType.TEXT_HTML_VALUE);
 		response.setStatus(HttpServletResponse.SC_OK);
 		String processedTemplate = HtmlTemplates.fromTemplate(HTML_TEMPLATE)
 			.withValue("contextPath", request.getContextPath())
-			.withRawHtml("message", success ? SUCCESS_MESSAGE : "")
 			.withRawHtml("csrfHeaders", renderCsrfHeader(csrfToken))
 			.withRawHtml("passkeys", passkeyRows(request.getRemoteUser(), request.getContextPath(), csrfToken))
 			.render();
@@ -170,8 +167,7 @@ public class DefaultWebAuthnRegistrationPageGeneratingFilter extends OncePerRequ
 					<div class="content">
 						<h2 class="center">WebAuthn Registration</h2>
 						<form class="default-form" method="post" action="#" onclick="return false">
-			{{message}}
-							<div id="success" class="alert alert-success" role="alert"></div>
+							<div id="success" class="alert alert-success" role="alert">Success!</div>
 							<div id="error" class="alert alert-danger" role="alert"></div>
 							<p>
 								<label for="label" class="screenreader">Passkey Label</label>
@@ -212,10 +208,6 @@ public class DefaultWebAuthnRegistrationPageGeneratingFilter extends OncePerRequ
 										</form>
 									</td>
 								</tr>
-			""";
-
-	private static final String SUCCESS_MESSAGE = """
-							<div class="alert alert-success" role="alert">Success!</div>
 			""";
 
 	private static final String CSRF_HEADERS = """
