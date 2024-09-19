@@ -53,8 +53,8 @@ function resetPopups(ui) {
 
 /**
  *
- * @param headers
- * @param contextPath
+ * @param headers headers added to the credentials creation POST request, typically CSRF
+ * @param contextPath the contextPath from which the app is served
  * @param ui contains getRegisterButton(), getSuccess(), getError(), getLabelInput(), getDeleteForms()
  * @returns {Promise<void>}
  */
