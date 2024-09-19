@@ -43,6 +43,12 @@ public class PublicKeyCredentialRequestOptions {
 	// FIXME: a null userVerification is being rendered, should we forbid null or should we not render null. I think that preferred is the default
 	private final UserVerificationRequirement userVerification;
 
+	// FIXME: Add hints https://www.w3.org/TR/webauthn-3/#dom-publickeycredentialrequestoptions-hints
+
+	// FIXME: Add attestation https://www.w3.org/TR/webauthn-3/#dom-publickeycredentialrequestoptions-attestation
+
+	// FIXME: Add attestationFormats https://www.w3.org/TR/webauthn-3/#dom-publickeycredentialrequestoptions-attestationformats
+
 	private final AuthenticationExtensionsClientInputs extensions;
 
 	private PublicKeyCredentialRequestOptions(Bytes challenge, Duration timeout, String rpId, List<PublicKeyCredentialDescriptor> allowCredentials, UserVerificationRequirement userVerification, AuthenticationExtensionsClientInputs extensions) {

@@ -48,6 +48,8 @@ public class PublicKeyCredentialCreationOptions {
 
 	private final AuthenticatorSelectionCriteria authenticatorSelection;
 
+	// FIXME: Add hints https://www.w3.org/TR/webauthn-3/#dom-publickeycredentialcreationoptions-hints
+
 	private final AttestationConveyancePreference attestation;
 
 	private final AuthenticationExtensionsClientInputs extensions;
