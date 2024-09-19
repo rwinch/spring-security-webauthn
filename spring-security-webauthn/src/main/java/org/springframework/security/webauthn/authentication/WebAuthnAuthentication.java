@@ -54,4 +54,9 @@ public class WebAuthnAuthentication extends AbstractAuthenticationToken {
 	public PublicKeyCredentialUserEntity getPrincipal() {
 		return this.principal;
 	}
+
+	@Override
+	public String getName() {
+		return this.principal.getName();
+	}
 }
