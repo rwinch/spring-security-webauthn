@@ -175,8 +175,7 @@ class DefaultWebAuthnRegistrationPageGeneratingFilterTests {
 								<div class="content">
 									<h2 class="center">WebAuthn Registration</h2>
 									<form class="default-form" method="post" action="#" onclick="return false">
-
-										<div id="success" class="alert alert-success" role="alert"></div>
+										<div id="success" class="alert alert-success" role="alert">Success!</div>
 										<div id="error" class="alert alert-danger" role="alert"></div>
 										<p>
 											<label for="label" class="screenreader">Passkey Label</label>
@@ -232,18 +231,6 @@ class DefaultWebAuthnRegistrationPageGeneratingFilterTests {
 		String body = bodyAsString(matchingRequest());
 		assertThat(body).doesNotContain(credential.getLabel());
 		assertThat(body).contains(htmlEncodedLabel);
-	}
-
-	@Test
-	void doFilterWhenSuccessThenMessage() throws Exception {
-		String body = bodyAsString(matchingRequest().param("success", ""));
-		assertThat(body).contains("Success!");
-	}
-
-	@Test
-	void doFilterWhenNotSuccessThenNoMessage() throws Exception {
-		String body = bodyAsString(matchingRequest());
-		assertThat(body).doesNotContain("Success!");
 	}
 
 	@Test
