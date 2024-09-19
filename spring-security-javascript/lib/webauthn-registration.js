@@ -51,6 +51,20 @@ function resetPopups(ui) {
   setVisibility(error, false);
 }
 
+async function submitDeleteForm(contextPath, form, headers) {
+  const options = {
+    method: "DELETE",
+    headers: {
+      "Content-Type": "application/json",
+      ...headers,
+    },
+  };
+  await fetch(form.action, options);
+  // TODO: error handling
+  window.location.href = `${contextPath}/webauthn/register?success`;
+  return false;
+}
+
 /**
  *
  * @param headers headers added to the credentials creation POST request, typically CSRF
@@ -88,18 +102,4 @@ export async function setupRegistration(headers, contextPath, ui) {
       submitDeleteForm(contextPath, form, headers);
     }),
   );
-}
-
-async function submitDeleteForm(contextPath, form, headers) {
-  const options = {
-    method: "DELETE",
-    headers: {
-      "Content-Type": "application/json",
-      ...headers,
-    },
-  };
-  await fetch(form.action, options);
-  // TODO: error handling
-  window.location.href = `${contextPath}/webauthn/register?success`;
-  return false;
 }
