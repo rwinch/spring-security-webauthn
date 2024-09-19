@@ -25,7 +25,8 @@ import java.security.Principal;
  * @since 6.4
  * @author Rob Winch
  */
-public interface PublicKeyCredentialUserEntity extends Principal {
+// FIXME: This is an interface so that users can use it like UserDetails, but would be ideal if we didn't need an interface in webauthn api for something required by Spring Security's authentication
+public interface PublicKeyCredentialUserEntity {
 	/**
 	 * The <a href="https://www.w3.org/TR/webauthn-3/#dom-publickeycredentialentity-name">name</a> property is a
 	 * human-palatable identifier for a user account.
