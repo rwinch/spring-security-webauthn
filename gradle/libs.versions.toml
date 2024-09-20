@@ -11,5 +11,5 @@ spring-security-bom = 'org.springframework.security:spring-security-bom:6.4.0-SN
 webauthn4j-core = 'com.webauthn4j:webauthn4j-core:0.26.0.RELEASE'
 
 [plugins]
-org-springframework-boot = 'org.springframework.boot:3.3.3'
+org-springframework-boot = 'org.springframework.boot:3.3.4'
 io-spring-dependency-management = 'io.spring.dependency-management:1.1.6'
