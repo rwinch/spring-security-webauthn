@@ -201,7 +201,7 @@ public class DefaultWebAuthnRegistrationPageGeneratingFilter extends OncePerRequ
 									<td>{{lastUsed}}</td>
 									<td class="center">{{signatureCount}}</td>
 									<td>
-										<form class="delete-form" method="post" action="{{contextPath}}/webauthn/register/{{credentialId}}">
+										<form class="delete-form no-margin" method="post" action="{{contextPath}}/webauthn/register/{{credentialId}}">
 											<input type="hidden" name="method" value="delete">
 											<input type="hidden" name="{{csrfParameterName}}" value="{{csrfToken}}">
 											<button class="primary small" type="submit">Delete</button>

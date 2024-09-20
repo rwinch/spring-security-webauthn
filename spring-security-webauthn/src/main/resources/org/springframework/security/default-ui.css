@@ -54,6 +54,10 @@ h2 {
     text-align: center;
 }
 
+.no-margin {
+    margin: 0;
+}
+
 /* Components */
 a,
 a:visited {
