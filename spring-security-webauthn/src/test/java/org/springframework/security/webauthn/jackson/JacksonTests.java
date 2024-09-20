@@ -22,12 +22,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.skyscreamer.jsonassert.JSONAssert;
 import org.springframework.security.web.webauthn.registration.WebAuthnRegistrationFilter;
-import org.springframework.security.webauthn.api.TestPublicKeyCredentialCreationOptions;
-import org.springframework.security.webauthn.api.AuthenticatorAssertionResponse;
-import org.springframework.security.webauthn.api.PublicKeyCredentialRequestOptions;
-import org.springframework.security.webauthn.api.Bytes;
 import org.springframework.security.webauthn.api.*;
-import org.springframework.security.webauthn.management.*;
+import org.springframework.security.webauthn.management.RelyingPartyPublicKey;
 
 import java.time.Duration;
 import java.util.Arrays;
@@ -369,4 +365,18 @@ class JacksonTests {
 		assertThat(registrationRequest).usingRecursiveComparison().isEqualTo(expected);
 	}
 
+	@Test
+	void writeAuthenticationExtensionsClientInputsWhenCredPropsTrue() throws Exception {
+		String expected = """
+			{
+				"credProps": true
+			}
+		""";
+
+		ImmutableAuthenticationExtensionsClientInputs clientInputs = new ImmutableAuthenticationExtensionsClientInputs(ImmutableAuthenticationExtensionsClientInput.credProps);
+
+		String actual = this.mapper.writeValueAsString(clientInputs);
+
+		JSONAssert.assertEquals(expected, actual, false);
+	}
 }
