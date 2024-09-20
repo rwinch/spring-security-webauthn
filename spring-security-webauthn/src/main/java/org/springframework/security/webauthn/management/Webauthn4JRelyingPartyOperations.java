@@ -29,6 +29,7 @@ import com.webauthn4j.data.RegistrationRequest;
 import com.webauthn4j.data.attestation.AttestationObject;
 import com.webauthn4j.data.attestation.authenticator.AttestedCredentialData;
 import com.webauthn4j.data.attestation.authenticator.AuthenticatorData;
+import com.webauthn4j.data.attestation.authenticator.COSEKey;
 import com.webauthn4j.data.attestation.statement.COSEAlgorithmIdentifier;
 import com.webauthn4j.data.client.Origin;
 import com.webauthn4j.data.client.challenge.Challenge;
@@ -223,12 +224,13 @@ public class Webauthn4JRelyingPartyOperations implements WebAuthnRelyingPartyOpe
 		AuthenticatorData<RegistrationExtensionAuthenticatorOutput> authData = registrationData.getAttestationObject().getAuthenticatorData();
 
 		CborConverter cborConverter = this.objectConverter.getCborConverter();
-		byte[] coseKey = cborConverter.writeValueAsBytes(authData.getAttestedCredentialData().getCOSEKey());
+		COSEKey coseKey = authData.getAttestedCredentialData().getCOSEKey();
+		byte[] rawCoseKey = cborConverter.writeValueAsBytes(coseKey);
 		ImmutableCredentialRecord userCredential = ImmutableCredentialRecord.builder()
 				.userEntityUserId(creationOptions.getUser().getId())
 				.credentialType(credential.getType())
 				.credentialId(credential.getRawId())
-				.publicKey(new ImmutablePublicKeyCose(coseKey))
+				.publicKey(new ImmutablePublicKeyCose(rawCoseKey))
 				.signatureCount(authData.getSignCount())
 				.uvInitialized(authData.isFlagUV())
 				.transports(convertTransports(registrationData.getTransports()))
