@@ -56,6 +56,7 @@ public class WebauthnJackson2Module extends SimpleModule {
 		context.setMixInAnnotations(AuthenticatorTransport.class, AuthenticatorTransportMixin.class);
 		context.setMixInAnnotations(COSEAlgorithmIdentifier.class, COSEAlgorithmIdentifierMixin.class);
 		context.setMixInAnnotations(CredentialPropertiesOutput.class, CredentialPropertiesOutputMixin.class);
+		context.setMixInAnnotations(CredProtectAuthenticationExtensionsClientInput.class, CredProtectAuthenticationExtensionsClientInputMixin.class);
 		context.setMixInAnnotations(PublicKeyCredential.PublicKeyCredentialBuilder.class, PublicKeyCredentialMixin.PublicKeyCredentialBuilderMixin.class);
 		context.setMixInAnnotations(PublicKeyCredential.class, PublicKeyCredentialMixin.class);
 		context.setMixInAnnotations(PublicKeyCredentialCreationOptions.class, PublicKeyCredentialCreationOptionsMixin.class);

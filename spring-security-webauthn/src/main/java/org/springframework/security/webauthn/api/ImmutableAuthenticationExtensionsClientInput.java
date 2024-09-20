@@ -31,8 +31,6 @@ public class ImmutableAuthenticationExtensionsClientInput<T> implements Authenti
 	 */
 	public static final AuthenticationExtensionsClientInput<Boolean> credProps = new ImmutableAuthenticationExtensionsClientInput<>("credProps", true);
 
-	public static final AuthenticationExtensionsClientInput<Boolean> credProtect = new ImmutableAuthenticationExtensionsClientInput<>("credProtect", true);
-
 	private final String extensionId;
 
 	private final T input;
