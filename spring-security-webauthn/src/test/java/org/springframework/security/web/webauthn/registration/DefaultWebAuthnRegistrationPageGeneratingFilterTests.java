@@ -94,7 +94,7 @@ class DefaultWebAuthnRegistrationPageGeneratingFilterTests {
 		String body = bodyAsString(matchingRequest());
 		assertThat(body).contains("setupRegistration({\"X-CSRF-TOKEN\" : \"CSRF_TOKEN\"}");
 		assertThat(body.replaceAll("\\s", "")).contains("""
-				<form class="delete-form" method="post" action="/webauthn/register/NauGCN7bZ5jEBwThcde51g">
+				<form class="delete-form no-margin" method="post" action="/webauthn/register/NauGCN7bZ5jEBwThcde51g">
 					<input type="hidden" name="method" value="delete">
 					<input type="hidden" name="_csrf" value="CSRF_TOKEN">
 					<button class="primary small" type="submit">Delete</button>
@@ -200,7 +200,7 @@ class DefaultWebAuthnRegistrationPageGeneratingFilterTests {
 												<td>2024-09-18T11:11:42Z</td>
 												<td class="center">0</td>
 												<td>
-													<form class="delete-form" method="post" action="/webauthn/register/NauGCN7bZ5jEBwThcde51g">
+													<form class="delete-form no-margin" method="post" action="/webauthn/register/NauGCN7bZ5jEBwThcde51g">
 														<input type="hidden" name="method" value="delete">
 														<input type="hidden" name="_csrf" value="CSRF_TOKEN">
 														<button class="primary small" type="submit">Delete</button>
