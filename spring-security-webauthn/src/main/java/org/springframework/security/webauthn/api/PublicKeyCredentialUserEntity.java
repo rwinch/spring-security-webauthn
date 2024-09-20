@@ -16,6 +16,8 @@
 
 package org.springframework.security.webauthn.api;
 
+import org.springframework.security.webauthn.management.RelyingPartyAuthenticationRequest;
+
 import java.security.Principal;
 
 /**
@@ -24,6 +26,7 @@ import java.security.Principal;
  * when creating a new credential.
  * @since 6.4
  * @author Rob Winch
+ * @see org.springframework.security.webauthn.management.WebAuthnRelyingPartyOperations#authenticate(RelyingPartyAuthenticationRequest)
  */
 // FIXME: This is an interface so that users can use it like UserDetails, but would be ideal if we didn't need an interface in webauthn api for something required by Spring Security's authentication
 public interface PublicKeyCredentialUserEntity {
