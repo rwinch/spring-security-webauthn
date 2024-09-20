@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.security.webauthn.management;
+package org.springframework.security.webauthn.api;
 
 /**
  * A <a href="https://www.w3.org/TR/webauthn-3/#sctn-encoded-credPubKey-examples">COSE encoded public key</a>.

@@ -17,6 +17,7 @@
 package org.springframework.security.webauthn.management;
 
 import org.springframework.security.webauthn.api.Bytes;
+import org.springframework.security.webauthn.api.CredentialRecord;
 import org.springframework.util.Assert;
 
 import java.util.*;

@@ -36,7 +36,7 @@ import org.springframework.security.webauthn.api.Bytes;
 import org.springframework.security.webauthn.api.PublicKeyCredentialCreationOptions;
 import org.springframework.security.webauthn.management.RelyingPartyPublicKey;
 import org.springframework.security.webauthn.management.ImmutableRelyingPartyRegistrationRequest;
-import org.springframework.security.webauthn.management.CredentialRecord;
+import org.springframework.security.webauthn.api.CredentialRecord;
 import org.springframework.security.webauthn.management.UserCredentialRepository;
 import org.springframework.security.webauthn.management.WebAuthnRelyingPartyOperations;
 import org.springframework.util.Assert;

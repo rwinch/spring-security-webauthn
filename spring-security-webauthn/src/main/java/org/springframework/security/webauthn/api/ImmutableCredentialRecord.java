@@ -14,15 +14,10 @@
  * limitations under the License.
  */
 
-package org.springframework.security.webauthn.management;
+package org.springframework.security.webauthn.api;
 
 import java.time.Instant;
-import java.util.List;
 import java.util.Set;
-
-import org.springframework.security.webauthn.api.Bytes;
-import org.springframework.security.webauthn.api.AuthenticatorTransport;
-import org.springframework.security.webauthn.api.PublicKeyCredentialType;
 
 /**
  * An immutable {@link CredentialRecord}.

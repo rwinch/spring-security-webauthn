@@ -18,6 +18,8 @@ package org.springframework.security.webauthn.management;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.security.webauthn.api.Bytes;
+import org.springframework.security.webauthn.api.CredentialRecord;
+import org.springframework.security.webauthn.api.ImmutableCredentialRecord;
 import org.springframework.security.webauthn.api.TestCredentialRecord;
 
 import java.time.Instant;

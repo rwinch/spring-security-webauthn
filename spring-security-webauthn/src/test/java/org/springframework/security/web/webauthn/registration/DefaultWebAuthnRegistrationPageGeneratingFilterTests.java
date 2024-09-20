@@ -29,7 +29,7 @@ import org.springframework.security.webauthn.api.Bytes;
 import org.springframework.security.webauthn.api.ImmutablePublicKeyCredentialUserEntity;
 import org.springframework.security.webauthn.api.PublicKeyCredentialUserEntity;
 import org.springframework.security.webauthn.api.TestCredentialRecord;
-import org.springframework.security.webauthn.management.ImmutableCredentialRecord;
+import org.springframework.security.webauthn.api.ImmutableCredentialRecord;
 import org.springframework.security.webauthn.management.PublicKeyCredentialUserEntityRepository;
 import org.springframework.security.webauthn.management.UserCredentialRepository;
 import org.springframework.test.web.servlet.MockMvc;

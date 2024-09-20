@@ -32,7 +32,7 @@ import org.springframework.mock.web.MockServletContext;
 import org.springframework.security.webauthn.api.TestPublicKeyCredentialCreationOptions;
 import org.springframework.security.webauthn.api.TestCredentialRecord;
 import org.springframework.security.webauthn.api.PublicKeyCredentialCreationOptions;
-import org.springframework.security.webauthn.management.ImmutableCredentialRecord;
+import org.springframework.security.webauthn.api.ImmutableCredentialRecord;
 import org.springframework.security.webauthn.management.UserCredentialRepository;
 import org.springframework.security.webauthn.management.WebAuthnRelyingPartyOperations;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;

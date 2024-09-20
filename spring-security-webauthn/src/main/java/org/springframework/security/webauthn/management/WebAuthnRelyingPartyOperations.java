@@ -17,6 +17,7 @@
 package org.springframework.security.webauthn.management;
 
 import org.springframework.security.core.Authentication;
+import org.springframework.security.webauthn.api.CredentialRecord;
 import org.springframework.security.webauthn.api.PublicKeyCredentialRequestOptions;
 import org.springframework.security.webauthn.api.PublicKeyCredentialCreationOptions;
 import org.springframework.security.webauthn.api.PublicKeyCredentialUserEntity;
