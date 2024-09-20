@@ -25,25 +25,21 @@ import org.springframework.security.webauthn.api.AuthenticationExtensionsClientI
 import java.io.IOException;
 
 /**
- * Provides Jackson serialization of {@link AuthenticationExtensionsClientInputs}.
+ * Provides Jackson serialization of {@link AuthenticationExtensionsClientInput}.
  * @since 6.4
  * @author Rob Winch
  */
-class AuthenticationExtensionsClientInputsSerializer extends StdSerializer<AuthenticationExtensionsClientInputs> {
+class AuthenticationExtensionsClientInputSerializer extends StdSerializer<AuthenticationExtensionsClientInput> {
 
 	/**
 	 * Creates a new instance.
 	 */
-	AuthenticationExtensionsClientInputsSerializer() {
-		super(AuthenticationExtensionsClientInputs.class);
+	AuthenticationExtensionsClientInputSerializer() {
+		super(AuthenticationExtensionsClientInput.class);
 	}
 
 	@Override
-	public void serialize(AuthenticationExtensionsClientInputs inputs, JsonGenerator jgen, SerializerProvider provider) throws IOException {
-		jgen.writeStartObject();
-		for (AuthenticationExtensionsClientInput input : inputs.getInputs()) {
-			jgen.writeObject(input);
-		}
-		jgen.writeEndObject();
+	public void serialize(AuthenticationExtensionsClientInput input, JsonGenerator jgen, SerializerProvider provider) throws IOException {
+		jgen.writeObjectField(input.getExtensionId(), input.getInput());
 	}
 }

@@ -44,6 +44,7 @@ public class WebauthnJackson2Module extends SimpleModule {
 	public void setupModule(SetupContext context) {
 		context.setMixInAnnotations(Bytes.class, BytesMixin.class);
 		context.setMixInAnnotations(AttestationConveyancePreference.class, AttestationConveyancePreferenceMixin.class);
+		context.setMixInAnnotations(AuthenticationExtensionsClientInput.class, AuthenticationExtensionsClientInputMixin.class);
 		context.setMixInAnnotations(AuthenticationExtensionsClientInputs.class, AuthenticationExtensionsClientInputsMixin.class);
 		context.setMixInAnnotations(AuthenticationExtensionsClientOutputs.class, AuthenticationExtensionsClientOutputsMixin.class);
 		context.setMixInAnnotations(AuthenticatorAssertionResponse.AuthenticatorAssertionResponseBuilder.class, AuthenticatorAssertionResponseMixin.AuthenticatorAssertionResponseBuilderMixin.class);
