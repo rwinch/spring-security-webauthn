@@ -60,9 +60,6 @@ async function submitDeleteForm(contextPath, form, headers) {
     },
   };
   await fetch(form.action, options);
-  // TODO: error handling
-  window.location.href = `${contextPath}/webauthn/register?success`;
-  return false;
 }
 
 /**
@@ -99,7 +96,12 @@ export async function setupRegistration(headers, contextPath, ui) {
   ui.getDeleteForms().forEach((form) =>
     form.addEventListener("submit", async function (e) {
       e.preventDefault();
-      submitDeleteForm(contextPath, form, headers);
+      try {
+        await submitDeleteForm(contextPath, form, headers);
+        window.location.href = `${contextPath}/webauthn/register?success`;
+      } catch (err) {
+        setError(ui, err.message);
+      }
     }),
   );
 }

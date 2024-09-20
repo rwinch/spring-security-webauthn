@@ -204,28 +204,66 @@ describe("webauthn-registration", () => {
         });
 
         it("sets up forms for fetch", async () => {
-          const contextPath = "/some/path";
+          const deleteFormOne = {
+            addEventListener: fake(),
+          };
+          const deleteFormTwo = {
+            addEventListener: fake(),
+          };
+          deleteForms = [deleteFormOne, deleteFormTwo];
+
+          await setupRegistration({}, "", ui);
+
+          assert.calledOnceWithMatch(deleteFormOne.addEventListener, "submit", match.typeOf("function"));
+          assert.calledOnceWithMatch(deleteFormTwo.addEventListener, "submit", match.typeOf("function"));
+        });
+
+        describe("when the delete button is clicked", () => {
+          it("calls POST to the form action", async () => {
+            const contextPath = "/some/path";
+            const deleteForm = {
+              addEventListener: fake(),
+              action: `${contextPath}/webauthn/1234`,
+            };
+            deleteForms = [deleteForm];
+            const headers = {
+              "X-CSRF-TOKEN": "token",
+            };
+
+            await setupRegistration(headers, contextPath, ui);
+
+            const clickEvent = {
+              preventDefault: fake(),
+            };
+            await deleteForm.addEventListener.firstCall.lastArg(clickEvent);
+            assert.calledOnce(clickEvent.preventDefault);
+            assert.calledOnceWithExactly(global.fetch, `/some/path/webauthn/1234`, {
+              method: "DELETE",
+              headers: {
+                "Content-Type": "application/json",
+                ...headers,
+              },
+            });
+            expect(global.window.location.href).to.equal(`/some/path/webauthn/register?success`);
+          });
+        });
+
+        it("handles errors", async () => {
+          global.fetch = fake.rejects("Server threw an error");
+          global.window.location.href = "/initial/location";
           const deleteForm = {
             addEventListener: fake(),
           };
           deleteForms = [deleteForm];
-          const headers = {
-            "X-CSRF-TOKEN": "token",
-          };
-          await setupRegistration(headers, contextPath, ui);
-          const clickEvent = {
-            preventDefault: fake(),
-          };
+
+          await setupRegistration({}, "", ui);
+          const clickEvent = { preventDefault: fake() };
           await deleteForm.addEventListener.firstCall.lastArg(clickEvent);
-          assert.calledOnce(clickEvent.preventDefault);
-          assert.calledOnceWithExactly(global.fetch, deleteForm.action, {
-            method: "DELETE",
-            headers: {
-              "Content-Type": "application/json",
-              ...headers,
-            },
-          });
-          expect(global.window.location.href).to.equal(`${contextPath}/webauthn/register?success`);
+
+          expect(errorPopup).to.be.visible;
+          expect(errorPopup.textContent).to.equal("Server threw an error");
+          // URL does not change
+          expect(global.window.location.href).to.equal("/initial/location");
         });
       });
     });
