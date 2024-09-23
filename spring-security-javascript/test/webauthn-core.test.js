@@ -175,6 +175,16 @@ describe("webauthn-core", () => {
 
       expect(global.window.location.href).to.equal("/login?error");
     });
+
+    it("request fails", async () => {
+      httpPostStub.withArgs(`${contextPath}/login/webauthn`, match.any, match.any).rejects("Server threw an error");
+
+      try {
+        await webauthn.authenticate({}, contextPath, false);
+      } catch (err) {
+        expect(err).to.be.an("error");
+      }
+    });
   });
 
   describe("register", () => {
