@@ -300,10 +300,11 @@ describe("webauthn-core", () => {
     it("throws when label is missing", async () => {
       try {
         await webauthn.register({}, "/", "");
-        expect.fail("register should throw");
       } catch (err) {
         expect(err).to.be.an("error");
+        return;
       }
+      expect.fail("register should throw");
     });
 
     it("calls the authenticator with the correct options", async () => {
