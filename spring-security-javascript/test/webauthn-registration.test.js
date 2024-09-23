@@ -85,6 +85,9 @@ describe("webauthn-registration", () => {
           href: {},
         },
       };
+      global.console = {
+        error: stub(),
+      };
     });
 
     afterEach(() => {
@@ -187,6 +190,10 @@ describe("webauthn-registration", () => {
           expect(errorPopup.textContent).to.equal("The registration failed");
           expect(errorPopup).to.be.visible;
           expect(successPopup).to.be.hidden;
+          assert.calledOnceWithMatch(
+            global.console.error,
+            match.instanceOf(Error).and(match.has("message", "The registration failed")),
+          );
         });
       });
 

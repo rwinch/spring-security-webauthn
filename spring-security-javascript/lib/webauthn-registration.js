@@ -90,6 +90,7 @@ export async function setupRegistration(headers, contextPath, ui) {
       window.location.href = `${contextPath}/webauthn/register?success`;
     } catch (err) {
       setError(ui, err.message);
+      console.error(err);
     }
   });
 
