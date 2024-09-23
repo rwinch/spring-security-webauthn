@@ -177,7 +177,9 @@ describe("webauthn-core", () => {
     });
 
     it("request fails", async () => {
-      httpPostStub.withArgs(`${contextPath}/login/webauthn`, match.any, match.any).rejects("Server threw an error");
+      httpPostStub
+        .withArgs(`${contextPath}/login/webauthn`, match.any, match.any)
+        .rejects(new Error("Server threw an error"));
 
       try {
         await webauthn.authenticate({}, contextPath, false);
@@ -302,6 +304,7 @@ describe("webauthn-core", () => {
         await webauthn.register({}, "/", "");
       } catch (err) {
         expect(err).to.be.an("error");
+        expect(err.message).to.equal("Error: Passkey Label is required");
         return;
       }
       expect.fail("register should throw");
@@ -361,7 +364,7 @@ describe("webauthn-core", () => {
     it("throws when the navigator.credentials.create fails", async () => {
       global.navigator = {
         credentials: {
-          create: fake.rejects("authenticator threw an error"),
+          create: fake.rejects(new Error("authenticator threw an error")),
         },
       };
       try {
