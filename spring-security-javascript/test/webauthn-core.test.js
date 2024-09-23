@@ -247,6 +247,12 @@ describe("webauthn-core", () => {
       httpPostStub.withArgs(contextPath + "/webauthn/register/options", match.any).resolves({
         json: fake.resolves(credentialsCreateOptions),
       });
+      httpPostStub.withArgs(`${contextPath}/webauthn/register`, match.any, match.any).resolves({
+        ok: true,
+        json: fake.resolves({
+          success: true,
+        }),
+      });
 
       global.window = {
         ...global.window,
@@ -263,13 +269,6 @@ describe("webauthn-core", () => {
     it("succeeds", async () => {
       const contextPath = "/some/path";
       const headers = { _csrf: "csrf-value" };
-
-      httpPostStub.withArgs(`${contextPath}/webauthn/register`, match.any, match.any).resolves({
-        ok: true,
-        json: fake.resolves({
-          success: true,
-        }),
-      });
 
       await webauthn.register(headers, contextPath, "my passkey");
       assert.calledWithExactly(
@@ -308,11 +307,7 @@ describe("webauthn-core", () => {
     });
 
     it("calls the authenticator with the correct options", async () => {
-      try {
-        await webauthn.register({}, contextPath, "my passkey");
-      } catch {
-        // ignored
-      }
+      await webauthn.register({}, contextPath, "my passkey");
 
       assert.calledOnceWithExactly(
         global.navigator.credentials.create,
