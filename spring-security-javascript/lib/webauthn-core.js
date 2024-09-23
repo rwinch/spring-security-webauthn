@@ -92,7 +92,7 @@ async function register(headers, contextPath, label) {
   const optionsResponse = await http.post(`${contextPath}/webauthn/register/options`, headers);
   const options = await optionsResponse.json();
   // FIXME: Use https://www.w3.org/TR/webauthn-3/#sctn-parseCreationOptionsFromJSON
-  let decodedExcludeCredentials = !options.excludeCredentials
+  const decodedExcludeCredentials = !options.excludeCredentials
     ? []
     : options.excludeCredentials.map((cred) => ({
         ...cred,
@@ -116,7 +116,7 @@ async function register(headers, contextPath, label) {
       signal: abortController.newSignal(),
     });
   } catch (e) {
-    throw new Error("Registration failed: " + e.message, { cause: e });
+    throw new Error(`Registration failed: ${e.message}`, { cause: e });
   }
 
   // FIXME: Let response be credential.response. If response is not an instance of AuthenticatorAttestationResponse, abort the ceremony with a user-visible error. https://www.w3.org/TR/webauthn-3/#sctn-registering-a-new-credential
