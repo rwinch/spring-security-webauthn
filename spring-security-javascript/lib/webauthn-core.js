@@ -89,8 +89,14 @@ async function register(headers, contextPath, label) {
     throw new Error("Error: Passkey Label is required");
   }
 
-  const optionsResponse = await http.post(`${contextPath}/webauthn/register/options`, headers);
-  const options = await optionsResponse.json();
+  let options;
+  try {
+    const optionsResponse = await http.post(`${contextPath}/webauthn/register/options`, headers);
+    options = await optionsResponse.json();
+  } catch (e) {
+    throw new Error(`Could not fetch registration options: ${e.message}`, { cause: e });
+  }
+
   // FIXME: Use https://www.w3.org/TR/webauthn-3/#sctn-parseCreationOptionsFromJSON
   const decodedExcludeCredentials = !options.excludeCredentials
     ? []

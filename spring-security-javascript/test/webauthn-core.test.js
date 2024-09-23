@@ -310,6 +310,30 @@ describe("webauthn-core", () => {
       expect.fail("register should throw");
     });
 
+    it("throws when cannot get the registration options", async () => {
+      httpPostStub.withArgs(match.any, match.any).rejects(new Error("Server threw an error"));
+      try {
+        await webauthn.register({}, "/", "my passkey");
+      } catch (err) {
+        expect(err).to.be.an("error");
+        expect(err.message).to.equal("Could not fetch registration options: Server threw an error");
+        return;
+      }
+      expect.fail("register should throw");
+    });
+
+    it("throws when the registration options are not valid JSON", async () => {
+      httpPostStub.withArgs(match.any, match.any).resolves({ json: fake.rejects(new Error("Not a JSON response")) });
+      try {
+        await webauthn.register({}, "/", "my passkey");
+      } catch (err) {
+        expect(err).to.be.an("error");
+        expect(err.message).to.equal("Could not fetch registration options: Not a JSON response");
+        return;
+      }
+      expect.fail("register should throw");
+    });
+
     it("calls the authenticator with the correct options", async () => {
       await webauthn.register({}, contextPath, "my passkey");
 
