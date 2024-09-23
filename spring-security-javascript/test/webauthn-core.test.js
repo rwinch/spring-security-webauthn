@@ -402,8 +402,62 @@ describe("webauthn-core", () => {
       expect.fail("register should throw");
     });
 
-    it("throws when the registration fails", () => {
-      // TODO
+    it("throws when the registration call fails", async () => {
+      httpPostStub
+        .withArgs(`${contextPath}/webauthn/register`, match.any, match.any)
+        .rejects(new Error("Server threw an error"));
+      try {
+        await webauthn.register({}, contextPath, "my passkey");
+      } catch (err) {
+        expect(err).to.be.an("error");
+        expect(err.message).to.equal("Registration failed: Server threw an error");
+        expect(err.cause).to.deep.equal(new Error("Server threw an error"));
+        return;
+      }
+      expect.fail("register should throw");
+    });
+
+    it("throws when the registration call does not return JSON", async () => {
+      httpPostStub.withArgs(`${contextPath}/webauthn/register`, match.any, match.any).resolves({
+        json: fake.rejects(new Error("Not valid JSON")),
+      });
+      try {
+        await webauthn.register({}, contextPath, "my passkey");
+      } catch (err) {
+        expect(err).to.be.an("error");
+        expect(err.message).to.equal("Registration failed: Not valid JSON");
+        expect(err.cause).to.deep.equal(new Error("Not valid JSON"));
+        return;
+      }
+      expect.fail("register should throw");
+    });
+
+    it("throws when the server returns null", async () => {
+      httpPostStub.withArgs(`${contextPath}/webauthn/register`, match.any, match.any).resolves({
+        json: fake.resolves(null),
+      });
+      try {
+        await webauthn.register({}, contextPath, "my passkey");
+      } catch (err) {
+        expect(err).to.be.an("error");
+        expect(err.message).to.equal("Registration failed: Server responded with null");
+        return;
+      }
+      expect.fail("register should throw");
+    });
+
+    it("throws when the server success == false", async () => {
+      httpPostStub.withArgs(`${contextPath}/webauthn/register`, match.any, match.any).resolves({
+        json: fake.resolves({ success: false }),
+      });
+      try {
+        await webauthn.register({}, contextPath, "my passkey");
+      } catch (err) {
+        expect(err).to.be.an("error");
+        expect(err.message).to.equal('Registration failed: Server responded with {"success":false}');
+        return;
+      }
+      expect.fail("register should throw");
     });
   });
 });

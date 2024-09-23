@@ -147,16 +147,16 @@ async function register(headers, contextPath, label) {
     },
   };
 
-  // POST the response to the endpoint that calls
-  const verificationResp = await http.post(`${contextPath}/webauthn/register`, headers, registrationRequest);
+  let verificationJSON;
+  try {
+    const verificationResp = await http.post(`${contextPath}/webauthn/register`, headers, registrationRequest);
+    verificationJSON = await verificationResp.json();
+  } catch (e) {
+    throw new Error(`Registration failed: ${e.message}`, { cause: e });
+  }
 
-  // Wait for the results of verification
-  const verificationJSON = await verificationResp.json();
-
-  // Show UI appropriate for the `success` status & reload to display the new registration
   if (!(verificationJSON && verificationJSON.success)) {
-    // TODO: handle <pre>
-    throw new Error(`Registration failed! Response: <pre>${JSON.stringify(verificationJSON, null, 2)}</pre>`);
+    throw new Error(`Registration failed: Server responded with ${JSON.stringify(verificationJSON)}`);
   }
 }
 
