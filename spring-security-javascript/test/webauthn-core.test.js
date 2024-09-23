@@ -316,7 +316,9 @@ describe("webauthn-core", () => {
         await webauthn.register({}, "/", "my passkey");
       } catch (err) {
         expect(err).to.be.an("error");
-        expect(err.message).to.equal("Could not fetch registration options: Server threw an error");
+        expect(err.message).to.equal(
+          "Registration failed. Could not fetch registration options: Server threw an error",
+        );
         return;
       }
       expect.fail("register should throw");
@@ -328,7 +330,7 @@ describe("webauthn-core", () => {
         await webauthn.register({}, "/", "my passkey");
       } catch (err) {
         expect(err).to.be.an("error");
-        expect(err.message).to.equal("Could not fetch registration options: Not a JSON response");
+        expect(err.message).to.equal("Registration failed. Could not fetch registration options: Not a JSON response");
         return;
       }
       expect.fail("register should throw");
@@ -395,7 +397,9 @@ describe("webauthn-core", () => {
         await webauthn.register({}, contextPath, "my passkey");
       } catch (err) {
         expect(err).to.be.an("error");
-        expect(err.message).to.equal("Registration failed: authenticator threw an error");
+        expect(err.message).to.equal(
+          "Registration failed. Call to navigator.credentials.create failed: authenticator threw an error",
+        );
         expect(err.cause).to.deep.equal(new Error("authenticator threw an error"));
         return;
       }
@@ -410,7 +414,9 @@ describe("webauthn-core", () => {
         await webauthn.register({}, contextPath, "my passkey");
       } catch (err) {
         expect(err).to.be.an("error");
-        expect(err.message).to.equal("Registration failed: Server threw an error");
+        expect(err.message).to.equal(
+          "Registration failed. Could not process the registration request: Server threw an error",
+        );
         expect(err.cause).to.deep.equal(new Error("Server threw an error"));
         return;
       }
@@ -425,7 +431,7 @@ describe("webauthn-core", () => {
         await webauthn.register({}, contextPath, "my passkey");
       } catch (err) {
         expect(err).to.be.an("error");
-        expect(err.message).to.equal("Registration failed: Not valid JSON");
+        expect(err.message).to.equal("Registration failed. Could not process the registration request: Not valid JSON");
         expect(err.cause).to.deep.equal(new Error("Not valid JSON"));
         return;
       }
@@ -440,7 +446,7 @@ describe("webauthn-core", () => {
         await webauthn.register({}, contextPath, "my passkey");
       } catch (err) {
         expect(err).to.be.an("error");
-        expect(err.message).to.equal("Registration failed: Server responded with null");
+        expect(err.message).to.equal("Registration failed. Server responded with: null");
         return;
       }
       expect.fail("register should throw");
@@ -454,7 +460,7 @@ describe("webauthn-core", () => {
         await webauthn.register({}, contextPath, "my passkey");
       } catch (err) {
         expect(err).to.be.an("error");
-        expect(err.message).to.equal('Registration failed: Server responded with {"success":false}');
+        expect(err.message).to.equal('Registration failed. Server responded with: {"success":false}');
         return;
       }
       expect.fail("register should throw");

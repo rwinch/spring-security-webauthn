@@ -94,7 +94,7 @@ async function register(headers, contextPath, label) {
     const optionsResponse = await http.post(`${contextPath}/webauthn/register/options`, headers);
     options = await optionsResponse.json();
   } catch (e) {
-    throw new Error(`Could not fetch registration options: ${e.message}`, { cause: e });
+    throw new Error(`Registration failed. Could not fetch registration options: ${e.message}`, { cause: e });
   }
 
   // FIXME: Use https://www.w3.org/TR/webauthn-3/#sctn-parseCreationOptionsFromJSON
@@ -122,7 +122,7 @@ async function register(headers, contextPath, label) {
       signal: abortController.newSignal(),
     });
   } catch (e) {
-    throw new Error(`Registration failed: ${e.message}`, { cause: e });
+    throw new Error(`Registration failed. Call to navigator.credentials.create failed: ${e.message}`, { cause: e });
   }
 
   // FIXME: Let response be credential.response. If response is not an instance of AuthenticatorAttestationResponse, abort the ceremony with a user-visible error. https://www.w3.org/TR/webauthn-3/#sctn-registering-a-new-credential
@@ -152,11 +152,11 @@ async function register(headers, contextPath, label) {
     const verificationResp = await http.post(`${contextPath}/webauthn/register`, headers, registrationRequest);
     verificationJSON = await verificationResp.json();
   } catch (e) {
-    throw new Error(`Registration failed: ${e.message}`, { cause: e });
+    throw new Error(`Registration failed. Could not process the registration request: ${e.message}`, { cause: e });
   }
 
   if (!(verificationJSON && verificationJSON.success)) {
-    throw new Error(`Registration failed: Server responded with ${JSON.stringify(verificationJSON)}`);
+    throw new Error(`Registration failed. Server responded with: ${JSON.stringify(verificationJSON)}`);
   }
 }
 
