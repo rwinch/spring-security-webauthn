@@ -32,7 +32,10 @@ async function authenticate(headers, contextPath, useConditionalMediation) {
   // FIXME: add contextRoot
   const options = await http.post(`${contextPath}/webauthn/authenticate/options`, headers).then((r) => r.json());
   // FIXME: Use https://www.w3.org/TR/webauthn-3/#sctn-parseRequestOptionsFromJSON
-  const decodedOptions = { ...options, challenge: base64url.decode(options.challenge) };
+  const decodedOptions = {
+    ...options,
+    challenge: base64url.decode(options.challenge),
+  };
 
   // Invoke the WebAuthn get() method.
   const credentialOptions = {
@@ -106,14 +109,16 @@ async function register(headers, contextPath, label) {
     excludeCredentials: decodedExcludeCredentials,
   };
 
-  const credentialsContainer = await navigator.credentials
-    .create({
+  let credentialsContainer;
+  try {
+    credentialsContainer = await navigator.credentials.create({
       publicKey: decodedOptions,
       signal: abortController.newSignal(),
-    })
-    .catch((e) => {
-      throw new Error("Registration failed: " + e.message, { cause: e });
     });
+  } catch (e) {
+    throw new Error("Registration failed: " + e.message, { cause: e });
+  }
+
   // FIXME: Let response be credential.response. If response is not an instance of AuthenticatorAttestationResponse, abort the ceremony with a user-visible error. https://www.w3.org/TR/webauthn-3/#sctn-registering-a-new-credential
   const { response } = credentialsContainer;
   const credential = {

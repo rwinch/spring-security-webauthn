@@ -358,8 +358,21 @@ describe("webauthn-core", () => {
       );
     });
 
-    it("throws when the navigator.credentials.create fails", () => {
-      // TODO
+    it("throws when the navigator.credentials.create fails", async () => {
+      global.navigator = {
+        credentials: {
+          create: fake.rejects("authenticator threw an error"),
+        },
+      };
+      try {
+        await webauthn.register({}, contextPath, "my passkey");
+      } catch (err) {
+        expect(err).to.be.an("error");
+        expect(err.message).to.equal("Registration failed: authenticator threw an error");
+        expect(err.cause).to.deep.equal(new Error("authenticator threw an error"));
+        return;
+      }
+      expect.fail("register should throw");
     });
 
     it("throws when the registration fails", () => {
