@@ -247,6 +247,8 @@ describe("webauthn-core", () => {
       };
       httpPostStub = stub(http, "post");
       httpPostStub.withArgs(contextPath + "/webauthn/register/options", match.any).resolves({
+        ok: true,
+        status: 200,
         json: fake.resolves(credentialsCreateOptions),
       });
       httpPostStub.withArgs(`${contextPath}/webauthn/register`, match.any, match.any).resolves({
@@ -376,8 +378,29 @@ describe("webauthn-core", () => {
         expect.fail("register should throw");
       });
 
+      it("when registration options call returns other than HTTP 200 OK", async () => {
+        httpPostStub.withArgs(match.any, match.any).resolves({
+          ok: false,
+          status: 400,
+        });
+        try {
+          await webauthn.register({}, "/", "my passkey");
+        } catch (err) {
+          expect(err).to.be.an("error");
+          expect(err.message).to.equal(
+            "Registration failed. Could not fetch registration options: Server responded with HTTP 400",
+          );
+          return;
+        }
+        expect.fail("register should throw");
+      });
+
       it("when the registration options are not valid JSON", async () => {
-        httpPostStub.withArgs(match.any, match.any).resolves({ json: fake.rejects(new Error("Not a JSON response")) });
+        httpPostStub.withArgs(match.any, match.any).resolves({
+          ok: true,
+          status: 200,
+          json: fake.rejects(new Error("Not a JSON response")),
+        });
         try {
           await webauthn.register({}, "/", "my passkey");
         } catch (err) {
@@ -426,8 +449,25 @@ describe("webauthn-core", () => {
         expect.fail("register should throw");
       });
 
+      it("when the server does not return HTTP 200 OK", async () => {
+        httpPostStub.withArgs(`${contextPath}/webauthn/register`, match.any, match.any).resolves({
+          ok: false,
+          status: 400,
+        });
+        try {
+          await webauthn.register({}, contextPath, "my passkey");
+        } catch (err) {
+          expect(err).to.be.an("error");
+          expect(err.message).to.equal("Registration failed. Could not process the registration request: HTTP 400");
+          return;
+        }
+        expect.fail("register should throw");
+      });
+
       it("when the registration call does not return JSON", async () => {
         httpPostStub.withArgs(`${contextPath}/webauthn/register`, match.any, match.any).resolves({
+          ok: true,
+          status: 200,
           json: fake.rejects(new Error("Not valid JSON")),
         });
         try {
@@ -445,6 +485,8 @@ describe("webauthn-core", () => {
 
       it("when the server returns null", async () => {
         httpPostStub.withArgs(`${contextPath}/webauthn/register`, match.any, match.any).resolves({
+          ok: true,
+          status: 200,
           json: fake.resolves(null),
         });
         try {
@@ -459,6 +501,8 @@ describe("webauthn-core", () => {
 
       it('when the server returns {"success":false}', async () => {
         httpPostStub.withArgs(`${contextPath}/webauthn/register`, match.any, match.any).resolves({
+          ok: true,
+          status: 200,
           json: fake.resolves({ success: false }),
         });
         try {

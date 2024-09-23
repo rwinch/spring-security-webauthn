@@ -92,6 +92,9 @@ async function register(headers, contextPath, label) {
   let options;
   try {
     const optionsResponse = await http.post(`${contextPath}/webauthn/register/options`, headers);
+    if (!optionsResponse.ok) {
+      throw new Error(`Server responded with HTTP ${optionsResponse.status}`);
+    }
     options = await optionsResponse.json();
   } catch (e) {
     throw new Error(`Registration failed. Could not fetch registration options: ${e.message}`, { cause: e });
@@ -150,6 +153,9 @@ async function register(headers, contextPath, label) {
   let verificationJSON;
   try {
     const verificationResp = await http.post(`${contextPath}/webauthn/register`, headers, registrationRequest);
+    if (!verificationResp.ok) {
+      throw new Error(`HTTP ${verificationResp.status}`);
+    }
     verificationJSON = await verificationResp.json();
   } catch (e) {
     throw new Error(`Registration failed. Could not process the registration request: ${e.message}`, { cause: e });
