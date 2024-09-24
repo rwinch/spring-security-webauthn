@@ -89,18 +89,22 @@ describe("webauthn-core", () => {
       extensions: {},
     };
 
-    // This is kind of a self-fulfilling prophecy type of test ; we produce array buffers by calling
-    // base64url.decode ; they will then be re-encoded to the same string.
+    // This is kind of a self-fulfilling prophecy type of test: we produce array buffers by calling
+    // base64url.decode ; they will then be re-encoded to the same string in the production code.
     // The ArrayBuffer API is not super friendly.
     beforeEach(() => {
       httpPostStub = stub(http, "post");
       httpPostStub.withArgs(contextPath + "/webauthn/authenticate/options", match.any).resolves({
         json: fake.resolves(credentialsGetOptions),
       });
-      global.window = {
-        ...global.window,
-        location: {},
-      };
+      httpPostStub.withArgs(`${contextPath}/login/webauthn`, match.any, match.any).resolves({
+        ok: true,
+        json: fake.resolves({
+          authenticated: true,
+          redirectUrl: "/success",
+        }),
+      });
+
       const validAuthenticatorResponse = {
         id: "UgghgP5QKozwsSUK1twCj8mpgZs",
         rawId: base64url.decode("UgghgP5QKozwsSUK1twCj8mpgZs"),
@@ -123,6 +127,10 @@ describe("webauthn-core", () => {
           get: fake.resolves(validAuthenticatorResponse),
         },
       };
+      global.window = {
+        ...global.window,
+        location: {},
+      };
     });
 
     afterEach(() => {
@@ -132,17 +140,8 @@ describe("webauthn-core", () => {
     });
 
     it("succeeds", async () => {
-      httpPostStub.withArgs(`${contextPath}/login/webauthn`, match.any, match.any).resolves({
-        ok: true,
-        json: fake.resolves({
-          authenticated: true,
-          redirectUrl: "/success",
-        }),
-      });
-
       await webauthn.authenticate({ "x-custom": "some-value" }, contextPath, false);
 
-      // TODO: assert options
       expect(global.window.location.href).to.equal("/success");
       assert.calledWith(
         httpPostStub.lastCall,
