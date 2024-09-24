@@ -95,10 +95,13 @@ describe("webauthn-core", () => {
     beforeEach(() => {
       httpPostStub = stub(http, "post");
       httpPostStub.withArgs(contextPath + "/webauthn/authenticate/options", match.any).resolves({
+        ok: true,
+        status: 200,
         json: fake.resolves(credentialsGetOptions),
       });
       httpPostStub.withArgs(`${contextPath}/login/webauthn`, match.any, match.any).resolves({
         ok: true,
+        status: 200,
         json: fake.resolves({
           authenticated: true,
           redirectUrl: "/success",
@@ -182,26 +185,175 @@ describe("webauthn-core", () => {
     });
 
     describe("authentication failures", () => {
-      it("is rejected by the server", async () => {
-        httpPostStub.withArgs(`${contextPath}/login/webauthn`, match.any, match.any).resolves({
-          ok: false,
-        });
-
-        await webauthn.authenticate({}, contextPath, false);
-
-        expect(global.window.location.href).to.equal("/login?error");
-      });
-
-      it("request fails", async () => {
+      it("when authentication options call", async () => {
         httpPostStub
-          .withArgs(`${contextPath}/login/webauthn`, match.any, match.any)
-          .rejects(new Error("Server threw an error"));
+          .withArgs(`${contextPath}/webauthn/authenticate/options`, match.any)
+          .rejects(new Error("Connection refused"));
 
         try {
           await webauthn.authenticate({}, contextPath, false);
         } catch (err) {
           expect(err).to.be.an("error");
+          expect(err.message).to.equal(
+            "Authentication failed. Could not fetch authentication options: Connection refused",
+          );
+          return;
         }
+        expect.fail("authenticate should throw");
+      });
+
+      it("when authentication options call returns does not return HTTP 200 OK", async () => {
+        httpPostStub.withArgs(`${contextPath}/webauthn/authenticate/options`, match.any).resolves({
+          ok: false,
+          status: 400,
+        });
+
+        try {
+          await webauthn.authenticate({}, contextPath, false);
+        } catch (err) {
+          expect(err).to.be.an("error");
+          expect(err.message).to.equal("Authentication failed. Could not fetch authentication options: HTTP 400");
+          return;
+        }
+        expect.fail("authenticate should throw");
+      });
+
+      it("when authentication options are not valid json", async () => {
+        httpPostStub.withArgs(`${contextPath}/webauthn/authenticate/options`, match.any).resolves({
+          ok: true,
+          status: 200,
+          json: fake.rejects(new Error("Not valid JSON")),
+        });
+
+        try {
+          await webauthn.authenticate({}, contextPath, false);
+        } catch (err) {
+          expect(err).to.be.an("error");
+          expect(err.message).to.equal("Authentication failed. Could not fetch authentication options: Not valid JSON");
+          return;
+        }
+        expect.fail("authenticate should throw");
+      });
+
+      it("when navigator.credentials.get fails", async () => {
+        global.navigator.credentials.get = fake.rejects(new Error("Operation was aborted"));
+        try {
+          await webauthn.authenticate({}, contextPath, false);
+        } catch (err) {
+          expect(err).to.be.an("error");
+          expect(err.message).to.equal(
+            "Authentication failed. Call to navigator.credentials.get failed: Operation was aborted",
+          );
+          return;
+        }
+        expect.fail("authenticate should throw");
+      });
+
+      it("when authentication call fails", async () => {
+        httpPostStub
+          .withArgs(`${contextPath}/login/webauthn`, match.any, match.any)
+          .rejects(new Error("Connection refused"));
+        try {
+          await webauthn.authenticate({}, contextPath, false);
+        } catch (err) {
+          expect(err).to.be.an("error");
+          expect(err.message).to.equal(
+            "Authentication failed. Could not process the authentication request: Connection refused",
+          );
+          return;
+        }
+        expect.fail("authenticate should throw");
+      });
+
+      it("when authentication call does not return HTTP 200 OK", async () => {
+        httpPostStub.withArgs(`${contextPath}/login/webauthn`, match.any, match.any).resolves({
+          ok: false,
+          status: 400,
+        });
+        try {
+          await webauthn.authenticate({}, contextPath, false);
+        } catch (err) {
+          expect(err).to.be.an("error");
+          expect(err.message).to.equal("Authentication failed. Could not process the authentication request: HTTP 400");
+          return;
+        }
+        expect.fail("authenticate should throw");
+      });
+
+      it("when authentication call does not return JSON", async () => {
+        httpPostStub.withArgs(`${contextPath}/login/webauthn`, match.any, match.any).resolves({
+          ok: true,
+          status: 200,
+          json: fake.rejects(new Error("Not valid JSON")),
+        });
+        try {
+          await webauthn.authenticate({}, contextPath, false);
+        } catch (err) {
+          expect(err).to.be.an("error");
+          expect(err.message).to.equal(
+            "Authentication failed. Could not process the authentication request: Not valid JSON",
+          );
+          return;
+        }
+        expect.fail("authenticate should throw");
+      });
+
+      it("when authentication call returns null", async () => {
+        httpPostStub.withArgs(`${contextPath}/login/webauthn`, match.any, match.any).resolves({
+          ok: true,
+          status: 200,
+          json: fake.resolves(null),
+        });
+        try {
+          await webauthn.authenticate({}, contextPath, false);
+        } catch (err) {
+          expect(err).to.be.an("error");
+          expect(err.message).to.equal(
+            'Authentication failed. Expected {"authenticated": true, "redirectUrl": "..."}, server responded with: null',
+          );
+          return;
+        }
+        expect.fail("authenticate should throw");
+      });
+
+      it('when authentication call returns {"authenticated":false}', async () => {
+        httpPostStub.withArgs(`${contextPath}/login/webauthn`, match.any, match.any).resolves({
+          ok: true,
+          status: 200,
+          json: fake.resolves({
+            authenticated: false,
+          }),
+        });
+        try {
+          await webauthn.authenticate({}, contextPath, false);
+        } catch (err) {
+          expect(err).to.be.an("error");
+          expect(err.message).to.equal(
+            'Authentication failed. Expected {"authenticated": true, "redirectUrl": "..."}, server responded with: {"authenticated":false}',
+          );
+          return;
+        }
+        expect.fail("authenticate should throw");
+      });
+
+      it("when authentication call returns no redirectUrl", async () => {
+        httpPostStub.withArgs(`${contextPath}/login/webauthn`, match.any, match.any).resolves({
+          ok: true,
+          status: 200,
+          json: fake.resolves({
+            authenticated: true,
+          }),
+        });
+        try {
+          await webauthn.authenticate({}, contextPath, false);
+        } catch (err) {
+          expect(err).to.be.an("error");
+          expect(err.message).to.equal(
+            'Authentication failed. Expected {"authenticated": true, "redirectUrl": "..."}, server responded with: {"authenticated":true}',
+          );
+          return;
+        }
+        expect.fail("authenticate should throw");
       });
     });
   });
@@ -212,13 +364,29 @@ describe("webauthn-core", () => {
 
     beforeEach(() => {
       const credentialsCreateOptions = {
-        rp: { name: "Spring Security Relying Party", id: "example.localhost" },
-        user: { name: "user", id: "eatPy60xmXG_58JrIiIBa5wq8Y76c7MD6mnY5vW8yP8", displayName: "user" },
+        rp: {
+          name: "Spring Security Relying Party",
+          id: "example.localhost",
+        },
+        user: {
+          name: "user",
+          id: "eatPy60xmXG_58JrIiIBa5wq8Y76c7MD6mnY5vW8yP8",
+          displayName: "user",
+        },
         challenge: "s0hBOfkSaVLXdsbyD8jii6t2IjUd-eiTP1Cmeuo1qUo",
         pubKeyCredParams: [
-          { type: "public-key", alg: -8 },
-          { type: "public-key", alg: -7 },
-          { type: "public-key", alg: -257 },
+          {
+            type: "public-key",
+            alg: -8,
+          },
+          {
+            type: "public-key",
+            alg: -7,
+          },
+          {
+            type: "public-key",
+            alg: -257,
+          },
         ],
         timeout: 300000,
         excludeCredentials: [
@@ -228,7 +396,10 @@ describe("webauthn-core", () => {
             transports: [],
           },
         ],
-        authenticatorSelection: { residentKey: "required", userVerification: "preferred" },
+        authenticatorSelection: {
+          residentKey: "required",
+          userVerification: "preferred",
+        },
         attestation: "direct",
         extensions: { credProps: true },
       };
@@ -395,7 +566,7 @@ describe("webauthn-core", () => {
         expect.fail("register should throw");
       });
 
-      it("when registration options call returns other than HTTP 200 OK", async () => {
+      it("when registration options call does not return HTTP 200 OK", async () => {
         httpPostStub.withArgs(match.any, match.any).resolves({
           ok: false,
           status: 400,
@@ -412,7 +583,7 @@ describe("webauthn-core", () => {
         expect.fail("register should throw");
       });
 
-      it("when the registration options are not valid JSON", async () => {
+      it("when registration options are not valid JSON", async () => {
         httpPostStub.withArgs(match.any, match.any).resolves({
           ok: true,
           status: 200,
@@ -430,7 +601,7 @@ describe("webauthn-core", () => {
         expect.fail("register should throw");
       });
 
-      it("when the navigator.credentials.create fails", async () => {
+      it("when navigator.credentials.create fails", async () => {
         global.navigator = {
           credentials: {
             create: fake.rejects(new Error("authenticator threw an error")),
@@ -449,24 +620,24 @@ describe("webauthn-core", () => {
         expect.fail("register should throw");
       });
 
-      it("when the registration call fails", async () => {
+      it("when registration call fails", async () => {
         httpPostStub
           .withArgs(`${contextPath}/webauthn/register`, match.any, match.any)
-          .rejects(new Error("Server threw an error"));
+          .rejects(new Error("Connection refused"));
         try {
           await webauthn.register({}, contextPath, "my passkey");
         } catch (err) {
           expect(err).to.be.an("error");
           expect(err.message).to.equal(
-            "Registration failed. Could not process the registration request: Server threw an error",
+            "Registration failed. Could not process the registration request: Connection refused",
           );
-          expect(err.cause).to.deep.equal(new Error("Server threw an error"));
+          expect(err.cause).to.deep.equal(new Error("Connection refused"));
           return;
         }
         expect.fail("register should throw");
       });
 
-      it("when the server does not return HTTP 200 OK", async () => {
+      it("when registration call does not return HTTP 200 OK", async () => {
         httpPostStub.withArgs(`${contextPath}/webauthn/register`, match.any, match.any).resolves({
           ok: false,
           status: 400,
@@ -481,7 +652,7 @@ describe("webauthn-core", () => {
         expect.fail("register should throw");
       });
 
-      it("when the registration call does not return JSON", async () => {
+      it("when registration call does not return JSON", async () => {
         httpPostStub.withArgs(`${contextPath}/webauthn/register`, match.any, match.any).resolves({
           ok: true,
           status: 200,
@@ -500,7 +671,7 @@ describe("webauthn-core", () => {
         expect.fail("register should throw");
       });
 
-      it("when the server returns null", async () => {
+      it("when registration call returns null", async () => {
         httpPostStub.withArgs(`${contextPath}/webauthn/register`, match.any, match.any).resolves({
           ok: true,
           status: 200,
@@ -516,7 +687,7 @@ describe("webauthn-core", () => {
         expect.fail("register should throw");
       });
 
-      it('when the server returns {"success":false}', async () => {
+      it('when registration call returns {"success":false}', async () => {
         httpPostStub.withArgs(`${contextPath}/webauthn/register`, match.any, match.any).resolves({
           ok: true,
           status: 200,

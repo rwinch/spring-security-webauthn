@@ -29,7 +29,17 @@ async function isConditionalMediationAvailable() {
 }
 
 async function authenticate(headers, contextPath, useConditionalMediation) {
-  const options = await http.post(`${contextPath}/webauthn/authenticate/options`, headers).then((r) => r.json());
+  let options;
+  try {
+    const optionsResponse = await http.post(`${contextPath}/webauthn/authenticate/options`, headers);
+    if (!optionsResponse.ok) {
+      throw new Error(`HTTP ${optionsResponse.status}`);
+    }
+    options = await optionsResponse.json();
+  } catch (err) {
+    throw new Error(`Authentication failed. Could not fetch authentication options: ${err.message}`, { cause: err });
+  }
+
   // FIXME: Use https://www.w3.org/TR/webauthn-3/#sctn-parseRequestOptionsFromJSON
   const decodedOptions = {
     ...options,
@@ -45,7 +55,14 @@ async function authenticate(headers, contextPath, useConditionalMediation) {
     // Request a conditional UI
     credentialOptions.mediation = "conditional";
   }
-  const cred = await navigator.credentials.get(credentialOptions);
+
+  let cred;
+  try {
+    cred = await navigator.credentials.get(credentialOptions);
+  } catch (err) {
+    throw new Error(`Authentication failed. Call to navigator.credentials.get failed: ${err.message}`, { cause: err });
+  }
+
   const { response, type: credType } = cred;
   let userHandle;
   if (response.userHandle) {
@@ -65,21 +82,27 @@ async function authenticate(headers, contextPath, useConditionalMediation) {
     authenticatorAttachment: cred.authenticatorAttachment,
   };
 
-  // POST the response to the endpoint that calls
-  const authenticationResponse = await http.post(`${contextPath}/login/webauthn`, headers, body).then((response) => {
-    if (response.ok) {
-      return response.json();
-    } else {
-      return { errorUrl: "/login?error" };
+  let authenticationResponse;
+  try {
+    const authenticationCallResponse = await http.post(`${contextPath}/login/webauthn`, headers, body);
+    if (!authenticationCallResponse.ok) {
+      throw new Error(`HTTP ${authenticationCallResponse.status}`);
     }
-  });
-
-  // Show UI appropriate for the `verified` status
-  if (authenticationResponse && authenticationResponse.authenticated) {
-    window.location.href = authenticationResponse.redirectUrl;
-  } else {
-    window.location.href = authenticationResponse.errorUrl;
+    authenticationResponse = await authenticationCallResponse.json();
+    //   if (authenticationResponse && authenticationResponse.authenticated) {
+  } catch (err) {
+    throw new Error(`Authentication failed. Could not process the authentication request: ${err.message}`, {
+      cause: err,
+    });
   }
+
+  if (!(authenticationResponse && authenticationResponse.authenticated && authenticationResponse.redirectUrl)) {
+    throw new Error(
+      `Authentication failed. Expected {"authenticated": true, "redirectUrl": "..."}, server responded with: ${JSON.stringify(authenticationResponse)}`,
+    );
+  }
+
+  window.location.href = authenticationResponse.redirectUrl;
 }
 
 async function register(headers, contextPath, label) {
