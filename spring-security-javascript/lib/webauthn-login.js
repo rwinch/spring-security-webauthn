@@ -18,17 +18,26 @@
 
 import webauthn from "./webauthn-core.js";
 
+async function authenticateOrError(headers, contextPath, useConditionalMediation) {
+  try {
+    await webauthn.authenticate(headers, contextPath, useConditionalMediation);
+  } catch (err) {
+    console.error(err);
+    window.location.href = `${contextPath}/login?error`;
+  }
+}
+
 async function conditionalMediation(headers, contextPath) {
   const available = await webauthn.isConditionalMediationAvailable();
   if (available) {
-    await webauthn.authenticate(headers, contextPath, true);
+    await authenticateOrError(headers, contextPath, true);
   }
   return available;
 }
 
 export async function setupLogin(headers, contextPath, signinButton) {
   signinButton.addEventListener("click", async () => {
-    await webauthn.authenticate(headers, contextPath, false);
+    await authenticateOrError(headers, contextPath, false);
   });
 
   await conditionalMediation(headers, contextPath);

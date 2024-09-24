@@ -16,6 +16,7 @@
 
 "use strict";
 
+import { expect } from "chai";
 import { setupLogin } from "../lib/webauthn-login.js";
 import webauthn from "../lib/webauthn-core.js";
 import { assert, fake, match, stub } from "sinon";
@@ -31,6 +32,15 @@ describe("webauthn-login", () => {
       authenticateStub = stub(webauthn, "authenticate").resolves(undefined);
       signinButton = {
         addEventListener: fake(),
+      };
+
+      global.console = {
+        error: stub(),
+      };
+      global.window = {
+        location: {
+          href: {},
+        },
       };
     });
 
@@ -57,15 +67,12 @@ describe("webauthn-login", () => {
     });
 
     it("does not call authenticate when conditional mediation is not available", async () => {
-      isConditionalMediationAvailableStub.resolves(false);
-
       await setupLogin({}, "/", signinButton);
 
       assert.notCalled(authenticateStub);
     });
 
     it("calls authenticate when the signin button is clicked", async () => {
-      isConditionalMediationAvailableStub.resolves(false);
       const headers = { "x-header": "value" };
       const contextPath = "/some/path";
 
@@ -75,6 +82,21 @@ describe("webauthn-login", () => {
       await signinButton.addEventListener.firstCall.lastArg();
 
       assert.calledOnceWithExactly(authenticateStub, headers, contextPath, false);
+      //  TODO: redirects
+    });
+
+    it("handles authentication errors", async () => {
+      authenticateStub.rejects(new Error("Authentication failed"));
+      await setupLogin({}, "/some/path", signinButton);
+
+      // Call the event listener
+      await signinButton.addEventListener.firstCall.lastArg();
+
+      expect(global.window.location.href).to.equal(`/some/path/login?error`);
+      assert.calledOnceWithMatch(
+        global.console.error,
+        match.instanceOf(Error).and(match.has("message", "Authentication failed")),
+      );
     });
   });
 });
