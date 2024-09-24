@@ -165,6 +165,22 @@ describe("webauthn-core", () => {
       );
     });
 
+    it("calls the authenticator with the correct options", async () => {
+      await webauthn.authenticate({}, contextPath, false);
+
+      assert.calledOnceWithMatch(global.navigator.credentials.get, {
+        publicKey: {
+          challenge: base64url.decode("nRbOrtNKTfJ1JaxfUDKs8j3B-JFqyGQw8DO4u6eV3JA"),
+          timeout: 300000,
+          rpId: "localhost",
+          allowCredentials: [],
+          userVerification: "preferred",
+          extensions: {},
+        },
+        signal: match.any,
+      });
+    });
+
     it("is rejected by the server", async () => {
       httpPostStub.withArgs(`${contextPath}/login/webauthn`, match.any, match.any).resolves({
         ok: false,
