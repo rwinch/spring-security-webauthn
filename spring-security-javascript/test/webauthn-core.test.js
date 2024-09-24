@@ -181,26 +181,28 @@ describe("webauthn-core", () => {
       });
     });
 
-    it("is rejected by the server", async () => {
-      httpPostStub.withArgs(`${contextPath}/login/webauthn`, match.any, match.any).resolves({
-        ok: false,
+    describe("authentication failures", () => {
+      it("is rejected by the server", async () => {
+        httpPostStub.withArgs(`${contextPath}/login/webauthn`, match.any, match.any).resolves({
+          ok: false,
+        });
+
+        await webauthn.authenticate({}, contextPath, false);
+
+        expect(global.window.location.href).to.equal("/login?error");
       });
 
-      await webauthn.authenticate({}, contextPath, false);
+      it("request fails", async () => {
+        httpPostStub
+          .withArgs(`${contextPath}/login/webauthn`, match.any, match.any)
+          .rejects(new Error("Server threw an error"));
 
-      expect(global.window.location.href).to.equal("/login?error");
-    });
-
-    it("request fails", async () => {
-      httpPostStub
-        .withArgs(`${contextPath}/login/webauthn`, match.any, match.any)
-        .rejects(new Error("Server threw an error"));
-
-      try {
-        await webauthn.authenticate({}, contextPath, false);
-      } catch (err) {
-        expect(err).to.be.an("error");
-      }
+        try {
+          await webauthn.authenticate({}, contextPath, false);
+        } catch (err) {
+          expect(err).to.be.an("error");
+        }
+      });
     });
   });
 
@@ -367,7 +369,7 @@ describe("webauthn-core", () => {
       );
     });
 
-    describe("failures", () => {
+    describe("registration failures", () => {
       it("when label is missing", async () => {
         try {
           await webauthn.register({}, "/", "");
