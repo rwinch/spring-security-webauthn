@@ -29,7 +29,7 @@ describe("webauthn-login", () => {
 
     beforeEach(() => {
       isConditionalMediationAvailableStub = stub(webauthn, "isConditionalMediationAvailable").resolves(false);
-      authenticateStub = stub(webauthn, "authenticate").resolves(undefined);
+      authenticateStub = stub(webauthn, "authenticate").resolves("/success");
       signinButton = {
         addEventListener: fake(),
       };
@@ -64,6 +64,7 @@ describe("webauthn-login", () => {
       await setupLogin(headers, contextPath, signinButton);
 
       assert.calledOnceWithExactly(authenticateStub, headers, contextPath, true);
+      expect(global.window.location.href).to.equal("/success");
     });
 
     it("does not call authenticate when conditional mediation is not available", async () => {
@@ -82,7 +83,7 @@ describe("webauthn-login", () => {
       await signinButton.addEventListener.firstCall.lastArg();
 
       assert.calledOnceWithExactly(authenticateStub, headers, contextPath, false);
-      //  TODO: redirects
+      expect(global.window.location.href).to.equal("/success");
     });
 
     it("handles authentication errors", async () => {

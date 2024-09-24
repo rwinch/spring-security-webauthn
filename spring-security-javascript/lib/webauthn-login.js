@@ -20,7 +20,8 @@ import webauthn from "./webauthn-core.js";
 
 async function authenticateOrError(headers, contextPath, useConditionalMediation) {
   try {
-    await webauthn.authenticate(headers, contextPath, useConditionalMediation);
+    const redirectUrl = await webauthn.authenticate(headers, contextPath, useConditionalMediation);
+    window.location.href = redirectUrl;
   } catch (err) {
     console.error(err);
     window.location.href = `${contextPath}/login?error`;

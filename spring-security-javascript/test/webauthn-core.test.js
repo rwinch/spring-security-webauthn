@@ -130,22 +130,17 @@ describe("webauthn-core", () => {
           get: fake.resolves(validAuthenticatorResponse),
         },
       };
-      global.window = {
-        ...global.window,
-        location: {},
-      };
     });
 
     afterEach(() => {
       http.post.restore();
       delete global.navigator;
-      delete global.window.location;
     });
 
     it("succeeds", async () => {
-      await webauthn.authenticate({ "x-custom": "some-value" }, contextPath, false);
+      const redirectUrl = await webauthn.authenticate({ "x-custom": "some-value" }, contextPath, false);
 
-      expect(global.window.location.href).to.equal("/success");
+      expect(redirectUrl).to.equal("/success");
       assert.calledWith(
         httpPostStub.lastCall,
         `${contextPath}/login/webauthn`,
@@ -445,17 +440,11 @@ describe("webauthn-core", () => {
           success: true,
         }),
       });
-
-      global.window = {
-        ...global.window,
-        location: {},
-      };
     });
 
     afterEach(() => {
       httpPostStub.restore();
       delete global.navigator;
-      delete global.window.location;
     });
 
     it("succeeds", async () => {

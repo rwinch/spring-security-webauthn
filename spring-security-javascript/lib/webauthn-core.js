@@ -102,7 +102,7 @@ async function authenticate(headers, contextPath, useConditionalMediation) {
     );
   }
 
-  window.location.href = authenticationResponse.redirectUrl;
+  return authenticationResponse.redirectUrl;
 }
 
 async function register(headers, contextPath, label) {
