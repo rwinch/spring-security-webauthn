@@ -16,6 +16,7 @@
 
 "use strict";
 
+import "./bootstrap.js";
 import { expect } from "chai";
 import { setupLogin } from "../lib/webauthn-login.js";
 import webauthn from "../lib/webauthn-core.js";

@@ -16,6 +16,7 @@
 
 "use strict";
 
+import "./bootstrap.js";
 import abortController from "../lib/abort-controller.js";
 import { expect } from "chai";
 

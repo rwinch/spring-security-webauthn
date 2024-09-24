@@ -16,6 +16,7 @@
 
 "use strict";
 
+import "./bootstrap.js";
 import { expect } from "chai";
 import { assert, fake, match, stub } from "sinon";
 import http from "../lib/http.js";
