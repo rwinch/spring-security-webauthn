@@ -29,7 +29,6 @@ async function isConditionalMediationAvailable() {
 }
 
 async function authenticate(headers, contextPath, useConditionalMediation) {
-  // FIXME: add contextRoot
   const options = await http.post(`${contextPath}/webauthn/authenticate/options`, headers).then((r) => r.json());
   // FIXME: Use https://www.w3.org/TR/webauthn-3/#sctn-parseRequestOptionsFromJSON
   const decodedOptions = {
@@ -66,7 +65,6 @@ async function authenticate(headers, contextPath, useConditionalMediation) {
     authenticatorAttachment: cred.authenticatorAttachment,
   };
 
-  // FIXME: add contextRoot
   // POST the response to the endpoint that calls
   const authenticationResponse = await http.post(`${contextPath}/login/webauthn`, headers, body).then((response) => {
     if (response.ok) {
