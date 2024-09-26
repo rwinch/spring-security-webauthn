@@ -36,7 +36,7 @@ public class SecurityConfig {
 			.formLogin(Customizer.withDefaults())
 			.httpBasic(Customizer.withDefaults())
 			.authorizeHttpRequests(requests -> requests
-				.requestMatchers("/login/**", "/message", "/error").permitAll()
+				.requestMatchers("/login/**", "/message", "/error", "/favicon.ico").permitAll()
 				.anyRequest().authenticated()
 			)
 			.with(webauthn(), (passkeys) -> passkeys
