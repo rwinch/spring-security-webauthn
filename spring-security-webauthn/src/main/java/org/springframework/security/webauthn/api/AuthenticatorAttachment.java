@@ -57,6 +57,11 @@ public final class AuthenticatorAttachment {
 		return this.value;
 	}
 
+	@Override
+	public String toString() {
+		return "AuthenticatorAttachment [" + this.value + "]";
+	}
+
 	/**
 	 * Gets an instance of {@link AuthenticatorAttachment} based upon the value passed in.
 	 * @param value the value to obtain the {@link AuthenticatorAttachment}
