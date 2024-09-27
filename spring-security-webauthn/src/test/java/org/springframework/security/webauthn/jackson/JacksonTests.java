@@ -21,9 +21,22 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.skyscreamer.jsonassert.JSONAssert;
-import org.springframework.security.web.webauthn.registration.WebAuthnRegistrationFilter;
-import org.springframework.security.webauthn.api.*;
-import org.springframework.security.webauthn.management.RelyingPartyPublicKey;
+import org.springframework.security.webauthn.api.AuthenticationExtensionsClientOutputs;
+import org.springframework.security.webauthn.api.AuthenticatorAssertionResponse;
+import org.springframework.security.webauthn.api.AuthenticatorAttachment;
+import org.springframework.security.webauthn.api.AuthenticatorAttestationResponse;
+import org.springframework.security.webauthn.api.AuthenticatorTransport;
+import org.springframework.security.webauthn.api.Bytes;
+import org.springframework.security.webauthn.api.CredentialPropertiesOutput;
+import org.springframework.security.webauthn.api.ImmutableAuthenticationExtensionsClientInput;
+import org.springframework.security.webauthn.api.ImmutableAuthenticationExtensionsClientInputs;
+import org.springframework.security.webauthn.api.ImmutableAuthenticationExtensionsClientOutputs;
+import org.springframework.security.webauthn.api.PublicKeyCredential;
+import org.springframework.security.webauthn.api.PublicKeyCredentialCreationOptions;
+import org.springframework.security.webauthn.api.PublicKeyCredentialRequestOptions;
+import org.springframework.security.webauthn.api.PublicKeyCredentialType;
+import org.springframework.security.webauthn.api.TestPublicKeyCredentialCreationOptions;
+import org.springframework.security.webauthn.api.UserVerificationRequirement;
 
 import java.time.Duration;
 import java.util.Arrays;
@@ -32,29 +45,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 class JacksonTests {
 
-	private static final String PUBLIC_KEY_JSON = """
-			{
-			   "id": "AX6nVVERrH6opMafUGn3Z9EyNEy6cftfBKV_2YxYl1jdW8CSJxMKGXFV3bnrKTiMSJeInkG7C6B2lPt8E5i3KaM",
-			   "rawId": "AX6nVVERrH6opMafUGn3Z9EyNEy6cftfBKV_2YxYl1jdW8CSJxMKGXFV3bnrKTiMSJeInkG7C6B2lPt8E5i3KaM",
-			   "response": {
-				 "attestationObject": "o2NmbXRkbm9uZWdhdHRTdG10oGhhdXRoRGF0YVjFSZYN5YgOjGh0NBcPZHZgW4_krrmihjLHmVzzuoMdl2NFAAAAAAAAAAAAAAAAAAAAAAAAAAAAQQF-p1VREax-qKTGn1Bp92fRMjRMunH7XwSlf9mMWJdY3VvAkicTChlxVd256yk4jEiXiJ5BuwugdpT7fBOYtymjpQECAyYgASFYIJK-2epPEw0ujHN-gvVp2Hp3ef8CzU3zqwO5ylx8L2OsIlggK5x5OlTGEPxLS-85TAABum4aqVK4CSWJ7LYDdkjuBLk",
-				 "clientDataJSON": "eyJ0eXBlIjoid2ViYXV0aG4uY3JlYXRlIiwiY2hhbGxlbmdlIjoiSUJRbnVZMVowSzFIcUJvRldDcDJ4bEpsOC1vcV9hRklYenlUX0YwLTBHVSIsIm9yaWdpbiI6Imh0dHA6Ly9sb2NhbGhvc3Q6ODA4MCIsImNyb3NzT3JpZ2luIjpmYWxzZX0",
-				 "transports": [
-				   "hybrid",
-				   "internal"
-				 ]
-			   },
-			   "type": "public-key",
-			   "clientExtensionResults": {
-				 "credProps": {
-				   "rk": false
-				 }
-			   },
-			   "authenticatorAttachment": "cross-platform"
-			 }
-		""";
-
 	private ObjectMapper mapper;
+
 	@BeforeEach
 	void setup () {
 		this.mapper = new ObjectMapper();
@@ -219,7 +211,7 @@ class JacksonTests {
 	@Test
 	void readPublicKeyCredentialAuthenticatorAttestationResponse() throws Exception {
 
-		PublicKeyCredential<AuthenticatorAttestationResponse> publicKeyCredential = this.mapper.readValue(PUBLIC_KEY_JSON, new TypeReference<PublicKeyCredential<AuthenticatorAttestationResponse>>() {
+		PublicKeyCredential<AuthenticatorAttestationResponse> publicKeyCredential = this.mapper.readValue(PublicKeyCredentialJson.PUBLIC_KEY_JSON, new TypeReference<PublicKeyCredential<AuthenticatorAttestationResponse>>() {
 		});
 
 		ImmutableAuthenticationExtensionsClientOutputs clientExtensionResults = new ImmutableAuthenticationExtensionsClientOutputs(new CredentialPropertiesOutput(false));
@@ -332,38 +324,6 @@ class JacksonTests {
 		assertThat(publicKeyCredential).usingRecursiveComparison().isEqualTo(expected);
 	}
 
-	@Test
-	void readRelyingPartyRequest() throws Exception {
-		String json = """
-			{
-				"publicKey": {
-					"label": "Cell Phone",
-					"credential": %s
-				}
-			}
-			""".formatted(PUBLIC_KEY_JSON);
-		WebAuthnRegistrationFilter.WebAuthnRegistrationRequest registrationRequest = this.mapper.readValue(json, WebAuthnRegistrationFilter.WebAuthnRegistrationRequest.class);
-
-
-		ImmutableAuthenticationExtensionsClientOutputs clientExtensionResults = new ImmutableAuthenticationExtensionsClientOutputs(new CredentialPropertiesOutput(false));
-
-		PublicKeyCredential<AuthenticatorAttestationResponse> credential = PublicKeyCredential.builder()
-				.id("AX6nVVERrH6opMafUGn3Z9EyNEy6cftfBKV_2YxYl1jdW8CSJxMKGXFV3bnrKTiMSJeInkG7C6B2lPt8E5i3KaM")
-				.rawId(Bytes.fromBase64("AX6nVVERrH6opMafUGn3Z9EyNEy6cftfBKV_2YxYl1jdW8CSJxMKGXFV3bnrKTiMSJeInkG7C6B2lPt8E5i3KaM"))
-				.response(AuthenticatorAttestationResponse.builder()
-						.attestationObject(Bytes.fromBase64("o2NmbXRkbm9uZWdhdHRTdG10oGhhdXRoRGF0YVjFSZYN5YgOjGh0NBcPZHZgW4_krrmihjLHmVzzuoMdl2NFAAAAAAAAAAAAAAAAAAAAAAAAAAAAQQF-p1VREax-qKTGn1Bp92fRMjRMunH7XwSlf9mMWJdY3VvAkicTChlxVd256yk4jEiXiJ5BuwugdpT7fBOYtymjpQECAyYgASFYIJK-2epPEw0ujHN-gvVp2Hp3ef8CzU3zqwO5ylx8L2OsIlggK5x5OlTGEPxLS-85TAABum4aqVK4CSWJ7LYDdkjuBLk"))
-						.clientDataJSON(Bytes.fromBase64("eyJ0eXBlIjoid2ViYXV0aG4uY3JlYXRlIiwiY2hhbGxlbmdlIjoiSUJRbnVZMVowSzFIcUJvRldDcDJ4bEpsOC1vcV9hRklYenlUX0YwLTBHVSIsIm9yaWdpbiI6Imh0dHA6Ly9sb2NhbGhvc3Q6ODA4MCIsImNyb3NzT3JpZ2luIjpmYWxzZX0"))
-						.transports(AuthenticatorTransport.HYBRID, AuthenticatorTransport.INTERNAL)
-						.build())
-				.type(PublicKeyCredentialType.PUBLIC_KEY)
-				.clientExtensionResults(clientExtensionResults)
-				.authenticatorAttachment(AuthenticatorAttachment.CROSS_PLATFORM)
-				.build();
-
-		WebAuthnRegistrationFilter.WebAuthnRegistrationRequest expected = new WebAuthnRegistrationFilter.WebAuthnRegistrationRequest();
-		expected.setPublicKey(new RelyingPartyPublicKey(credential, "Cell Phone"));
-		assertThat(registrationRequest).usingRecursiveComparison().isEqualTo(expected);
-	}
 
 	@Test
 	void writeAuthenticationExtensionsClientInputsWhenCredPropsTrue() throws Exception {

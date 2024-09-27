@@ -170,8 +170,7 @@ public class WebAuthnRegistrationFilter extends OncePerRequestFilter {
 		response.setStatus(HttpStatus.NO_CONTENT.value());
 	}
 
-	// FIXME: make private
-	public static class WebAuthnRegistrationRequest {
+	static class WebAuthnRegistrationRequest {
 		private RelyingPartyPublicKey publicKey;
 
 		public RelyingPartyPublicKey getPublicKey() {
@@ -183,9 +182,7 @@ public class WebAuthnRegistrationFilter extends OncePerRequestFilter {
 		}
 	}
 
-	// FIXME: make private
-	// FIXME: expose userCredential as a getter (need to update JSON mapping)
-	public static class SuccessfulUserRegistrationResponse {
+	static class SuccessfulUserRegistrationResponse {
 		private final CredentialRecord credentialRecord;
 
 		public SuccessfulUserRegistrationResponse(CredentialRecord credentialRecord) {
