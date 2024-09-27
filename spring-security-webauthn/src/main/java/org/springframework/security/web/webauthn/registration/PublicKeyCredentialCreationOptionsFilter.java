@@ -29,6 +29,9 @@ import org.springframework.http.converter.json.MappingJackson2HttpMessageConvert
 import org.springframework.http.server.ServletServerHttpResponse;
 import org.springframework.security.authentication.AuthenticationTrustResolver;
 import org.springframework.security.authentication.AuthenticationTrustResolverImpl;
+import org.springframework.security.authorization.AuthenticatedAuthorizationManager;
+import org.springframework.security.authorization.AuthorizationDecision;
+import org.springframework.security.authorization.AuthorizationManager;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -42,6 +45,7 @@ import org.springframework.util.Assert;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.util.function.Supplier;
 
 import static org.springframework.security.web.util.matcher.AntPathRequestMatcher.antMatcher;
 
@@ -58,7 +62,7 @@ public class PublicKeyCredentialCreationOptionsFilter extends OncePerRequestFilt
 
 	private RequestMatcher matcher = antMatcher(HttpMethod.POST, "/webauthn/register/options");
 
-	private AuthenticationTrustResolver trustResolver = new AuthenticationTrustResolverImpl();
+	private AuthorizationManager<HttpServletRequest> authorization = AuthenticatedAuthorizationManager.authenticated();
 
 	private final WebAuthnRelyingPartyOperations rpOperations;
 
@@ -81,13 +85,14 @@ public class PublicKeyCredentialCreationOptionsFilter extends OncePerRequestFilt
 			return;
 		}
 
-		SecurityContext context = this.securityContextHolderStrategy.getContext();
-		Authentication authentication = context.getAuthentication();
-		if (!this.trustResolver.isAuthenticated(authentication)) {
+		Supplier<SecurityContext> context = this.securityContextHolderStrategy.getDeferredContext();
+		Supplier<Authentication> authentication = () -> context.get().getAuthentication();
+		AuthorizationDecision decision = this.authorization.check(authentication, request);
+		if (!decision.isGranted()) {
 			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
 			return;
 		}
-		PublicKeyCredentialCreationOptions options = this.rpOperations.createPublicKeyCredentialCreationOptions(new ImmutablePublicKeyCredentialCreationOptionsRequest(authentication));
+		PublicKeyCredentialCreationOptions options = this.rpOperations.createPublicKeyCredentialCreationOptions(new ImmutablePublicKeyCredentialCreationOptionsRequest(authentication.get()));
 		this.repository.save(request, response, options);
 		response.setStatus(HttpServletResponse.SC_OK);
 		response.setHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE);
