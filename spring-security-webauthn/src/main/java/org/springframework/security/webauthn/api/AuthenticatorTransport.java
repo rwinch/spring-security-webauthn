@@ -17,7 +17,6 @@
 package org.springframework.security.webauthn.api;
 
 /**
- * FIXME: Consider not using an enum. Spec states The AuthenticatorTransport enumeration is deliberately not referenced, see § 2.1.1 Enumerations as DOMString types.
  * <a href="https://www.w3.org/TR/webauthn-3/#enumdef-authenticatortransport">AuthenticatorTransport</a> defines hints
  * as to how clients might communicate with a particular authenticator in order to obtain an assertion for a specific
  * credential.
