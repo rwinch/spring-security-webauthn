@@ -18,10 +18,25 @@ package org.springframework.security.webauthn.jackson;
 
 import com.fasterxml.jackson.core.Version;
 import com.fasterxml.jackson.databind.module.SimpleModule;
+import org.springframework.security.webauthn.api.AttestationConveyancePreference;
+import org.springframework.security.webauthn.api.AuthenticationExtensionsClientInput;
+import org.springframework.security.webauthn.api.AuthenticationExtensionsClientInputs;
+import org.springframework.security.webauthn.api.AuthenticationExtensionsClientOutputs;
 import org.springframework.security.webauthn.api.AuthenticatorAssertionResponse;
-import org.springframework.security.webauthn.api.PublicKeyCredentialRequestOptions;
+import org.springframework.security.webauthn.api.AuthenticatorAttachment;
+import org.springframework.security.webauthn.api.AuthenticatorAttestationResponse;
+import org.springframework.security.webauthn.api.AuthenticatorSelectionCriteria;
+import org.springframework.security.webauthn.api.AuthenticatorTransport;
 import org.springframework.security.webauthn.api.Bytes;
-import org.springframework.security.webauthn.api.*;
+import org.springframework.security.webauthn.api.COSEAlgorithmIdentifier;
+import org.springframework.security.webauthn.api.CredProtectAuthenticationExtensionsClientInput;
+import org.springframework.security.webauthn.api.CredentialPropertiesOutput;
+import org.springframework.security.webauthn.api.PublicKeyCredential;
+import org.springframework.security.webauthn.api.PublicKeyCredentialCreationOptions;
+import org.springframework.security.webauthn.api.PublicKeyCredentialRequestOptions;
+import org.springframework.security.webauthn.api.PublicKeyCredentialType;
+import org.springframework.security.webauthn.api.ResidentKeyRequirement;
+import org.springframework.security.webauthn.api.UserVerificationRequirement;
 import org.springframework.security.webauthn.management.RelyingPartyPublicKey;
 
 /**
