@@ -79,7 +79,6 @@ public class WebAuthnAuthenticationFilter extends AbstractAuthenticationProcessi
 		setSecurityContextRepository(new HttpSessionSecurityContextRepository());
 		setAuthenticationFailureHandler(new AuthenticationEntryPointFailureHandler(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED)));
 		setAuthenticationSuccessHandler(new HttpMessageConverterAuthenticationSuccessHandler());
-		// FIXME: should the failure handler be a status of 400 instead of 401 so JS can handle it?
 	}
 
 	@Override
