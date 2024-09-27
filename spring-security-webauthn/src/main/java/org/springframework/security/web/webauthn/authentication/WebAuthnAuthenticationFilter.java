@@ -70,7 +70,6 @@ import static org.springframework.security.web.util.matcher.AntPathRequestMatche
  */
 public class WebAuthnAuthenticationFilter extends AbstractAuthenticationProcessingFilter  {
 
-	// FIXME: Using WebauthnJackson2Module here might be a dependency cycle
 	private GenericHttpMessageConverter<Object> converter = new MappingJackson2HttpMessageConverter(Jackson2ObjectMapperBuilder.json().modules(new WebauthnJackson2Module()).build());
 
 	private PublicKeyCredentialRequestOptionsRepository requestOptionsRepository = new HttpSessionPublicKeyCredentialRequestOptionsRepository();
