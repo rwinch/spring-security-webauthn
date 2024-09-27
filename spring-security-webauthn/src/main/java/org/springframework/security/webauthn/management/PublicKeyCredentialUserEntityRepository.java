@@ -20,7 +20,6 @@ import org.springframework.security.webauthn.api.Bytes;
 import org.springframework.security.webauthn.api.PublicKeyCredentialUserEntity;
 
 /**
- * FIXME: only interfaces for inputs and outputs
  * A repository for managing {@link PublicKeyCredentialUserEntity} instances.
  * @since 6.4
  * @author Rob Winch
