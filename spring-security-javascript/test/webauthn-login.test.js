@@ -56,7 +56,9 @@ describe("webauthn-login", () => {
       assert.calledOnceWithMatch(signinButton.addEventListener, "click", match.typeOf("function"));
     });
 
-    it("uses conditional mediation when available", async () => {
+    // FIXME: conditional mediation triggers browser crashes
+    // See: https://github.com/rwinch/spring-security-webauthn/issues/73
+    xit("uses conditional mediation when available", async () => {
       isConditionalMediationAvailableStub.resolves(true);
 
       const headers = { "x-header": "value" };

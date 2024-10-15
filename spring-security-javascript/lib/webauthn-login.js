@@ -41,5 +41,7 @@ export async function setupLogin(headers, contextPath, signinButton) {
     await authenticateOrError(headers, contextPath, false);
   });
 
-  await conditionalMediation(headers, contextPath);
+  // FIXME: conditional mediation triggers browser crashes
+  // See: https://github.com/rwinch/spring-security-webauthn/issues/73
+  // await conditionalMediation(headers, contextPath);
 }
