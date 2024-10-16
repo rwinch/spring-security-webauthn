@@ -38,14 +38,12 @@ public interface CredentialRecord {
 	 * The <a href="https://www.w3.org/TR/webauthn-3/#abstract-opdef-credential-record-id">credential.id</a>.
 	 * @return
 	 */
-	// FIXME: Change type to CredentialId(id, rawId)
 	Bytes getCredentialId();
 
 	/**
 	 * The <a href="https://www.w3.org/TR/webauthn-3/#abstract-opdef-credential-record-publickey">publicKey</a>
 	 * @return
 	 */
-	// FIXME: Change type so it includes the COSE and may (later?) include other parsed properties
 	PublicKeyCose getPublicKey();
 
 	/**
