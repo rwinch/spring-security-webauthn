@@ -1,7 +1,7 @@
 [libraries]
 assertj-bom = 'org.assertj:assertj-bom:3.26.3'
 hamcrest = 'org.hamcrest:hamcrest:3.0'
-jackson-bom = 'com.fasterxml.jackson:jackson-bom:2.18.0'
+jackson-bom = 'com.fasterxml.jackson:jackson-bom:2.18.1'
 jakarta-servlet = 'jakarta.servlet:jakarta.servlet-api:6.0.0'
 junit-bom = 'org.junit:junit-bom:5.11.2'
 jsonassert = 'org.skyscreamer:jsonassert:1.5.3'
